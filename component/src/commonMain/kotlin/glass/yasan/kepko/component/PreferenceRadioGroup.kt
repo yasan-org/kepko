@@ -136,7 +136,6 @@ private fun RadioGroupRow(
             )
         }
         Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier.weight(1f),
         ) {
             Text(
