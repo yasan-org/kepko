@@ -13,7 +13,19 @@ public class Colors internal constructor(
     private val grayscale: Boolean = false,
 ) {
     private val inversePalette: ColorPalette =
-        if (palette == ColorPalette.LIGHT) ColorPalette.DARK else ColorPalette.LIGHT
+        when (palette) {
+            LIGHT -> DARK
+            DARK -> LIGHT
+            BLACK -> LIGHT
+            SOLARIZED_LIGHT -> SOLARIZED_DARK
+            SOLARIZED_DARK -> SOLARIZED_LIGHT
+            CATPPUCCIN_LATTE -> CATPPUCCIN_MOCHA
+            CATPPUCCIN_FRAPPE -> CATPPUCCIN_LATTE
+            CATPPUCCIN_MACCHIATO -> CATPPUCCIN_LATTE
+            CATPPUCCIN_MOCHA -> CATPPUCCIN_LATTE
+            GRUVBOX_LIGHT -> GRUVBOX_DARK
+            GRUVBOX_DARK -> GRUVBOX_LIGHT
+        }
 
     private fun Color.applyGrayscale(): Color {
         if (!grayscale) return this
