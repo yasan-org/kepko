@@ -4,13 +4,13 @@
     <string name="go_back">Go back</string>
     <string name="preference_dark_palette_description">Color palette used when the system is in dark mode</string>
     <string name="preference_dark_palette_title">Dark Palette</string>
-    <string name="preference_grayscale_title">Grayscale</string>
+    <string name="preference_grayscale_title">Graustufen</string>
     <string name="preference_grayscale_description">Remove all colors from the interface</string>
     <string name="preference_light_palette_description">Color palette used when the system is in light mode</string>
     <string name="preference_light_palette_title">Light Palette</string>
     <string name="preference_palette_mode_dynamic">Follow System</string>
     <string name="preference_palette_mode_dynamic_description">Switch the color palette automatically when the system theme changes</string>
-    <string name="preference_theme_screen_title">Theme</string>
+    <string name="preference_theme_screen_title">Thema</string>
     <string name="preference_palette_title">Color Palette</string>
     <string name="preference_static_palette_title">Color Palette</string>
     <string name="color_success">Success</string>
@@ -31,12 +31,13 @@
     <string name="preference_badge_early_access">Early Access</string>
     <string name="preference_badge_experimental">Experimental</string>
     <string name="preference_badge_legacy">Legacy</string>
-    <string name="preference_badge_new">New</string>
+    <string name="preference_badge_new">Neu</string>
+    <string name="preference_badge_overridden_by">Overridden by %1$s</string>
     <string name="preference_badge_preview">Preview</string>
-    <string name="color_palette_black">Black (AMOLED)</string>
-    <string name="color_palette_dark">Dark</string>
+    <string name="color_palette_black">Schwarz (AMOLED)</string>
+    <string name="color_palette_dark">Dunkel</string>
     <string name="color_palette_dark_solarized">Solarized Dark</string>
-    <string name="color_palette_light">Light</string>
+    <string name="color_palette_light">Hell</string>
     <string name="color_palette_light_solarized">Solarized Light</string>
     <string name="color_palette_catppuccin_frappe">Catppuccin Frappé</string>
     <string name="color_palette_catppuccin_latte">Catppuccin Latte</string>
@@ -45,7 +46,12 @@
     <string name="color_palette_gruvbox_light">Gruvbox Light</string>
     <string name="color_palette_gruvbox_dark">Gruvbox Dark</string>
     <string name="color_palette_system">System</string>
-    <string name="preference_outline_title">Outline</string>
+    <string name="preference_outline_title">Umrandung</string>
     <string name="preference_roundness_title">Roundness</string>
     <string name="reset">Reset</string>
+    <string name="preference_follow_global_title">Follow global setting</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+    <string name="grayscale_enabled">Grayscale enabled</string>
+    <string name="grayscale_disabled">Grayscale disabled</string>
 </resources>
