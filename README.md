@@ -139,4 +139,6 @@ Button(
 
 Explore Kepko in a real project with the included [sample project](https://github.com/yasanglass/kepko/tree/main/sample).
 
+You can also try the sample project in your browser: **[Live WebAssembly Demo](https://yasanglass.github.io/kepko/sample/)**
+
 ![Sample](https://raw.githubusercontent.com/yasanglass/kepko/main/sample/composeApp/assets/readme/SampleLightReadmePreview.png)

@@ -352,10 +352,19 @@ jobs:
       - name: Generate Documentation
         run: ./gradlew :dokkaGenerateHtml
 
+      - name: Build Sample (Wasm)
+        run: ./gradlew :sample:composeApp:wasmJsBrowserDistribution
+
+      - name: Assemble Pages Site
+        run: |
+          mkdir -p build/pages/sample
+          cp -r build/dokka/html/. build/pages/
+          cp -r sample/composeApp/build/dist/wasmJs/productionExecutable/. build/pages/sample/
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: build/dokka/html
+          path: build/pages
 
   docs-deploy:
     name: Docs Deploy
