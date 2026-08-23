@@ -149,6 +149,8 @@ compose.desktop {
             )
             packageName = "Kepko"
             packageVersion = project.version.toString()
+            description = "Explore the Kepko design system for Compose Multiplatform"
+            licenseFile.set(rootProject.file("LICENSE"))
             macOS {
                 iconFile.set(project.file("src/jvmMain/resources/app_icon.icns"))
                 bundleID = "glass.yasan.kepko.sample"
@@ -159,6 +161,10 @@ compose.desktop {
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.png"))
+                debMaintainer = "yasanglass@gmail.com"
+                appCategory = "Development"
+                rpmLicenseType = "Apache-2.0"
+                menuGroup = "Development"
             }
         }
     }

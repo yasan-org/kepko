@@ -121,9 +121,13 @@ jobs:
           ./gradlew \
             :sample:composeApp:packageDeb \
             :sample:composeApp:packageRpm \
+            :sample:composeApp:createDistributable \
             :sample:androidApp:assembleRelease \
             :sample:composeApp:wasmJsBrowserDistribution \
             :sample:composeApp:jsBrowserDistribution
+
+      - name: Build AppImage
+        run: ./scripts/package-appimage.sh
 
       - name: Upload to GitHub Release
         env:
@@ -135,6 +139,9 @@ jobs:
 
           cp sample/composeApp/build/compose/binaries/main/rpm/*.rpm "kepko-sample-linux-${TAG}.rpm"
           gh release upload "${TAG}" "kepko-sample-linux-${TAG}.rpm" --clobber
+
+          cp sample/composeApp/build/appimage/*.AppImage "kepko-sample-linux-${TAG}.AppImage"
+          gh release upload "${TAG}" "kepko-sample-linux-${TAG}.AppImage" --clobber
 
           for apk in sample/androidApp/build/outputs/apk/release/*.apk; do
             suffix="$(basename "${apk}" .apk)"
