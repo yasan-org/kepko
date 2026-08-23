@@ -1,6 +1,7 @@
 package glass.yasan.kepko.persistence
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
@@ -21,21 +22,28 @@ import glass.yasan.kepko.resource.Strings
 internal fun PersistentPreferenceThemeProfileContent(
     persistence: PersistenceManager,
     profile: UserVisibleProfile,
+    enabled: Boolean,
+    topContent: @Composable ColumnScope.() -> Unit,
+    bottomContent: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
     ) {
+        topContent()
         PersistentPreferenceThemeProfilePalette(
             persistence = persistence,
             profileId = profile.id,
+            enabled = enabled,
         )
         Spacer(Modifier.height(8.dp))
         PersistentPreferenceThemeProfileGrayscale(
             persistence = persistence,
             profileId = profile.id,
+            enabled = enabled,
         )
+        bottomContent()
     }
 }
 
@@ -44,6 +52,7 @@ internal fun PersistentPreferenceThemeProfileContent(
 private fun PersistentPreferenceThemeProfilePalette(
     persistence: PersistenceManager,
     profileId: String,
+    enabled: Boolean,
 ) {
     val followGlobalItem = PreferenceRadioGroupItem(
         id = PreferenceValueIds.FOLLOW_GLOBAL_ID,
@@ -68,6 +77,7 @@ private fun PersistentPreferenceThemeProfilePalette(
                 ColorPalette.fromIdOrNull(id)?.let { persistence.setPalettePrimary(profileId, it) }
             }
         },
+        enabled = enabled,
         modifier = Modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.PROFILE_PALETTE_PICKER)
     )
@@ -78,6 +88,7 @@ private fun PersistentPreferenceThemeProfilePalette(
 private fun PersistentPreferenceThemeProfileGrayscale(
     persistence: PersistenceManager,
     profileId: String,
+    enabled: Boolean,
 ) {
     val globalValue = if (persistence.isGrayscaleEnabled(null)) Strings.enabled else Strings.disabled
 
@@ -110,6 +121,7 @@ private fun PersistentPreferenceThemeProfileGrayscale(
                 },
             )
         },
+        enabled = enabled,
         modifier = Modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.PROFILE_GRAYSCALE_PICKER)
     )

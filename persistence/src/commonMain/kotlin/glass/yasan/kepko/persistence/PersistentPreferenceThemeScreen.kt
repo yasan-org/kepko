@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -61,6 +62,9 @@ public fun PersistentPreferenceThemeScreen(
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
     activeProfile: UserVisibleProfile? = null,
     targetProfile: UserVisibleProfile? = null,
+    enabled: Boolean = true,
+    topContent: @Composable ColumnScope.() -> Unit = {},
+    bottomContent: @Composable ColumnScope.() -> Unit = {},
 ) {
     AnimatedPersistentKepkoTheme(
         persistence = persistence,
@@ -70,7 +74,9 @@ public fun PersistentPreferenceThemeScreen(
         Scaffold(
             title = Strings.preferenceThemeScreenTitle,
             onBackClick = onBackClick,
-            trailingContent = { PersistentPreferenceThemeResetButton(persistence, targetProfile) },
+            trailingContent = {
+                PersistentPreferenceThemeResetButton(persistence, targetProfile, enabled)
+            },
             subtitle = targetProfile?.let {
                 {
                     Subtitle(
@@ -88,6 +94,9 @@ public fun PersistentPreferenceThemeScreen(
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 activeProfile = activeProfile,
                 targetProfile = targetProfile,
+                enabled = enabled,
+                topContent = topContent,
+                bottomContent = bottomContent,
                 modifier = Modifier
                     .padding(top = 16.dp)
                     .padding(contentPadding),
@@ -103,6 +112,9 @@ public fun PersistentPreferenceThemeContent(
     isSystemInDarkTheme: Boolean,
     activeProfile: UserVisibleProfile? = null,
     targetProfile: UserVisibleProfile? = null,
+    enabled: Boolean = true,
+    topContent: @Composable ColumnScope.() -> Unit = {},
+    bottomContent: @Composable ColumnScope.() -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     AnimatedPersistentKepkoTheme(
@@ -114,6 +126,9 @@ public fun PersistentPreferenceThemeContent(
             PersistentPreferenceThemeProfileContent(
                 persistence = persistence,
                 profile = targetProfile,
+                enabled = enabled,
+                topContent = topContent,
+                bottomContent = bottomContent,
                 modifier = modifier,
             )
         } else {
@@ -121,6 +136,9 @@ public fun PersistentPreferenceThemeContent(
                 persistence = persistence,
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 activeProfile = activeProfile,
+                enabled = enabled,
+                topContent = topContent,
+                bottomContent = bottomContent,
                 modifier = modifier,
             )
         }
@@ -132,6 +150,9 @@ private fun PersistentPreferenceThemeGlobalContent(
     persistence: PersistenceManager,
     isSystemInDarkTheme: Boolean,
     activeProfile: UserVisibleProfile?,
+    enabled: Boolean,
+    topContent: @Composable ColumnScope.() -> Unit,
+    bottomContent: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val paletteOverriddenBadge = activeProfile
@@ -156,7 +177,8 @@ private fun PersistentPreferenceThemeGlobalContent(
         modifier = modifier
             .verticalScroll(rememberScrollState()),
     ) {
-        PersistentPreferenceThemeMode(persistence)
+        topContent()
+        PersistentPreferenceThemeMode(persistence, enabled = enabled)
         AnimatedVisibility(
             visible = persistence.getPalettePrimary(profileId = null) == null,
             enter = enterTransition,
@@ -166,6 +188,7 @@ private fun PersistentPreferenceThemeGlobalContent(
                 persistence = persistence,
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 overriddenBadge = paletteOverriddenBadge,
+                enabled = enabled,
             )
         }
         AnimatedVisibility(
@@ -173,14 +196,23 @@ private fun PersistentPreferenceThemeGlobalContent(
             enter = enterTransition,
             exit = exitTransition,
         ) {
-            PersistentPreferenceThemeStatic(persistence, overriddenBadge = paletteOverriddenBadge)
+            PersistentPreferenceThemeStatic(
+                persistence = persistence,
+                overriddenBadge = paletteOverriddenBadge,
+                enabled = enabled,
+            )
         }
         Spacer(Modifier.height(24.dp))
-        PersistentPreferenceThemeGrayscale(persistence, overriddenBadge = grayscaleOverriddenBadge)
+        PersistentPreferenceThemeGrayscale(
+            persistence = persistence,
+            overriddenBadge = grayscaleOverriddenBadge,
+            enabled = enabled,
+        )
         Spacer(Modifier.height(8.dp))
-        PersistentPreferenceThemeOutline(persistence)
+        PersistentPreferenceThemeOutline(persistence, enabled = enabled)
         Spacer(Modifier.height(8.dp))
-        PersistentPreferenceThemeRoundness(persistence)
+        PersistentPreferenceThemeRoundness(persistence, enabled = enabled)
+        bottomContent()
     }
 }
 
@@ -188,8 +220,9 @@ private fun PersistentPreferenceThemeGlobalContent(
 private fun PersistentPreferenceThemeResetButton(
     persistence: PersistenceManager,
     targetProfile: UserVisibleProfile? = null,
+    enabled: Boolean = true,
 ) {
-    val showResetButton = if (targetProfile != null) {
+    val showResetButton = enabled && if (targetProfile != null) {
         persistence.profileManager.getProfilePalette(targetProfile.id) != null ||
             persistence.profileManager.getProfileGrayscale(targetProfile.id) != null
     } else {
@@ -217,6 +250,7 @@ private fun PersistentPreferenceThemeResetButton(
 @Composable
 private fun PersistentPreferenceThemeMode(
     persistence: PersistenceManager,
+    enabled: Boolean,
 ) {
     val primaryPalette = persistence.getPalettePrimary(null)
     var lastPrimaryPalette by remember { mutableStateOf(primaryPalette) }
@@ -227,6 +261,7 @@ private fun PersistentPreferenceThemeMode(
         title = Strings.preferencePaletteModeDynamic,
         description = Strings.preferencePaletteModeDynamicDescription,
         checked = primaryPalette == null,
+        enabled = enabled,
         onCheckedChange = { followSystem ->
             persistence.setPalettePrimary(
                 null,
@@ -242,6 +277,7 @@ private fun PersistentPreferenceThemeSystem(
     persistence: PersistenceManager,
     isSystemInDarkTheme: Boolean,
     overriddenBadge: Badge?,
+    enabled: Boolean,
 ) {
     Column {
         Spacer(Modifier.height(8.dp))
@@ -250,6 +286,7 @@ private fun PersistentPreferenceThemeSystem(
                 persistence = persistence,
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 overriddenBadge = overriddenBadge,
+                enabled = enabled,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -259,6 +296,7 @@ private fun PersistentPreferenceThemeSystem(
                 persistence = persistence,
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 overriddenBadge = overriddenBadge,
+                enabled = enabled,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -270,6 +308,7 @@ private fun PersistentPreferenceThemeSystem(
 private fun PersistentPreferenceThemeStatic(
     persistence: PersistenceManager,
     overriddenBadge: Badge?,
+    enabled: Boolean,
 ) {
     Column {
         Spacer(Modifier.height(8.dp))
@@ -283,6 +322,7 @@ private fun PersistentPreferenceThemeStatic(
                 ColorPalette.fromIdOrNull(id)?.let { persistence.setPalettePrimary(null, it) }
             },
             badge = overriddenBadge,
+            enabled = enabled,
             modifier = Modifier
                 .testTag(PersistentPreferenceThemeScreenSemantics.PALETTE_PICKER)
         )
@@ -295,6 +335,7 @@ private fun PersistentPreferenceThemeLight(
     persistence: PersistenceManager,
     isSystemInDarkTheme: Boolean,
     overriddenBadge: Badge?,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     PreferenceRadioGroupPicker(
@@ -309,6 +350,7 @@ private fun PersistentPreferenceThemeLight(
         onSelectId = { id -> ColorPalette.fromIdOrNull(id)?.let { persistence.paletteLight = it } },
         description = Strings.preferenceLightPaletteDescription,
         badge = overriddenBadge ?: Badge.active.takeIf { !isSystemInDarkTheme },
+        enabled = enabled,
         modifier = modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.LIGHT_PICKER)
     )
@@ -320,6 +362,7 @@ private fun PersistentPreferenceThemeDark(
     persistence: PersistenceManager,
     isSystemInDarkTheme: Boolean,
     overriddenBadge: Badge?,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     PreferenceRadioGroupPicker(
@@ -334,6 +377,7 @@ private fun PersistentPreferenceThemeDark(
         onSelectId = { id -> ColorPalette.fromIdOrNull(id)?.let { persistence.paletteDark = it } },
         description = Strings.preferenceDarkPaletteDescription,
         badge = overriddenBadge ?: Badge.active.takeIf { isSystemInDarkTheme },
+        enabled = enabled,
         modifier = modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.DARK_PICKER)
     )
@@ -343,12 +387,14 @@ private fun PersistentPreferenceThemeDark(
 private fun PersistentPreferenceThemeGrayscale(
     persistence: PersistenceManager,
     overriddenBadge: Badge?,
+    enabled: Boolean,
 ) {
     PreferenceSwitch(
         title = Strings.preferenceGrayscaleTitle,
         description = Strings.preferenceGrayscaleDescription,
         checked = persistence.isGrayscaleEnabled(null),
         onCheckedChange = { persistence.setGrayscaleEnabled(null, it) },
+        enabled = enabled,
         badge = overriddenBadge,
         modifier = Modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.GRAYSCALE)
@@ -358,6 +404,7 @@ private fun PersistentPreferenceThemeGrayscale(
 @Composable
 private fun PersistentPreferenceThemeOutline(
     persistence: PersistenceManager,
+    enabled: Boolean,
 ) {
     var value by remember(persistence.outline) { mutableStateOf(persistence.outline.value) }
     PreferenceSlider(
@@ -365,6 +412,7 @@ private fun PersistentPreferenceThemeOutline(
         value = value,
         onValueChange = { value = it },
         onValueChangeFinished = { persistence.outline = value.dp },
+        enabled = enabled,
         valueLabelSuffix = "x",
         valueRange = 1f..5f,
         steps = 3,
@@ -376,6 +424,7 @@ private fun PersistentPreferenceThemeOutline(
 @Composable
 private fun PersistentPreferenceThemeRoundness(
     persistence: PersistenceManager,
+    enabled: Boolean,
 ) {
     var value by remember(persistence.roundness) { mutableStateOf(persistence.roundness) }
     PreferenceSlider(
@@ -383,6 +432,7 @@ private fun PersistentPreferenceThemeRoundness(
         value = value,
         onValueChange = { value = it },
         onValueChangeFinished = { persistence.roundness = value },
+        enabled = enabled,
         valueLabelSuffix = "x",
         valueRange = 0f..1.6f,
         steps = 15,
@@ -473,6 +523,26 @@ internal fun PersistentPreferenceThemeScreenGlobalOverriddenStaticPreview() {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
             activeProfile = previewProfile,
+        )
+    }
+}
+
+@ExperimentalKepkoApi
+@PreviewWithTest
+@Composable
+internal fun PersistentPreferenceThemeScreenDisabledWithTopContentPreview() {
+    PreviewPersistentKepkoTheme(configure = { setPalettePrimary(null, ColorPalette.LIGHT) }) {
+        PersistentPreferenceThemeScreen(
+            onBackClick = {},
+            enabled = false,
+            topContent = {
+                PreferenceSwitch(
+                    title = "Host content",
+                    checked = true,
+                    onCheckedChange = {},
+                )
+                Spacer(Modifier.height(24.dp))
+            },
         )
     }
 }

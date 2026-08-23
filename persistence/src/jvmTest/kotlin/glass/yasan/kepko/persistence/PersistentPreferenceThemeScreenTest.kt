@@ -1,6 +1,8 @@
 package glass.yasan.kepko.persistence
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -8,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import com.russhwolf.settings.MapSettings
+import glass.yasan.kepko.component.Text
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.ColorPalette.BLACK
@@ -371,7 +374,80 @@ internal class PersistentPreferenceThemeScreenTest {
         }
     }
 
+    @Test
+    fun givenSlots_whenRendered_thenHostContentIsInsideTheScrollingColumn() {
+        runDesktopComposeUiTest {
+            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            setContent {
+                PersistentKepkoTheme(persistenceManager = persistenceManager) {
+                    PersistentPreferenceThemeScreen(
+                        onBackClick = {},
+                        topContent = { Text(TOP_SLOT) },
+                        bottomContent = { Text(BOTTOM_SLOT) },
+                    )
+                }
+            }
+
+            waitForIdle()
+
+            onNodeWithText(TOP_SLOT).assertExists()
+            onNodeWithText(BOTTOM_SLOT).assertExists()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.PALETTE_MODE).assertIsEnabled()
+        }
+    }
+
+    @Test
+    fun givenDisabled_whenRendered_thenControlsAreReadOnlyAndResetIsHidden() {
+        runDesktopComposeUiTest {
+            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            persistenceManager.setGrayscaleEnabled(null, true)
+            lateinit var resetString: String
+            setContent {
+                PersistentKepkoTheme(persistenceManager = persistenceManager) {
+                    resetString = Strings.reset
+                    PersistentPreferenceThemeScreen(
+                        onBackClick = {},
+                        enabled = false,
+                        topContent = { Text(TOP_SLOT) },
+                    )
+                }
+            }
+
+            waitForIdle()
+
+            onNodeWithText(TOP_SLOT).assertExists()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.PALETTE_MODE).assertIsNotEnabled()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.LIGHT_PICKER).assertIsNotEnabled()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.DARK_PICKER).assertIsNotEnabled()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.GRAYSCALE).assertIsNotEnabled()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.OUTLINE).assertIsNotEnabled()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.ROUNDNESS).assertIsNotEnabled()
+            onNodeWithContentDescription(resetString).assertDoesNotExist()
+        }
+    }
+
+    @Test
+    fun givenDisabled_whenControlClicked_thenPreferencesAreUnchanged() {
+        runDesktopComposeUiTest {
+            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            setContent {
+                PersistentKepkoTheme(persistenceManager = persistenceManager) {
+                    PersistentPreferenceThemeScreen(onBackClick = {}, enabled = false)
+                }
+            }
+
+            waitForIdle()
+            onNodeWithTag(PersistentPreferenceThemeScreenSemantics.GRAYSCALE).performClick()
+            waitForIdle()
+
+            assertFalse(persistenceManager.isGrayscaleEnabled(null))
+        }
+    }
+
     private companion object {
+        const val TOP_SLOT = "top slot"
+        const val BOTTOM_SLOT = "bottom slot"
+
         val testProfile = UserVisibleProfile(
             id = "work",
             name = { "Work" },

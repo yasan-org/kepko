@@ -15,6 +15,8 @@ import glass.yasan.kepko.resource.Strings
 
 /**
  * A ready-made navigation button, with the active theme preferences shown in the description.
+ *
+ * Passing a [description] replaces that summary; `null` keeps it.
  */
 @ExperimentalKepkoApi
 @Composable
@@ -24,11 +26,11 @@ public fun PersistentPreferenceThemeButton(
     persistence: PersistenceManager = LocalKepkoPersistenceManager.current,
     targetProfile: UserVisibleProfile? = null,
     text: String = Strings.preferenceThemeScreenTitle,
-    description: String = persistence.themeButtonDescription(targetProfile),
+    description: String? = null,
 ) {
     Button(
         text = text,
-        description = description,
+        description = description ?: persistence.themeButtonDescription(targetProfile),
         onClick = onClick,
         leadingIcon = Icons.palette,
         trailingIcon = Icons.chevronForward,
@@ -100,6 +102,7 @@ internal fun PersistentPreferenceThemeButtonPreview() {
                 profileManager.setProfileGrayscale(previewProfile.id, true)
             },
         )
+        PreviewPreferenceThemeButton(description = "Following Yasan Launcher")
     }
 }
 
@@ -108,6 +111,7 @@ internal fun PersistentPreferenceThemeButtonPreview() {
 private fun PreviewPreferenceThemeButton(
     isSystemInDarkTheme: Boolean = false,
     targetProfile: UserVisibleProfile? = null,
+    description: String? = null,
     configure: PreviewPersistenceManager.() -> Unit = {},
 ) {
     PreviewPersistentKepkoTheme(
@@ -117,6 +121,7 @@ private fun PreviewPreferenceThemeButton(
         PersistentPreferenceThemeButton(
             onClick = {},
             targetProfile = targetProfile,
+            description = description,
         )
     }
 }
