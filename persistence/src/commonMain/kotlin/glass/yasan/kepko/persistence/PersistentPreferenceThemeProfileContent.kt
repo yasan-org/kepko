@@ -16,6 +16,7 @@ import glass.yasan.kepko.component.PreferenceRadioGroupItem
 import glass.yasan.kepko.component.PreferenceRadioGroupPicker
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
+import glass.yasan.kepko.persistence.internal.asPreferenceRadioGroupItem
 import glass.yasan.kepko.resource.Strings
 
 @Composable

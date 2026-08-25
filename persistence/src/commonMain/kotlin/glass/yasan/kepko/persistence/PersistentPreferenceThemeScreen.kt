@@ -31,7 +31,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import glass.yasan.kepko.component.Badge
 import glass.yasan.kepko.component.IconButton
-import glass.yasan.kepko.component.PreferenceRadioGroupItem
 import glass.yasan.kepko.component.PreferenceRadioGroupPicker
 import glass.yasan.kepko.component.PreferenceSlider
 import glass.yasan.kepko.component.PreferenceSwitch
@@ -42,6 +41,7 @@ import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.ColorPalette.Companion.defaultDark
 import glass.yasan.kepko.foundation.theme.ColorPalette.Companion.defaultLight
 import glass.yasan.kepko.foundation.theme.isSystemInDarkTheme
+import glass.yasan.kepko.persistence.internal.asPreferenceRadioGroupItem
 import glass.yasan.kepko.resource.Icons
 import glass.yasan.kepko.resource.Strings
 
@@ -439,20 +439,6 @@ private fun PersistentPreferenceThemeRoundness(
         modifier = Modifier
             .testTag(PersistentPreferenceThemeScreenSemantics.ROUNDNESS)
     )
-}
-
-internal fun ColorPalette.asPreferenceRadioGroupItem(
-    segment: Int = 0,
-    isDefault: Boolean = false,
-): PreferenceRadioGroupItem = PreferenceRadioGroupItem(
-    id = id,
-    segment = segment,
-    badge = when {
-        isDefault -> Badge.default
-        else -> null
-    },
-) {
-    title()
 }
 
 @ExperimentalKepkoApi
