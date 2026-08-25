@@ -20,7 +20,6 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         freeCompilerArgs.add("-Xcontext-sensitive-resolution")
-        freeCompilerArgs.add("-opt-in=glass.yasan.kepko.foundation.annotation.InternalKepkoApi")
     }
 
     android {
@@ -42,10 +41,12 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+        binaries.executable()
     }
 
     js {
         browser()
+        binaries.executable()
     }
 
     applyDefaultHierarchyTemplate()

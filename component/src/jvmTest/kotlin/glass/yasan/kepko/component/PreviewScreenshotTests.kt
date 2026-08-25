@@ -2,7 +2,7 @@ package glass.yasan.kepko.component
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.runDesktopComposeUiTest
+import androidx.compose.ui.test.v2.runDesktopComposeUiTest
 import io.github.takahirom.roborazzi.captureRoboImage
 import sergio.sastre.composable.preview.scanner.jvm.JvmAnnotationScanner
 import kotlin.test.Test
