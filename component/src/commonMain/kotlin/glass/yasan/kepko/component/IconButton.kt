@@ -4,6 +4,7 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -34,7 +35,7 @@ public fun IconButton(
     Icon(
         painter = painter,
         contentDescription = contentDescription,
-        tint = tint,
+        tint = if (enabled) tint else KepkoTheme.colors.contentDisabled,
         modifier = modifier
             .padding(outerPadding)
             .clip(KepkoTheme.shapes.extraLarge)
@@ -66,7 +67,7 @@ public fun IconButton(
     Icon(
         bitmap = bitmap,
         contentDescription = contentDescription,
-        tint = tint,
+        tint = if (enabled) tint else KepkoTheme.colors.contentDisabled,
         modifier = modifier
             .padding(outerPadding)
             .clip(KepkoTheme.shapes.extraLarge)
@@ -114,10 +115,32 @@ internal fun IconButtonSolarizedDarkPreview() {
 @Composable
 private fun PreviewIconButtonContent() {
     Midground {
-        Row {
-            IconButton(painter = Icons.info, contentDescription = null, onClick = {})
-            IconButton(painter = Icons.settings, contentDescription = null, onClick = {})
-            IconButton(painter = Icons.close, contentDescription = null, onClick = {})
+        Column {
+            Row {
+                IconButton(painter = Icons.info, contentDescription = null, onClick = {})
+                IconButton(painter = Icons.settings, contentDescription = null, onClick = {})
+                IconButton(painter = Icons.close, contentDescription = null, onClick = {})
+            }
+            Row {
+                IconButton(
+                    painter = Icons.info,
+                    contentDescription = null,
+                    onClick = {},
+                    enabled = false,
+                )
+                IconButton(
+                    painter = Icons.settings,
+                    contentDescription = null,
+                    onClick = {},
+                    enabled = false,
+                )
+                IconButton(
+                    painter = Icons.close,
+                    contentDescription = null,
+                    onClick = {},
+                    enabled = false,
+                )
+            }
         }
     }
 }

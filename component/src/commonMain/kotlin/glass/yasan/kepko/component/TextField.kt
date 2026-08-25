@@ -94,7 +94,7 @@ public object TextFieldDefaults {
     public fun colors(
         focusedContainerColor: Color = KepkoTheme.colors.foreground,
         unfocusedContainerColor: Color = KepkoTheme.colors.foreground,
-        disabledContainerColor: Color = KepkoTheme.colors.foreground.copy(alpha = 0.50f),
+        disabledContainerColor: Color = KepkoTheme.colors.foreground,
         errorContainerColor: Color = KepkoTheme.colors.foreground,
         focusedTextColor: Color = KepkoTheme.colors.content,
         unfocusedTextColor: Color = KepkoTheme.colors.content,

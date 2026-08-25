@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import glass.yasan.kepko.foundation.border.borderStrokeFor
 import glass.yasan.kepko.foundation.color.contentColorFor
+import glass.yasan.kepko.foundation.color.getLayerColors
 import glass.yasan.kepko.foundation.theme.KepkoTheme
 import androidx.compose.material3.ButtonDefaults as Material3ButtonDefaults
 
@@ -28,6 +29,19 @@ public object ButtonPrimitiveDefaults {
 
     @Composable
     public fun contentColor(containerColor: Color): Color = contentColorFor(containerColor)
+
+    public val disabledContentColor: Color
+        @Composable
+        @ReadOnlyComposable
+        get() = KepkoTheme.colors.contentDisabled
+
+    @Composable
+    public fun disabledContainerColor(containerColor: Color): Color =
+        if (containerColor in KepkoTheme.colors.getLayerColors()) {
+            containerColor
+        } else {
+            KepkoTheme.colors.foreground
+        }
 
     public val shape: Shape
         @Composable

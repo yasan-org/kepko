@@ -196,6 +196,12 @@ internal fun ButtonInternal(
     trailingContent: @Composable RowScope.() -> Unit,
     hapticFeedbackEnabled: Boolean,
 ) {
+    val descriptionColor = if (enabled) {
+        contentColor.copy(alpha = ButtonDefaults.DescriptionAlpha)
+    } else {
+        ButtonPrimitiveDefaults.disabledContentColor
+    }
+
     ButtonPrimitive(
         onClick = onClick,
         onClickLabel = onClickLabel,
@@ -222,7 +228,7 @@ internal fun ButtonInternal(
                         textAlign = textAlign,
                         fontSize = fontSize,
                         fontWeight = fontWeight,
-                        contentColor = contentColor,
+                        descriptionColor = descriptionColor,
                         modifier = if (fillWidth) Modifier.weight(1f) else Modifier,
                     )
                 }
@@ -254,7 +260,7 @@ private fun ButtonLabel(
     textAlign: TextAlign,
     fontSize: TextUnit,
     fontWeight: FontWeight,
-    contentColor: Color,
+    descriptionColor: Color,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -276,7 +282,7 @@ private fun ButtonLabel(
             Text(
                 text = it,
                 textAlign = textAlign,
-                color = contentColor.copy(alpha = 0.75f),
+                color = descriptionColor,
                 fontSize = 12.sp,
                 lineHeight = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -403,6 +409,13 @@ private fun PreviewContent() {
                     text = "Button Text",
                     onClick = {},
                     containerColor = containerColor,
+                )
+                Button(
+                    text = "Button Text",
+                    onClick = {},
+                    description = "Disabled",
+                    containerColor = containerColor,
+                    enabled = false,
                 )
             }
         }

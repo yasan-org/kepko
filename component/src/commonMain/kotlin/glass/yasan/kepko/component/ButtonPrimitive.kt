@@ -55,20 +55,20 @@ public fun ButtonPrimitive(
 ) {
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     val isHovered by resolvedInteractionSource.collectIsHoveredAsState()
-    val borderHoverIncrease = border?.width?.times(0.5f)?.coerceAtMost(1.dp) ?: 0.dp
-    val animatedBorderWidth by animateDpAsState(
-        targetValue = if (enabled && isHovered && border != null) {
-            border.width + borderHoverIncrease
-        } else {
-            border?.width ?: 0.dp
-        },
-        label = "ButtonPrimitiveBorderWidth",
+    val disabledContainerColor = ButtonPrimitiveDefaults.disabledContainerColor(containerColor)
+    val resolvedBorder = resolveBorder(
+        border = border,
+        containerColor = containerColor,
+        disabledContainerColor = disabledContainerColor,
+        enabled = enabled,
+        isHovered = isHovered,
     )
-    val resolvedBorder = border?.let {
-        BorderStroke(width = animatedBorderWidth, brush = it.brush)
+    val resolvedContainerColor = if (enabled) containerColor else disabledContainerColor
+    val resolvedContentColor = if (enabled) {
+        contentColor
+    } else {
+        ButtonPrimitiveDefaults.disabledContentColor
     }
-    val resolvedContainerColor = if (enabled) containerColor else containerColor.copy(alpha = 0.50f)
-    val resolvedContentColor = if (enabled) contentColor else contentColor.copy(alpha = 0.70f)
 
     ProvideLocalContentColor(
         color = resolvedContentColor,
@@ -108,6 +108,37 @@ public fun ButtonPrimitive(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun resolveBorder(
+    border: BorderStroke?,
+    containerColor: Color,
+    disabledContainerColor: Color,
+    enabled: Boolean,
+    isHovered: Boolean,
+): BorderStroke? {
+    // A container that falls back to a layer while disabled also takes that layer's border, so the
+    // button keeps an outline instead of dissolving into the surface behind it.
+    val disabledBorder = if (disabledContainerColor == containerColor) {
+        border
+    } else {
+        border ?: ButtonPrimitiveDefaults.border(disabledContainerColor)
+    }
+    val sourceBorder = if (enabled) border else disabledBorder
+    val hoverIncrease = sourceBorder?.width?.times(0.5f)?.coerceAtMost(1.dp) ?: 0.dp
+    val animatedWidth by animateDpAsState(
+        targetValue = if (enabled && isHovered && sourceBorder != null) {
+            sourceBorder.width + hoverIncrease
+        } else {
+            sourceBorder?.width ?: 0.dp
+        },
+        label = "ButtonPrimitiveBorderWidth",
+    )
+
+    return sourceBorder?.let {
+        BorderStroke(width = animatedWidth, brush = it.brush)
     }
 }
 

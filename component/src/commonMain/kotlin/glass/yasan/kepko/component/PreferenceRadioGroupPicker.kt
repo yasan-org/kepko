@@ -166,6 +166,97 @@ internal fun PreferenceRadioGroupPickerSolarizedDarkPreview() {
     KepkoTheme(palette = SOLARIZED_DARK) { PreviewContent() }
 }
 
+@PreviewWithTest
+@Composable
+internal fun PreferenceRadioGroupPickerDisabledParityLightPreview() {
+    KepkoTheme(palette = LIGHT) { DisabledParityPreviewContent() }
+}
+
+@PreviewWithTest
+@Composable
+internal fun PreferenceRadioGroupPickerDisabledParityDarkPreview() {
+    KepkoTheme(palette = DARK) { DisabledParityPreviewContent() }
+}
+
+@PreviewWithTest
+@Composable
+internal fun PreferenceRadioGroupPickerDisabledParityBlackPreview() {
+    KepkoTheme(palette = BLACK) { DisabledParityPreviewContent() }
+}
+
+@PreviewWithTest
+@Composable
+internal fun PreferenceRadioGroupPickerDisabledParitySolarizedLightPreview() {
+    KepkoTheme(palette = SOLARIZED_LIGHT) { DisabledParityPreviewContent() }
+}
+
+@PreviewWithTest
+@Composable
+internal fun PreferenceRadioGroupPickerDisabledParitySolarizedDarkPreview() {
+    KepkoTheme(palette = SOLARIZED_DARK) { DisabledParityPreviewContent() }
+}
+
+/**
+ * A disabled [PreferenceRadioGroupPicker] next to a disabled [PreferenceContainer], so the two
+ * disabled treatments can be compared side by side.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DisabledParityPreviewContent() {
+    val items = listOf(
+        PreferenceRadioGroupItem("item1") { "Item 1" },
+        PreferenceRadioGroupItem("item2") { "Item 2" },
+    )
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .background(KepkoTheme.colors.midground)
+            .padding(vertical = 16.dp),
+    ) {
+        PreferenceRadioGroupPicker(
+            title = "Picker",
+            selectedId = "item1",
+            items = items,
+            onSelectId = {},
+            enabled = false,
+            leadingIcon = Icons.settings,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        PreferenceContainer(
+            title = "Container",
+            description = "Item 1",
+            enabled = false,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            leadingContent = {
+                Icon(
+                    painter = Icons.settings,
+                    contentDescription = null,
+                )
+            },
+        )
+        PreferenceRadioGroupPicker(
+            title = "Picker",
+            selectedId = "item1",
+            items = items,
+            onSelectId = {},
+            leadingIcon = Icons.settings,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+        PreferenceContainer(
+            title = "Container",
+            description = "Item 1",
+            modifier = Modifier.padding(horizontal = 16.dp),
+            leadingContent = {
+                Icon(
+                    painter = Icons.settings,
+                    contentDescription = null,
+                )
+            },
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PreviewContent() {
