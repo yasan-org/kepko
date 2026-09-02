@@ -78,6 +78,10 @@ public enum class NamedColor(
         id = "outline",
         resolve = { outline }
     ),
+    SCRIM(
+        id = "scrim",
+        resolve = { scrim }
+    ),
     INVERSE_FOREGROUND(
         id = "inverse_foreground",
         resolve = { inverseForeground }
