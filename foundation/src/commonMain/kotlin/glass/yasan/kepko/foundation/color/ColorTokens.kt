@@ -229,6 +229,8 @@ public object ColorTokens {
     }
 
 
+    internal val scrim: Color = Color(0x4D000000)
+
     internal fun foreground(palette: ColorPalette): Color = when (palette) {
         LIGHT -> foregroundLight
         DARK -> foregroundDark

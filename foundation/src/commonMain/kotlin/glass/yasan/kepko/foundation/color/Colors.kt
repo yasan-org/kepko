@@ -60,6 +60,8 @@ public class Colors internal constructor(
 
     public val outline: Color = ColorTokens.outline(palette).applyGrayscale()
 
+    public val scrim: Color = ColorTokens.scrim.applyGrayscale()
+
     public val inverseForeground: Color = ColorTokens.foreground(inversePalette).applyGrayscale()
     public val inverseMidground: Color = ColorTokens.midground(inversePalette).applyGrayscale()
     public val inverseBackground: Color = ColorTokens.background(inversePalette).applyGrayscale()

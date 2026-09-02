@@ -18,7 +18,7 @@ public object ModalBottomSheetDefaults {
     public val shape: Shape = RectangleShape
 
     public val scrimColor: Color
-        @Composable get() = Material3BottomSheetDefaults.ScrimColor
+        @Composable get() = KepkoTheme.colors.scrim
 
     public val contentWindowInsets: WindowInsets
         @Composable get() = Material3BottomSheetDefaults.windowInsets

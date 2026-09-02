@@ -8,6 +8,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.DialogProperties
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.border.border
+import glass.yasan.kepko.foundation.system.DialogScrimEffect
+import glass.yasan.kepko.foundation.system.withScrimColor
+import glass.yasan.kepko.foundation.theme.KepkoTheme
 import androidx.compose.material3.AlertDialog as Material3AlertDialog
 
 @ExperimentalKepkoApi
@@ -92,9 +95,14 @@ public fun AlertDialog(
         width = borderThickness,
     )
 
+    val scrimColor = KepkoTheme.colors.scrim
+
     Material3AlertDialog(
         onDismissRequest = onDismissRequest,
-        confirmButton = confirmButton,
+        confirmButton = {
+            DialogScrimEffect(scrimColor)
+            confirmButton()
+        },
         modifier = outlinedModifier,
         dismissButton = dismissButton,
         icon = icon,
@@ -106,6 +114,6 @@ public fun AlertDialog(
         titleContentColor = colors.titleContentColor,
         textContentColor = colors.textContentColor,
         tonalElevation = tonalElevation,
-        properties = properties,
+        properties = properties.withScrimColor(scrimColor),
     )
 }
