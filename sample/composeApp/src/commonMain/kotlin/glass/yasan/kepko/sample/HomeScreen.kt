@@ -56,6 +56,7 @@ import glass.yasan.kepko.component.PreferenceRadioGroupPickerChipDefaults
 import glass.yasan.kepko.component.PreferenceRadioGroupPickerChipDisplayMode
 import glass.yasan.kepko.component.PreferenceRadioGroupPickerChip
 import glass.yasan.kepko.component.PreferenceRadioGroupPicker
+import glass.yasan.kepko.component.PreferenceSegmentTitle
 import glass.yasan.kepko.component.PreferenceSlider
 import glass.yasan.kepko.component.PreferenceSwitch
 import glass.yasan.kepko.component.Scaffold
@@ -193,13 +194,16 @@ private fun LazyListScope.navigationButtons(
         )
     }
     item {
-        Button(
-            text = "Profiles",
-            description = "Switch the active profile and customize per-profile themes.",
-            onClick = onProfilesClick,
-            leadingIcon = Icons.person,
-            trailingIcon = Icons.chevronForward,
-        )
+        Column {
+            PreferenceSegmentTitle(title = "Customization")
+            Button(
+                text = "Profiles",
+                description = "Switch the active profile and customize per-profile themes.",
+                onClick = onProfilesClick,
+                leadingIcon = Icons.person,
+                trailingIcon = Icons.chevronForward,
+            )
+        }
     }
     item {
         Button(
@@ -294,14 +298,17 @@ private fun LazyListScope.examplePreferenceSwitch() {
     item {
         val switchValue = rememberSaveable { mutableStateOf(true) }
 
-        PreferenceSwitch(
-            title = "PreferenceSwitch",
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            checked = switchValue.value,
-            onCheckedChange = { switchValue.value = it },
-            badge = Badge.preview,
-            leadingIcon = painterResource(Res.drawable.ic_bolt)
-        )
+        Column {
+            PreferenceSegmentTitle(title = "General")
+            PreferenceSwitch(
+                title = "PreferenceSwitch",
+                description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                checked = switchValue.value,
+                onCheckedChange = { switchValue.value = it },
+                badge = Badge.preview,
+                leadingIcon = painterResource(Res.drawable.ic_bolt)
+            )
+        }
     }
     item {
         val switchValue = rememberSaveable { mutableStateOf(false) }
