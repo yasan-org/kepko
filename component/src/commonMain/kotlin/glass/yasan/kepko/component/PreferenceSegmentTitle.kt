@@ -28,8 +28,8 @@ public fun PreferenceSegmentTitle(
     Text(
         text = title.uppercase(),
         color = colors.contentColor,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Medium,
         textAlign = TextAlign.Start,
         modifier = modifier
             .fillMaxWidth()
