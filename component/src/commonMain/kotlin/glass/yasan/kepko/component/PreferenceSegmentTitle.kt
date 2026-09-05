@@ -18,9 +18,9 @@ public fun PreferenceSegmentTitle(
     title: String,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(
-        start = 8.dp,
-        top = 12.dp,
-        end = 8.dp,
+        start = 16.dp,
+        top = 24.dp,
+        end = 16.dp,
         bottom = 4.dp,
     ),
     colors: PreferenceSegmentTitleColors = PreferenceSegmentTitleDefaults.colors(),
