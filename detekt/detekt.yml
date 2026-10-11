@@ -1,0 +1,58 @@
+# Overrides on top of the detekt default config (buildUponDefaultConfig = true)
+
+complexity:
+  CyclomaticComplexMethod:
+    allowedComplexity: 19
+    ignoreSingleWhenExpression: true
+    ignoreSimpleWhenEntries: true
+    ignoreNestingFunctions: true
+  LongParameterList:
+    allowedFunctionParameters: 9
+    allowedConstructorParameters: 9
+    ignoreDefaultParameters: true
+  NamedArguments:
+    active: true
+    allowedArguments: 2
+  NestedBlockDepth:
+    allowedDepth: 5
+  TooManyFunctions:
+    allowedFunctionsPerFile: 20
+    allowedFunctionsPerClass: 20
+    allowedFunctionsPerInterface: 20
+    allowedFunctionsPerObject: 20
+    allowedFunctionsPerEnum: 20
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+naming:
+  FunctionNaming:
+    ignoreAnnotated: ['Composable']
+  MatchingDeclarationName:
+    multiplatformTargets:
+      - 'ios'
+      - 'android'
+      - 'js'
+      - 'jvm'
+      - 'native'
+      - 'iosArm64'
+      - 'mingwX64'
+      - 'linuxX64'
+
+style:
+  ForbiddenComment:
+    comments:
+      - reason: 'Forbidden FIXME todo marker in comment, please fix the problem.'
+        value: 'FIXME:'
+      - reason: 'Forbidden STOPSHIP todo marker in comment, please address the problem before shipping the code.'
+        value: 'STOPSHIP:'
+  MagicNumber:
+    active: false
+  ReturnCount:
+    max: 5
+  UnusedImport:
+    active: true
+  UnusedPrivateFunction:
+    allowedNames: '.*Preview'
+    ignoreAnnotated: ['Preview']

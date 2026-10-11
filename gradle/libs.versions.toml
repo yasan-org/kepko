@@ -3,20 +3,20 @@ agp = "9.4.1"
 android-sdk-compile = "37"
 android-sdk-min = "21"
 androidx-activity-compose = "1.13.0"
-androidx-core = "1.19.0"
+androidx-core = "1.19.1"
 androidx-compose-ui-tooling = "1.12.1"
 androidx-navigation3-runtime = "1.1.7"
 androidx-navigation3-ui = "1.1.2"
-arturbosch-detekt = "1.23.8"
-jetbrains-compose = "1.12.0"
+detekt = "2.0.0-alpha.6"
+jetbrains-compose = "1.12.1"
 jetbrains-compose-material3 = "1.9.0"
-jetbrains-kover = "0.9.9"
+jetbrains-kover = "0.9.11"
 jetbrains-dokka = "2.2.0"
-jetbrains-kotlin = "2.4.20"
+jetbrains-kotlin = "2.4.21"
 kotlinx-serialization = "1.11.0"
 multiplatform-settings = "1.3.0"
 composable-preview-scanner = "0.9.3"
-roborazzi = "1.74.0"
+roborazzi = "1.76.0"
 platformtools-darkmodedetector = "0.7.5"
 navigation-android-sdk-min = "23"
 sample-android-sdk-compile = "37"
@@ -51,7 +51,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "arturbosch-detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "jetbrains-dokka" }
 jetbrains-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "jetbrains-kotlin" }

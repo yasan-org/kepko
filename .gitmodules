@@ -1,3 +1,0 @@
-[submodule "detekt"]
-	path = detekt
-	url = git@github.com:yasanglass/detekt.git
