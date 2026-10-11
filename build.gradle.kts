@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.jetbrains.compose) apply false
     alias(libs.plugins.vanniktech.maven.publish) apply false
     alias(libs.plugins.roborazzi) apply false
-    alias(libs.plugins.arturbosch.detekt) apply true
+    alias(libs.plugins.detekt) apply true
     alias(libs.plugins.jetbrains.dokka)
     alias(libs.plugins.jetbrains.kover)
 }
@@ -54,7 +54,7 @@ allprojects {
 }
 
 fun Project.configureDetekt() {
-    pluginManager.apply("io.gitlab.arturbosch.detekt")
+    pluginManager.apply("dev.detekt")
     detekt {
         buildUponDefaultConfig = true
         config.setFrom(

@@ -1,0 +1,27 @@
+style:
+  ForbiddenImport:
+    active: true
+    excludes: ['**/glass/yasan/kepko/component/**']
+    forbiddenImports:
+      - 'androidx.compose.material3.Button'
+      - 'androidx.compose.material3.Checkbox'
+      - 'androidx.compose.material3.CircularProgressIndicator'
+      - 'androidx.compose.material3.CircularWavyProgressIndicator'
+      - 'androidx.compose.material3.HorizontalDivider'
+      - 'androidx.compose.material3.Icon'
+      - 'androidx.compose.material3.LinearProgressIndicator'
+      - 'androidx.compose.material3.LinearWavyProgressIndicator'
+      - 'androidx.compose.material3.MaterialTheme'
+      - 'androidx.compose.material3.ModalBottomSheet'
+      - 'androidx.compose.material3.RadioButton'
+      - 'androidx.compose.material3.Scaffold'
+      - 'androidx.compose.material3.Slider'
+      - 'androidx.compose.material3.Surface'
+      - 'androidx.compose.material3.Switch'
+      - 'androidx.compose.material3.Text'
+      - 'androidx.compose.material3.TextField'
+      - 'androidx.compose.material3.VerticalDivider'
+      - 'androidx.compose.material3.contentColorFor'
+      - 'androidx.compose.foundation.shape.CircleShape'
+      - 'androidx.compose.foundation.isSystemInDarkTheme'
+      - 'io.github.kdroidfilter.platformtools.darkmodedetector.isSystemInDarkMode'
