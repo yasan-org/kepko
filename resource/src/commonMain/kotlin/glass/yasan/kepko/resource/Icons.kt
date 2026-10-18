@@ -78,6 +78,9 @@ public object Icons {
     public val directorySync: Painter
         @Composable get() = painterResource(Res.drawable.ic_directory_sync)
 
+    public val download: Painter
+        @Composable get() = painterResource(Res.drawable.ic_download)
+
     public val edit: Painter
         @Composable get() = painterResource(Res.drawable.ic_edit)
 
@@ -126,20 +129,32 @@ public object Icons {
     public val lockOpen: Painter
         @Composable get() = painterResource(Res.drawable.ic_lock_open)
 
+    public val mail: Painter
+        @Composable get() = painterResource(Res.drawable.ic_mail)
+
+    public val manageHistory: Painter
+        @Composable get() = painterResource(Res.drawable.ic_manage_history)
+
     public val memory: Painter
         @Composable get() = painterResource(Res.drawable.ic_memory)
+
+    public val menu: Painter
+        @Composable get() = painterResource(Res.drawable.ic_menu)
 
     public val mic: Painter
         @Composable get() = painterResource(Res.drawable.ic_mic)
 
-    public val menu: Painter
-        @Composable get() = painterResource(Res.drawable.ic_menu)
+    public val modelTraining: Painter
+        @Composable get() = painterResource(Res.drawable.ic_model_training)
 
     public val modeNight: Painter
         @Composable get() = painterResource(Res.drawable.ic_mode_night)
 
     public val modeOffOn: Painter
         @Composable get() = painterResource(Res.drawable.ic_mode_off_on)
+
+    public val musicNote: Painter
+        @Composable get() = painterResource(Res.drawable.ic_music_note)
 
     public val newWindow: Painter
         @Composable get() = painterResource(Res.drawable.ic_new_window)
@@ -153,8 +168,14 @@ public object Icons {
     public val palette: Painter
         @Composable get() = painterResource(Res.drawable.ic_palette)
 
+    public val pause: Painter
+        @Composable get() = painterResource(Res.drawable.ic_pause)
+
     public val person: Painter
         @Composable get() = painterResource(Res.drawable.ic_person)
+
+    public val playArrow: Painter
+        @Composable get() = painterResource(Res.drawable.ic_play_arrow)
 
     public val privacyTip: Painter
         @Composable get() = painterResource(Res.drawable.ic_privacy_tip)
@@ -165,11 +186,11 @@ public object Icons {
     public val publicOff: Painter
         @Composable get() = painterResource(Res.drawable.ic_public_off)
 
-    public val releaseAlert: Painter
-        @Composable get() = painterResource(Res.drawable.ic_release_alert)
-
     public val refresh: Painter
         @Composable get() = painterResource(Res.drawable.ic_refresh)
+
+    public val releaseAlert: Painter
+        @Composable get() = painterResource(Res.drawable.ic_release_alert)
 
     public val report: Painter
         @Composable get() = painterResource(Res.drawable.ic_report)
@@ -207,6 +228,15 @@ public object Icons {
     public val shapes: Painter
         @Composable get() = painterResource(Res.drawable.ic_shapes)
 
+    public val skipNext: Painter
+        @Composable get() = painterResource(Res.drawable.ic_skip_next)
+
+    public val skipPrevious: Painter
+        @Composable get() = painterResource(Res.drawable.ic_skip_previous)
+
+    public val sort: Painter
+        @Composable get() = painterResource(Res.drawable.ic_sort)
+
     public val star: Painter
         @Composable get() = painterResource(Res.drawable.ic_star)
 
@@ -231,6 +261,9 @@ public object Icons {
     public val update: Painter
         @Composable get() = painterResource(Res.drawable.ic_update)
 
+    public val upload: Painter
+        @Composable get() = painterResource(Res.drawable.ic_upload)
+
     public val verified: Painter
         @Composable get() = painterResource(Res.drawable.ic_verified)
 
@@ -239,6 +272,9 @@ public object Icons {
 
     public val visibilityOff: Painter
         @Composable get() = painterResource(Res.drawable.ic_visibility_off)
+
+    public val wandStars: Painter
+        @Composable get() = painterResource(Res.drawable.ic_wand_stars)
 
     public val warning: Painter
         @Composable get() = painterResource(Res.drawable.ic_warning)
