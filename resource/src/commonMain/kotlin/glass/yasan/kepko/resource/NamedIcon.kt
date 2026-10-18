@@ -103,6 +103,10 @@ public enum class NamedIcon(
         id = "directory_sync",
         painter = { Icons.directorySync }
     ),
+    DOWNLOAD(
+        id = "download",
+        painter = { Icons.download }
+    ),
     EDIT(
         id = "edit",
         painter = { Icons.edit }
@@ -167,17 +171,29 @@ public enum class NamedIcon(
         id = "lock_open",
         painter = { Icons.lockOpen }
     ),
+    MAIL(
+        id = "mail",
+        painter = { Icons.mail }
+    ),
+    MANAGE_HISTORY(
+        id = "manage_history",
+        painter = { Icons.manageHistory }
+    ),
     MEMORY(
         id = "memory",
         painter = { Icons.memory }
+    ),
+    MENU(
+        id = "menu",
+        painter = { Icons.menu }
     ),
     MIC(
         id = "mic",
         painter = { Icons.mic }
     ),
-    MENU(
-        id = "menu",
-        painter = { Icons.menu }
+    MODEL_TRAINING(
+        id = "model_training",
+        painter = { Icons.modelTraining }
     ),
     MODE_NIGHT(
         id = "mode_night",
@@ -186,6 +202,10 @@ public enum class NamedIcon(
     MODE_OFF_ON(
         id = "mode_off_on",
         painter = { Icons.modeOffOn }
+    ),
+    MUSIC_NOTE(
+        id = "music_note",
+        painter = { Icons.musicNote }
     ),
     NEW_WINDOW(
         id = "new_window",
@@ -203,9 +223,17 @@ public enum class NamedIcon(
         id = "palette",
         painter = { Icons.palette }
     ),
+    PAUSE(
+        id = "pause",
+        painter = { Icons.pause }
+    ),
     PERSON(
         id = "person",
         painter = { Icons.person }
+    ),
+    PLAY_ARROW(
+        id = "play_arrow",
+        painter = { Icons.playArrow }
     ),
     PRIVACY_TIP(
         id = "privacy_tip",
@@ -219,13 +247,13 @@ public enum class NamedIcon(
         id = "public_off",
         painter = { Icons.publicOff }
     ),
-    RELEASE_ALERT(
-        id = "release_alert",
-        painter = { Icons.releaseAlert }
-    ),
     REFRESH(
         id = "refresh",
         painter = { Icons.refresh }
+    ),
+    RELEASE_ALERT(
+        id = "release_alert",
+        painter = { Icons.releaseAlert }
     ),
     REPORT(
         id = "report",
@@ -275,6 +303,18 @@ public enum class NamedIcon(
         id = "shapes",
         painter = { Icons.shapes }
     ),
+    SKIP_NEXT(
+        id = "skip_next",
+        painter = { Icons.skipNext }
+    ),
+    SKIP_PREVIOUS(
+        id = "skip_previous",
+        painter = { Icons.skipPrevious }
+    ),
+    SORT(
+        id = "sort",
+        painter = { Icons.sort }
+    ),
     STAR(
         id = "star",
         painter = { Icons.star }
@@ -307,6 +347,10 @@ public enum class NamedIcon(
         id = "update",
         painter = { Icons.update }
     ),
+    UPLOAD(
+        id = "upload",
+        painter = { Icons.upload }
+    ),
     VERIFIED(
         id = "verified",
         painter = { Icons.verified }
@@ -318,6 +362,10 @@ public enum class NamedIcon(
     VISIBILITY_OFF(
         id = "visibility_off",
         painter = { Icons.visibilityOff }
+    ),
+    WAND_STARS(
+        id = "wand_stars",
+        painter = { Icons.wandStars }
     ),
     WARNING(
         id = "warning",
