@@ -1,0 +1,96 @@
+name: Yarn Lock Refresh
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+      timezone: Europe/Prague
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'gradle/**'
+      - '**/*.gradle.kts'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: yarn-lock-${{ github.head_ref || 'refresh' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+
+  refresh:
+    name: Refresh
+    if: >-
+      github.event_name != 'pull_request' || (startsWith(github.head_ref, 'renovate/')
+      && github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TITLE: Refresh Kotlin/JS yarn lockfiles
+      ONTO_BRANCH: ${{ github.head_ref }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Skip the bot's own commit
+        id: guard
+        if: github.event_name == 'pull_request'
+        run: |
+          if [ "$(git log -1 --format=%s)" = "$TITLE" ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Setup Java
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle
+        if: steps.guard.outputs.skip != 'true'
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Regenerate the lockfiles
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          rm -rf build/js build/wasm kotlin-js-store/yarn.lock kotlin-js-store/wasm/yarn.lock
+          ./gradlew kotlinUpgradeYarnLock kotlinWasmUpgradeYarnLock
+
+      - name: Check for changes
+        id: diff
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          if [ -n "$(git status --porcelain -- kotlin-js-store)" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Create the bot token
+        id: app
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.BOT_CLIENT_ID }}
+          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
+      - name: Deliver the lockfiles
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+          SLUG: ${{ steps.app.outputs.app-slug }}
+        run: |
+          id="$(gh api "/users/${SLUG}%5Bbot%5D" --jq .id)"
+          git config user.name "${SLUG}[bot]"
+          git config user.email "${id}+${SLUG}[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git add kotlin-js-store
+          git commit -m "$TITLE"
+          if [ -n "$ONTO_BRANCH" ]; then
+            git push origin "HEAD:refs/heads/${ONTO_BRANCH}"
+            exit 0
+          fi
+          git push --force origin HEAD:refs/heads/bot/yarn-lock-refresh
+          if [ -z "$(gh pr list --head bot/yarn-lock-refresh --state open --json number --jq '.[0].number // empty')" ]; then
+            gh pr create --base "$GITHUB_REF_NAME" --head bot/yarn-lock-refresh --title "$TITLE" \
+              --body "Weekly regeneration of the kotlin-js-store lockfiles, picking up patched transitive versions of the Kotlin/JS build tooling."
+          fi
