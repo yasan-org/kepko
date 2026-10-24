@@ -1,6 +1,5 @@
 package glass.yasan.kepko.persistence
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.Spring
@@ -37,6 +36,7 @@ import glass.yasan.kepko.component.PreferenceSwitch
 import glass.yasan.kepko.component.Scaffold
 import glass.yasan.kepko.component.Subtitle
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
+import glass.yasan.kepko.foundation.annotation.InternalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.ColorPalette.Companion.defaultDark
 import glass.yasan.kepko.foundation.theme.ColorPalette.Companion.defaultLight
@@ -539,17 +539,20 @@ internal val previewProfile = UserVisibleProfile(
     icon = { Icons.person },
 )
 
-@VisibleForTesting
-internal object PersistentPreferenceThemeScreenSemantics {
-    const val SCREEN = "theme_screen"
-    const val PALETTE_MODE = "theme_palette_mode"
-    const val PALETTE_PICKER = "theme_palette_picker"
-    const val LIGHT_PICKER = "theme_light_picker"
-    const val DARK_PICKER = "theme_dark_picker"
-    const val GRAYSCALE = "theme_grayscale"
-    const val OUTLINE = "theme_outline"
-    const val ROUNDNESS = "theme_roundness"
-    const val PROFILE_HEADER = "theme_profile_header"
-    const val PROFILE_PALETTE_PICKER = "theme_profile_palette_picker"
-    const val PROFILE_GRAYSCALE_PICKER = "theme_profile_grayscale_picker"
+/**
+ * Test tags for [PersistentPreferenceThemeScreen].
+ */
+@InternalKepkoApi
+public object PersistentPreferenceThemeScreenSemantics {
+    public const val SCREEN: String = "theme_screen"
+    public const val PALETTE_MODE: String = "theme_palette_mode"
+    public const val PALETTE_PICKER: String = "theme_palette_picker"
+    public const val LIGHT_PICKER: String = "theme_light_picker"
+    public const val DARK_PICKER: String = "theme_dark_picker"
+    public const val GRAYSCALE: String = "theme_grayscale"
+    public const val OUTLINE: String = "theme_outline"
+    public const val ROUNDNESS: String = "theme_roundness"
+    public const val PROFILE_HEADER: String = "theme_profile_header"
+    public const val PROFILE_PALETTE_PICKER: String = "theme_profile_palette_picker"
+    public const val PROFILE_GRAYSCALE_PICKER: String = "theme_profile_grayscale_picker"
 }

@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import glass.yasan.kepko.component.extensions.isFullWidth
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
@@ -140,6 +141,7 @@ private fun PreferenceRadioGroupSheetContent(
                                     )
                                 }
                             },
+                            modifier = Modifier.testTag(PreferenceRadioGroupSemantics.item(item.id)),
                         )
                     }
                 }
