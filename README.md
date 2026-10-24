@@ -8,7 +8,7 @@
   <a href="https://github.com/yasan-org/kepko/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/yasan-org/kepko"/></a>
   <a href="https://crowdin.com/project/kepko"><img alt="Crowdin" src="https://badges.crowdin.net/kepko/localized.svg"/></a>
   <a href="https://codecov.io/gh/yasan-org/kepko"><img alt="Codecov" src="https://codecov.io/gh/yasan-org/kepko/graph/badge.svg"/></a>
-  <a href="https://context7.com/yasan-org/kepko/llms.txt"><img alt="Context7" src="https://img.shields.io/badge/context7-llms.txt-blue"/></a>
+  <a href="https://context7.com/yasanglass/kepko/llms.txt"><img alt="Context7" src="https://img.shields.io/badge/context7-llms.txt-blue"/></a>
   <a href="https://deepwiki.com/yasan-org/kepko"><img alt="DeepWiki" src="https://deepwiki.com/badge.svg"/></a>
   <a href="https://yasan-org.github.io/kepko/"><img alt="Documentation" src="https://img.shields.io/badge/documentation-blue"/></a>
 </p>
