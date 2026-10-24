@@ -17,23 +17,27 @@ concurrency:
   group: yarn-lock-${{ github.head_ref || 'refresh' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  TITLE: Refresh Kotlin/JS yarn lockfiles
+  REF: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
 
   refresh:
     name: Refresh
     if: >-
-      github.event_name != 'pull_request' || (startsWith(github.head_ref, 'renovate/')
+      (github.event_name == 'pull_request' && startsWith(github.head_ref, 'renovate/')
       && github.event.pull_request.head.repo.full_name == github.repository)
+      || (github.event_name != 'pull_request' && github.ref_name == github.event.repository.default_branch)
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      TITLE: Refresh Kotlin/JS yarn lockfiles
-      ONTO_BRANCH: ${{ github.head_ref }}
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ env.REF }}
           persist-credentials: false
 
       - name: Skip the bot's own commit
@@ -63,34 +67,66 @@ jobs:
         id: diff
         if: steps.guard.outputs.skip != 'true'
         run: |
-          if [ -n "$(git status --porcelain -- kotlin-js-store)" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+          git diff -- kotlin-js-store > "$RUNNER_TEMP/yarn-lock.patch"
+          if [ -s "$RUNNER_TEMP/yarn-lock.patch" ]; then echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Upload the lockfiles
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: yarn-lock
+          path: ${{ runner.temp }}/yarn-lock.patch
+          retention-days: 7
+
+  deliver:
+    name: Deliver
+    needs: refresh
+    if: needs.refresh.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      ONTO_BRANCH: ${{ github.head_ref }}
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.REF }}
+          persist-credentials: false
+
+      - name: Download the lockfiles
+        uses: actions/download-artifact@v8
+        with:
+          name: yarn-lock
+          path: ${{ runner.temp }}
 
       - name: Create the bot token
         id: app
-        if: steps.diff.outputs.changed == 'true'
         uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.BOT_CLIENT_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Deliver the lockfiles
-        if: steps.diff.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
           SLUG: ${{ steps.app.outputs.app-slug }}
         run: |
+          git apply "$RUNNER_TEMP/yarn-lock.patch"
           id="$(gh api "/users/${SLUG}%5Bbot%5D" --jq .id)"
           git config user.name "${SLUG}[bot]"
           git config user.email "${id}+${SLUG}[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add kotlin-js-store
-          git commit -m "$TITLE"
+          git -c core.hooksPath=/dev/null commit -m "$TITLE"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           if [ -n "$ONTO_BRANCH" ]; then
-            git push origin "HEAD:refs/heads/${ONTO_BRANCH}"
+            git -c core.hooksPath=/dev/null push "$remote" "HEAD:refs/heads/${ONTO_BRANCH}"
             exit 0
           fi
-          git push --force origin HEAD:refs/heads/bot/yarn-lock-refresh
+          git -c core.hooksPath=/dev/null push --force "$remote" HEAD:refs/heads/bot/yarn-lock-refresh
           if [ -z "$(gh pr list --head bot/yarn-lock-refresh --state open --json number --jq '.[0].number // empty')" ]; then
-            gh pr create --base "$GITHUB_REF_NAME" --head bot/yarn-lock-refresh --title "$TITLE" \
+            gh pr create --base "$BASE_BRANCH" --head bot/yarn-lock-refresh --title "$TITLE" \
               --body "Weekly regeneration of the kotlin-js-store lockfiles, picking up patched transitive versions of the Kotlin/JS build tooling."
           fi
