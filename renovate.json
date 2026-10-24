@@ -8,5 +8,8 @@
   "mode": "full",
   "vulnerabilityAlerts": {
     "dependencyDashboardApproval": true
-  }
+  },
+  "gitIgnoredAuthors": [
+    "346567311+yasan-glass-bot[bot]@users.noreply.github.com"
+  ]
 }
