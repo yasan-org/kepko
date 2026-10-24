@@ -3,13 +3,65 @@
   "extends": [
     "config:recommended"
   ],
-  "dependencyDashboard": true,
-  "dependencyDashboardApproval": true,
-  "mode": "full",
-  "vulnerabilityAlerts": {
-    "dependencyDashboardApproval": true
-  },
+  "labels": [
+    "dependencies"
+  ],
+  "assignees": [
+    "yasanglass"
+  ],
+  "reviewers": [
+    "yasanglass"
+  ],
+  "timezone": "Europe/Prague",
+  "rebaseWhen": "conflicted",
   "gitIgnoredAuthors": [
     "346567311+yasan-glass-bot[bot]@users.noreply.github.com"
+  ],
+  "automerge": true,
+  "automergeStrategy": "squash",
+  "platformAutomerge": false,
+  "vulnerabilityAlerts": {
+    "enabled": false
+  },
+  "minimumReleaseAge": "28 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "packageRules": [
+    {
+      "description": "Minor updates settle for two weeks; the 28-day default above covers major and everything else",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "minimumReleaseAge": "14 days"
+    },
+    {
+      "description": "Patches settle for a week",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Below 1.0 a minor bump is a breaking one, so it waits as long as a major",
+      "matchCurrentVersion": "/^v?0\\./",
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "minimumReleaseAge": "28 days"
+    },
+    {
+      "description": "Alpha and beta bumps change APIs whatever their update type says, so they wait as long as a major",
+      "matchCurrentVersion": "/(alpha|beta|rc|dev|eap)/i",
+      "minimumReleaseAge": "28 days"
+    },
+    {
+      "description": "Every update lands in one pull request, merged once CI passes; last so it overrides the presets' groups",
+      "matchPackageNames": [
+        "*"
+      ],
+      "groupName": "dependencies",
+      "groupSlug": "all",
+      "separateMajorMinor": false,
+      "separateMultipleMajor": false
+    }
   ]
 }
