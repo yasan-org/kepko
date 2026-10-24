@@ -103,7 +103,7 @@ PersistentPreferenceThemeScreen(
 
 ## Navigation
 
-An optional experimental module with [Navigation 3](https://developer.android.com/guide/navigation/navigation-3) scenes for large windows. On Android it needs API 23 or later.
+An optional experimental module with [Navigation 3](https://developer.android.com/guide/navigation/navigation-3) scenes for large windows. On Android it needs API 24 or later.
 
 ```kotlin
 implementation("glass.yasan.kepko:navigation:<version>")
