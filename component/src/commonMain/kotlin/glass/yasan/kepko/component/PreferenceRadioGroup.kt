@@ -15,10 +15,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
+import glass.yasan.kepko.foundation.annotation.InternalKepkoApi
 import glass.yasan.kepko.foundation.border.focusBorder
 import glass.yasan.kepko.foundation.theme.KepkoTheme
 import glass.yasan.kepko.resource.Icons
@@ -115,6 +117,7 @@ private fun RadioGroupRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .testTag(PreferenceRadioGroupSemantics.item(item.id))
             .focusBorder(KepkoTheme.shapes.extraLarge)
             .clip(KepkoTheme.shapes.extraLarge)
             .clickable(
@@ -252,4 +255,12 @@ private fun PreviewContent() {
             )
         }
     }
+}
+
+/**
+ * Test tags for [PreferenceRadioGroup] and [PreferenceRadioGroupSheet].
+ */
+@InternalKepkoApi
+public object PreferenceRadioGroupSemantics {
+    public fun item(id: String): String = "preference_radio_group_item_$id"
 }
