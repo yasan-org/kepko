@@ -16,6 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import glass.yasan.kepko.component.extensions.isFullWidth
@@ -63,10 +68,20 @@ public fun PreferenceRadioGroupSheet(
 ) {
     if (visible) {
         val scope = rememberCoroutineScope()
+        val close = {
+            scope
+                .launch { sheetState.hide() }
+                .invokeOnCompletion { onDismiss() }
+        }
 
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = sheetState,
+            modifier = Modifier.onKeyEvent { event ->
+                val sideArrow = event.key == Key.DirectionLeft || event.key == Key.DirectionRight
+                if (sideArrow && event.type == KeyEventType.KeyDown) close()
+                sideArrow
+            },
             title = ModalBottomSheetTitle(
                 text = title,
                 icon = icon,
@@ -78,11 +93,7 @@ public fun PreferenceRadioGroupSheet(
                     items = items,
                     onSelectItem = { item ->
                         onSelectId(item.id)
-                        if (closeOnSelection) {
-                            scope
-                                .launch { sheetState.hide() }
-                                .invokeOnCompletion { onDismiss() }
-                        }
+                        if (closeOnSelection) close()
                     },
                 )
             },
