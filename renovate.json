@@ -20,7 +20,13 @@
   "automergeStrategy": "squash",
   "platformAutomerge": false,
   "vulnerabilityAlerts": {
-    "enabled": false
+    "description": "Security fixes skip the release-age wait and the shared group: their own pull request, merged once CI passes",
+    "groupName": null,
+    "minimumReleaseAge": null,
+    "automerge": true,
+    "addLabels": [
+      "security"
+    ]
   },
   "minimumReleaseAge": "28 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
