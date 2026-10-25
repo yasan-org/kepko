@@ -6,6 +6,7 @@ import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneStrategyScope
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 internal class ListDetailSceneStrategyTest {
@@ -69,6 +70,18 @@ internal class ListDetailSceneStrategyTest {
 
         // then
         assertNull(scene)
+    }
+
+    @Test
+    fun givenATwoPaneWindowThatIsNotLarge_whenADetailIsOpen_thenTheListDetailSceneIsUsed() {
+        // given
+        val entries = entriesOf(Route.List, Route.Detail)
+
+        // when
+        val scene = sceneFor(isLargeWindow = false, isTwoPane = true, entries = entries)
+
+        // then
+        assertNotNull(scene)
     }
 
     @Test

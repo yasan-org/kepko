@@ -68,14 +68,38 @@ internal class WindowSizeTest {
     }
 
     @Test
-    fun givenAWideButShortWindow_whenCheckedForTwoPanes_thenItIsNotLargeEnough() {
+    fun givenAWideButShortWindow_whenCheckedForTwoPanes_thenItIsNotTallEnough() {
         // given
-        val size = DpSize(width = 1000.dp, height = 500.dp)
+        val size = DpSize(width = 1000.dp, height = 400.dp)
 
         // when
         val isTwoPane = isTwoPaneWindow(size)
 
         // then
         assertFalse(isTwoPane)
+    }
+
+    @Test
+    fun givenATelevision_whenCheckedForTwoPanes_thenItFitsTwoPanes() {
+        // given
+        val size = DpSize(width = 960.dp, height = 540.dp)
+
+        // when
+        val isTwoPane = isTwoPaneWindow(size)
+
+        // then
+        assertTrue(isTwoPane)
+    }
+
+    @Test
+    fun givenATelevision_whenChecked_thenItIsNotLarge() {
+        // given
+        val size = DpSize(width = 960.dp, height = 540.dp)
+
+        // when
+        val isLarge = isLargeWindow(size)
+
+        // then
+        assertFalse(isLarge)
     }
 }
