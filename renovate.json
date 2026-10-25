@@ -12,7 +12,11 @@
   "reviewers": [
     "yasanglass"
   ],
+  "assignAutomerge": true,
   "timezone": "Europe/Prague",
+  "schedule": [
+    "* 1-5 * * *"
+  ],
   "gitIgnoredAuthors": [
     "346567311+yasan-glass-bot[bot]@users.noreply.github.com"
   ],
@@ -20,9 +24,10 @@
   "automergeStrategy": "squash",
   "platformAutomerge": false,
   "vulnerabilityAlerts": {
-    "description": "Security fixes skip the release-age wait and the shared group: their own pull request, merged once CI passes",
+    "description": "Security fixes skip the release-age wait, the night window and the shared group: their own pull request, merged once CI passes",
     "groupName": null,
     "minimumReleaseAge": null,
+    "schedule": [],
     "automerge": true,
     "addLabels": [
       "security"
@@ -57,6 +62,13 @@
       "description": "Alpha and beta bumps change APIs whatever their update type says, so they wait as long as a major",
       "matchCurrentVersion": "/(alpha|beta|rc|dev|eap)/i",
       "minimumReleaseAge": "28 days"
+    },
+    {
+      "description": "kotlinx-datetime's -compat builds are a compatibility artifact for 0.6.x consumers, not newer releases",
+      "matchPackageNames": [
+        "org.jetbrains.kotlinx:kotlinx-datetime"
+      ],
+      "allowedVersions": "!/-compat$/"
     },
     {
       "description": "Every update lands in one pull request, merged once CI passes; last so it overrides the presets' groups",
