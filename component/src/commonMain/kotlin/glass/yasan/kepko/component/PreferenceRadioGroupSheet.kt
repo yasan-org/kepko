@@ -13,15 +13,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import glass.yasan.kepko.component.extensions.isFullWidth
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.KepkoTheme
 import glass.yasan.kepko.resource.Icons
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @ExperimentalKepkoApi
@@ -63,10 +70,25 @@ public fun PreferenceRadioGroupSheet(
 ) {
     if (visible) {
         val scope = rememberCoroutineScope()
+        val closeJob = remember { arrayOfNulls<Job>(1) }
+        val close = {
+            // One close at a time, and dismiss only once the sheet has actually hidden.
+            if (closeJob[0]?.isActive != true) {
+                closeJob[0] = scope.launch {
+                    sheetState.hide()
+                    if (!sheetState.isVisible) onDismiss()
+                }
+            }
+        }
 
         ModalBottomSheet(
             onDismissRequest = onDismiss,
             sheetState = sheetState,
+            modifier = Modifier.onKeyEvent { event ->
+                val sideArrow = event.key == Key.DirectionLeft || event.key == Key.DirectionRight
+                if (sideArrow && event.type == KeyEventType.KeyDown) close()
+                sideArrow
+            },
             title = ModalBottomSheetTitle(
                 text = title,
                 icon = icon,
@@ -78,11 +100,7 @@ public fun PreferenceRadioGroupSheet(
                     items = items,
                     onSelectItem = { item ->
                         onSelectId(item.id)
-                        if (closeOnSelection) {
-                            scope
-                                .launch { sheetState.hide() }
-                                .invokeOnCompletion { onDismiss() }
-                        }
+                        if (closeOnSelection) close()
                     },
                 )
             },
