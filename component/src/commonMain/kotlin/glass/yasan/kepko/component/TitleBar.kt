@@ -49,16 +49,17 @@ internal fun TitleBarContent(
 ) {
     Row(
         content = content,
+        // The background goes first so it also fills the system insets, such as a TV's overscan margins.
         modifier = modifier
+            .fillMaxWidth()
+            .background(containerColor)
             .let {
                 if (windowInsets == null) {
                     it
                 } else {
                     it.windowInsetsPadding(windowInsets)
                 }
-            }
-            .fillMaxWidth()
-            .background(containerColor),
+            },
     )
 }
 

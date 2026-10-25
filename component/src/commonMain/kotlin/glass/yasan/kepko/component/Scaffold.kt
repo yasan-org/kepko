@@ -154,16 +154,13 @@ public fun Scaffold(
                 ),
             ) {
                 topBar()
-                HorizontalDivider(
-                    modifier = Modifier.windowInsetsPadding(
-                        insets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                    ),
-                )
+                HorizontalDivider()
             }
         },
         bottomBar = {
             Column(
                 modifier = Modifier
+                    .background(KepkoTheme.colors.midground)
                     .windowInsetsPadding(
                         insets = WindowInsets.safeDrawing
                             .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal),
