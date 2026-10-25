@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -27,6 +28,7 @@ import glass.yasan.kepko.component.extensions.isFullWidth
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.KepkoTheme
 import glass.yasan.kepko.resource.Icons
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @ExperimentalKepkoApi
@@ -68,10 +70,15 @@ public fun PreferenceRadioGroupSheet(
 ) {
     if (visible) {
         val scope = rememberCoroutineScope()
+        val closeJob = remember { arrayOfNulls<Job>(1) }
         val close = {
-            scope
-                .launch { sheetState.hide() }
-                .invokeOnCompletion { onDismiss() }
+            // One close at a time, and dismiss only once the sheet has actually hidden.
+            if (closeJob[0]?.isActive != true) {
+                closeJob[0] = scope.launch {
+                    sheetState.hide()
+                    if (!sheetState.isVisible) onDismiss()
+                }
+            }
         }
 
         ModalBottomSheet(
