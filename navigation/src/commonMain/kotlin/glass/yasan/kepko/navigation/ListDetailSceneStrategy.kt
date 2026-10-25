@@ -12,7 +12,8 @@ import androidx.navigation3.scene.SceneStrategyScope
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 
 /**
- * On large windows, shows the [list] entry beside the [detail] entry above it, sliding the panes as room changes.
+ * On large or two-pane windows, shows the [list] entry beside the [detail] entry above it, sliding the panes
+ * as room changes.
  */
 @ExperimentalKepkoApi
 public class ListDetailSceneStrategy<T : Any> internal constructor(
@@ -36,7 +37,7 @@ public class ListDetailSceneStrategy<T : Any> internal constructor(
     }
 
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
-        if (!isLargeWindow) return null
+        if (!isLargeWindow && !isTwoPane) return null
         val listIndex = entries.indexOfLast { entry -> entry.metadata[ListKey] == true }
         if (listIndex == -1) return null
         val details = entries.drop(listIndex + 1)

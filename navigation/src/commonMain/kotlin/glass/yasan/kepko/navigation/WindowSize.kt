@@ -17,11 +17,12 @@ public fun isLargeWindow(): Boolean = isLargeWindow(LocalWindowInfo.current.cont
 public fun isLargeWindow(size: DpSize): Boolean = minOf(size.width, size.height) >= 600.dp
 
 /**
- * Whether the window is large and wide enough to show a list and its detail side by side.
+ * Whether the window is wide enough to show a list and its detail side by side: an expanded width and a height
+ * that is not compact, as on tablets in landscape, desktops and TVs.
  */
 @ExperimentalKepkoApi
 @Composable
 public fun isTwoPaneWindow(): Boolean = isTwoPaneWindow(LocalWindowInfo.current.containerDpSize)
 
 @ExperimentalKepkoApi
-public fun isTwoPaneWindow(size: DpSize): Boolean = isLargeWindow(size) && size.width >= 840.dp
+public fun isTwoPaneWindow(size: DpSize): Boolean = size.width >= 840.dp && size.height >= 480.dp
