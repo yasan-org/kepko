@@ -159,7 +159,7 @@ compose.desktop {
                 dockName = "Kepko"
             }
             windows {
-                iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.png"))
+                iconFile.set(project.file("src/jvmMain/resources/app_icon.ico"))
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.png"))

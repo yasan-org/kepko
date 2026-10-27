@@ -177,6 +177,17 @@ jobs:
         shell: bash
         run: ./gradlew :sample:composeApp:packageMsi :sample:composeApp:packageExe
 
+      - name: Print jpackage Logs
+        if: failure()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for log in sample/composeApp/build/compose/logs/*/*.txt; do
+            echo "::group::${log}"
+            cat "${log}"
+            echo "::endgroup::"
+          done
+
       - name: Upload to GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

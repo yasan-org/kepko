@@ -9,7 +9,7 @@ on:
 
 jobs:
 
-  # Phase 1 (Linux, parallel)
+  # Phase 1 (Linux + Windows, parallel)
 
   detekt:
     name: Detekt
@@ -100,6 +100,37 @@ jobs:
           path: |
             **/build/libs/*-jvm.jar
           retention-days: 30
+
+  windows-package:
+    name: Windows Package
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Package Sample App
+        shell: bash
+        run: ./gradlew :sample:composeApp:packageMsi :sample:composeApp:packageExe
+
+      - name: Print jpackage Logs
+        if: failure()
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for log in sample/composeApp/build/compose/logs/*/*.txt; do
+            echo "::group::${log}"
+            cat "${log}"
+            echo "::endgroup::"
+          done
 
   # Phase 2 (macOS, needs Phase 1)
 
