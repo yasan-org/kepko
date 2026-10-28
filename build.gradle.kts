@@ -112,6 +112,14 @@ fun Project.configurePublishing() {
         }
     }
 
+    configure<PublishingExtension> {
+        repositories.maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/yasan-org/kepko")
+            credentials(PasswordCredentials::class)
+        }
+    }
+
     tasks.withType<Sign>().configureEach {
         isEnabled = gradle.startParameter.taskNames.none { it.contains("MavenLocal") }
     }

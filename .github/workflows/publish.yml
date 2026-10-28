@@ -8,11 +8,16 @@ permissions:
 
 jobs:
   publish:
-    name: Publish to Maven Central
+    name: Publish
     runs-on: macOS-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Java
         uses: actions/setup-java@v6
@@ -29,38 +34,16 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
 
-      - name: Upload Library Artifacts to GitHub Release
+      - name: Publish to GitHub Packages
+        continue-on-error: true
+        timeout-minutes: 45
+        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --no-configuration-cache --parallel
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.event.release.tag_name }}
-        run: |
-          uploaded_any=false
-          for module in resource foundation component persistence; do
-            zip_name="kepko-${module}-${TAG}.zip"
-            files=()
-            while IFS= read -r -d '' file; do
-              files+=("${file}")
-            done < <(
-              find "${module}/build/libs" "${module}/build/outputs/aar" \
-                -type f \
-                \( -name '*.jar' -o -name '*.aar' -o -name '*.module' -o -name '*.pom' -o -name '*.klib' \) \
-                -print0 2>/dev/null
-            )
-
-            if [ "${#files[@]}" -eq 0 ]; then
-              echo "::notice::No artifacts found for ${module}; skipping release upload."
-              continue
-            fi
-
-            rm -f "${zip_name}"
-            zip -j "${zip_name}" "${files[@]}"
-            gh release upload "${TAG}" "${zip_name}" --clobber
-            uploaded_any=true
-          done
-
-          if [ "${uploaded_any}" = false ]; then
-            echo "::warning::No release artifacts were uploaded. Maven Central publish may still have succeeded."
-          fi
+          ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
+          ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
 
   sample-macos:
     name: Sample App (macOS)
@@ -69,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Java
         uses: actions/setup-java@v6
@@ -100,6 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Java
         uses: actions/setup-java@v6
@@ -115,13 +102,9 @@ jobs:
           ./gradlew \
             :sample:composeApp:packageDeb \
             :sample:composeApp:packageRpm \
-            :sample:composeApp:createDistributable \
             :sample:androidApp:assembleRelease \
             :sample:composeApp:wasmJsBrowserDistribution \
             :sample:composeApp:jsBrowserDistribution
-
-      - name: Build AppImage
-        run: ./scripts/package-appimage.sh
 
       - name: Upload to GitHub Release
         env:
@@ -133,9 +116,6 @@ jobs:
 
           cp sample/composeApp/build/compose/binaries/main/rpm/*.rpm "kepko-sample-linux-${TAG}.rpm"
           gh release upload "${TAG}" "kepko-sample-linux-${TAG}.rpm" --clobber
-
-          cp sample/composeApp/build/appimage/*.AppImage "kepko-sample-linux-${TAG}.AppImage"
-          gh release upload "${TAG}" "kepko-sample-linux-${TAG}.AppImage" --clobber
 
           for apk in sample/androidApp/build/outputs/apk/release/*.apk; do
             suffix="$(basename "${apk}" .apk)"
@@ -155,7 +135,8 @@ jobs:
           gh release upload "${TAG}" "kepko-sample-js-${TAG}.zip" --clobber
 
   refresh-docs:
-    name: Context7
+    name: Refresh Context7 Docs
+    needs: publish
     uses: ./.github/workflows/context7.yml
     secrets: inherit
 
@@ -166,6 +147,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Java
         uses: actions/setup-java@v6
