@@ -143,7 +143,9 @@ fun Project.configurePublishing() {
                 } + "$base.pom" + "$base.module"
                 val expected = if (signingKey.isPresent) files + files.map { "$it.asc" } else files
                 val auth = "${gitHubPackagesUsername.orNull}:${gitHubPackagesPassword.orNull}"
-                val missing = expected.filterNot { url ->
+
+                // Returns the file's content (empty unless readBody), or null when it isn't there.
+                fun fetch(url: String, readBody: Boolean = false): String? {
                     val connection = URI(url).toURL().openConnection() as HttpURLConnection
                     connection.connectTimeout = 10_000
                     connection.readTimeout = 30_000
@@ -151,23 +153,28 @@ fun Project.configurePublishing() {
                         "Authorization",
                         "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}",
                     )
-                    val code = try {
-                        connection.responseCode
+                    try {
+                        return when (val code = connection.responseCode) {
+                            200 -> if (readBody) connection.inputStream.bufferedReader().use { it.readText() } else ""
+                            404 -> null
+                            else -> throw GradleException("Could not check $url on GitHub Packages: HTTP $code")
+                        }
                     } finally {
                         connection.disconnect()
                     }
-                    when (code) {
-                        200 -> true
-                        404 -> false
-                        else -> throw GradleException("Could not check $url on GitHub Packages: HTTP $code")
-                    }
                 }
+
+                // Gradle uploads maven-metadata.xml last, so it lists the version only once every file is up.
+                val metadata = "${base.substringBeforeLast('/').substringBeforeLast('/')}/maven-metadata.xml"
+                val listed = fetch(metadata, readBody = true)?.contains("<version>${publication.version}</version>")
+                val missing = expected.filter { fetch(it) == null } +
+                    listOfNotNull(metadata.takeUnless { listed == true })
                 when {
                     missing.isEmpty() -> {
                         task.logger.lifecycle("$coordinates is already on GitHub Packages")
                         throw StopExecutionException()
                     }
-                    missing.size == expected.size -> Unit
+                    missing.size == expected.size + 1 -> Unit
                     else -> throw GradleException(
                         "$coordinates is only partly on GitHub Packages, missing " +
                             missing.joinToString { it.substringAfterLast('/') } +
