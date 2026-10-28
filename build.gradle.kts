@@ -1,9 +1,6 @@
 import com.vanniktech.maven.publish.DeploymentValidation
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.plugins.signing.Sign
-import java.net.HttpURLConnection
-import java.net.URI
-import java.util.Base64
 
 plugins {
     alias(libs.plugins.jetbrains.kotlin.compose) apply false
@@ -120,68 +117,6 @@ fun Project.configurePublishing() {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/yasan-org/kepko")
             credentials(PasswordCredentials::class)
-        }
-    }
-
-    // GitHub Packages rejects re-uploading a file, so re-runs skip publications that are fully there
-    // and stop with a clear error on one an earlier run only partly uploaded.
-    val gitHubPackagesUsername = providers.gradleProperty("GitHubPackagesUsername")
-    val gitHubPackagesPassword = providers.gradleProperty("GitHubPackagesPassword")
-    val signingKey = providers.gradleProperty("signingInMemoryKey")
-    tasks.withType<PublishToMavenRepository>().configureEach {
-        if (name.endsWith("ToGitHubPackagesRepository")) {
-            doFirst("Check GitHub Packages") {
-                val task = this as PublishToMavenRepository
-                val publication = task.publication
-                val coordinates = "${publication.groupId}:${publication.artifactId}:${publication.version}"
-                val base = "${task.repository.url.toString().trimEnd('/')}/" +
-                    "${publication.groupId.replace('.', '/')}/${publication.artifactId}/${publication.version}/" +
-                    "${publication.artifactId}-${publication.version}"
-                // Signatures are added below, whether or not the publication lists them as artifacts.
-                val files = publication.artifacts.filterNot { it.extension.endsWith("asc") }.map { artifact ->
-                    base + artifact.classifier?.let { "-$it" }.orEmpty() + ".${artifact.extension}"
-                } + "$base.pom" + "$base.module"
-                val expected = if (signingKey.isPresent) files + files.map { "$it.asc" } else files
-                val auth = "${gitHubPackagesUsername.orNull}:${gitHubPackagesPassword.orNull}"
-
-                // Returns the file's content (empty unless readBody), or null when it isn't there.
-                fun fetch(url: String, readBody: Boolean = false): String? {
-                    val connection = URI(url).toURL().openConnection() as HttpURLConnection
-                    connection.connectTimeout = 10_000
-                    connection.readTimeout = 30_000
-                    connection.setRequestProperty(
-                        "Authorization",
-                        "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}",
-                    )
-                    try {
-                        return when (val code = connection.responseCode) {
-                            200 -> if (readBody) connection.inputStream.bufferedReader().use { it.readText() } else ""
-                            404 -> null
-                            else -> throw GradleException("Could not check $url on GitHub Packages: HTTP $code")
-                        }
-                    } finally {
-                        connection.disconnect()
-                    }
-                }
-
-                // Gradle uploads maven-metadata.xml last, so it lists the version only once every file is up.
-                val metadata = "${base.substringBeforeLast('/').substringBeforeLast('/')}/maven-metadata.xml"
-                val listed = fetch(metadata, readBody = true)?.contains("<version>${publication.version}</version>")
-                val missing = expected.filter { fetch(it) == null } +
-                    listOfNotNull(metadata.takeUnless { listed == true })
-                when {
-                    missing.isEmpty() -> {
-                        task.logger.lifecycle("$coordinates is already on GitHub Packages")
-                        throw StopExecutionException()
-                    }
-                    missing.size == expected.size + 1 -> Unit
-                    else -> throw GradleException(
-                        "$coordinates is only partly on GitHub Packages, missing " +
-                            missing.joinToString { it.substringAfterLast('/') } +
-                            ". Delete that package version on GitHub, then publish again.",
-                    )
-                }
-            }
         }
     }
 
