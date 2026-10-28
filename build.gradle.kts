@@ -137,7 +137,8 @@ fun Project.configurePublishing() {
                 val base = "${task.repository.url.toString().trimEnd('/')}/" +
                     "${publication.groupId.replace('.', '/')}/${publication.artifactId}/${publication.version}/" +
                     "${publication.artifactId}-${publication.version}"
-                val files = publication.artifacts.map { artifact ->
+                // Signatures are added below, whether or not the publication lists them as artifacts.
+                val files = publication.artifacts.filterNot { it.extension.endsWith("asc") }.map { artifact ->
                     base + artifact.classifier?.let { "-$it" }.orEmpty() + ".${artifact.extension}"
                 } + "$base.pom" + "$base.module"
                 val expected = if (signingKey.isPresent) files + files.map { "$it.asc" } else files
