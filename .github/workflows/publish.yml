@@ -67,6 +67,7 @@ jobs:
 
       - name: Publish to GitHub Packages
         continue-on-error: true
+        timeout-minutes: 30
         run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --no-configuration-cache
         env:
           ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}

@@ -123,29 +123,56 @@ fun Project.configurePublishing() {
         }
     }
 
-    // GitHub Packages rejects re-uploading a version, so re-runs skip publications already there.
+    // GitHub Packages rejects re-uploading a file, so re-runs skip publications that are fully there
+    // and stop with a clear error on one an earlier run only partly uploaded.
     val gitHubPackagesUsername = providers.gradleProperty("GitHubPackagesUsername")
     val gitHubPackagesPassword = providers.gradleProperty("GitHubPackagesPassword")
+    val signingKey = providers.gradleProperty("signingInMemoryKey")
     tasks.withType<PublishToMavenRepository>().configureEach {
         if (name.endsWith("ToGitHubPackagesRepository")) {
-            onlyIf("publication is not on GitHub Packages yet") { task ->
-                task as PublishToMavenRepository
+            doFirst("Check GitHub Packages") {
+                val task = this as PublishToMavenRepository
                 val publication = task.publication
-                val pomUrl = "${task.repository.url.toString().trimEnd('/')}/" +
+                val coordinates = "${publication.groupId}:${publication.artifactId}:${publication.version}"
+                val base = "${task.repository.url.toString().trimEnd('/')}/" +
                     "${publication.groupId.replace('.', '/')}/${publication.artifactId}/${publication.version}/" +
-                    "${publication.artifactId}-${publication.version}.pom"
+                    "${publication.artifactId}-${publication.version}"
+                val files = publication.artifacts.map { artifact ->
+                    base + artifact.classifier?.let { "-$it" }.orEmpty() + ".${artifact.extension}"
+                } + "$base.pom" + "$base.module"
+                val expected = if (signingKey.isPresent) files + files.map { "$it.asc" } else files
                 val auth = "${gitHubPackagesUsername.orNull}:${gitHubPackagesPassword.orNull}"
-                val connection = URI(pomUrl).toURL().openConnection() as HttpURLConnection
-                connection.setRequestProperty(
-                    "Authorization",
-                    "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}",
-                )
-                val published = runCatching { connection.responseCode == 200 }.getOrDefault(false)
-                connection.disconnect()
-                if (published) {
-                    task.logger.lifecycle("${publication.artifactId}:${publication.version} is already on GitHub Packages")
+                val missing = expected.filterNot { url ->
+                    val connection = URI(url).toURL().openConnection() as HttpURLConnection
+                    connection.connectTimeout = 10_000
+                    connection.readTimeout = 30_000
+                    connection.setRequestProperty(
+                        "Authorization",
+                        "Basic ${Base64.getEncoder().encodeToString(auth.toByteArray())}",
+                    )
+                    val code = try {
+                        connection.responseCode
+                    } finally {
+                        connection.disconnect()
+                    }
+                    when (code) {
+                        200 -> true
+                        404 -> false
+                        else -> throw GradleException("Could not check $url on GitHub Packages: HTTP $code")
+                    }
                 }
-                !published
+                when {
+                    missing.isEmpty() -> {
+                        task.logger.lifecycle("$coordinates is already on GitHub Packages")
+                        throw StopExecutionException()
+                    }
+                    missing.size == expected.size -> Unit
+                    else -> throw GradleException(
+                        "$coordinates is only partly on GitHub Packages, missing " +
+                            missing.joinToString { it.substringAfterLast('/') } +
+                            ". Delete that package version on GitHub, then publish again.",
+                    )
+                }
             }
         }
     }
