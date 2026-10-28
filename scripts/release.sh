@@ -49,8 +49,81 @@ if ! git rev-parse -q --verify "refs/tags/$CURRENT" >/dev/null; then
   exit 1
 fi
 
-COMMITS="$(git log --reverse --format='%H%x09%s' "$CURRENT..HEAD")"
-if [[ -z "$COMMITS" && "$FORCE" != "true" ]]; then
+# Writes release notes for the commits in <range> to <file>, comparing <from> to <to>.
+write_notes() {
+  local file="$1" range="$2" from="$3" to="$4"
+  local commits pull_requests=""
+  commits="$(git log --reverse --format='%H%x09%s' "$range")"
+
+  # Pull requests merged into each commit, oldest first and listed once.
+  while IFS=$'\t' read -r sha _; do
+    [[ -z "$sha" ]] && continue
+    pull_requests+="$(gh api "repos/$REPO/commits/$sha/pulls" \
+      --jq '.[] | select(.merged_at != null) | "\(.number)\t\(.title)\t\(.html_url)"')"$'\n'
+  done <<<"$commits"
+  pull_requests="$(awk -F'\t' 'NF && !seen[$1]++' <<<"$pull_requests")"
+
+  {
+    echo "## Pull requests"
+    echo
+    if [[ -n "$pull_requests" ]]; then
+      while IFS=$'\t' read -r number title url; do
+        echo "- $title ([#$number]($url))"
+      done <<<"$pull_requests"
+    else
+      echo "No pull requests were merged in this release."
+    fi
+    echo
+    echo "## Commits"
+    echo
+    if [[ -n "$commits" ]]; then
+      while IFS=$'\t' read -r sha subject; do
+        echo "- [\`${sha:0:7}\`]($REPO_URL/commit/$sha) $subject"
+      done <<<"$commits"
+    else
+      echo "No commits since $from."
+    fi
+    echo
+    echo "**Full Changelog**: $REPO_URL/compare/$from...$to"
+  } >"$file"
+}
+
+# A run that pushed its tag but failed to create the release leaves the current
+# version without a release. Create it instead of bumping again, so the Publish
+# workflow still runs for that version.
+if ! RELEASE_ERROR="$(gh api "repos/$REPO/releases/tags/$CURRENT" --silent 2>&1)"; then
+  if [[ "$RELEASE_ERROR" != *"HTTP 404"* ]]; then
+    echo "❌ Error: could not check for a release of $CURRENT: $RELEASE_ERROR"
+    exit 1
+  fi
+
+  PREVIOUS="$(git describe --tags --abbrev=0 --match '[0-9]*.[0-9]*.[0-9]*' "$CURRENT^" 2>/dev/null || true)"
+  if [[ -z "$PREVIOUS" ]]; then
+    echo "❌ Error: $CURRENT has no release and no earlier version tag to write its notes from"
+    exit 1
+  fi
+  # Leave out the version bump commit, as a normal release does.
+  RANGE="$PREVIOUS..$CURRENT"
+  if [[ "$(git log -1 --format=%s "$CURRENT")" == "Bump version to $CURRENT" ]]; then
+    RANGE="$PREVIOUS..$CURRENT^"
+  fi
+
+  NOTES="$(mktemp)"
+  write_notes "$NOTES" "$RANGE" "$PREVIOUS" "$CURRENT"
+
+  if [[ "$DRY_RUN" == "true" ]]; then
+    summary "Dry run: $CURRENT is tagged but has no release, so it would create that release (from $PREVIOUS)."
+    summary ""
+    summary "$(cat "$NOTES")"
+    exit 0
+  fi
+
+  gh release create "$CURRENT" --repo "$REPO" --title "$CURRENT" --notes-file "$NOTES" --verify-tag
+  summary "Released [$CURRENT]($REPO_URL/releases/tag/$CURRENT), which was tagged but had no release. Run again for a new version."
+  exit 0
+fi
+
+if [[ -z "$(git log --format=%H "$CURRENT..HEAD")" && "$FORCE" != "true" ]]; then
   summary "No changes since $CURRENT, so nothing was released."
   exit 0
 fi
@@ -67,39 +140,8 @@ if git rev-parse -q --verify "refs/tags/$NEXT" >/dev/null; then
   exit 1
 fi
 
-# Pull requests merged into each commit, oldest first and listed once.
-PULL_REQUESTS=""
-while IFS=$'\t' read -r sha _; do
-  [[ -z "$sha" ]] && continue
-  PULL_REQUESTS+="$(gh api "repos/$REPO/commits/$sha/pulls" \
-    --jq '.[] | select(.merged_at != null) | "\(.number)\t\(.title)\t\(.html_url)"')"$'\n'
-done <<<"$COMMITS"
-PULL_REQUESTS="$(awk -F'\t' 'NF && !seen[$1]++' <<<"$PULL_REQUESTS")"
-
 NOTES="$(mktemp)"
-{
-  echo "## Pull requests"
-  echo
-  if [[ -n "$PULL_REQUESTS" ]]; then
-    while IFS=$'\t' read -r number title url; do
-      echo "- $title ([#$number]($url))"
-    done <<<"$PULL_REQUESTS"
-  else
-    echo "No pull requests were merged in this release."
-  fi
-  echo
-  echo "## Commits"
-  echo
-  if [[ -n "$COMMITS" ]]; then
-    while IFS=$'\t' read -r sha subject; do
-      echo "- [\`${sha:0:7}\`]($REPO_URL/commit/$sha) $subject"
-    done <<<"$COMMITS"
-  else
-    echo "No commits since $CURRENT."
-  fi
-  echo
-  echo "**Full Changelog**: $REPO_URL/compare/$CURRENT...$NEXT"
-} >"$NOTES"
+write_notes "$NOTES" "$CURRENT..HEAD" "$CURRENT" "$NEXT"
 
 if [[ "$DRY_RUN" == "true" ]]; then
   summary "Dry run: would release $NEXT (from $CURRENT)."
