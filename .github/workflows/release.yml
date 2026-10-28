@@ -41,9 +41,11 @@ jobs:
           client-id: ${{ vars.BOT_CLIENT_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
+      # Check out the current main, not the commit the run was queued at.
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: main
           fetch-depth: 0
           token: ${{ steps.app.outputs.token }}
 
