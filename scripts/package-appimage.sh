@@ -32,9 +32,17 @@ if [[ ! -d "$DIST_DIR" ]]; then
   exit 1
 fi
 
+# Pinned to a release and checked against its SHA-256, so a replaced download is never run.
+APPIMAGETOOL_VERSION="1.9.1"
 case "$(uname -m)" in
-  x86_64) ARCH=x86_64 ;;
-  aarch64 | arm64) ARCH=aarch64 ;;
+  x86_64)
+    ARCH=x86_64
+    APPIMAGETOOL_SHA256="ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0"
+    ;;
+  aarch64 | arm64)
+    ARCH=aarch64
+    APPIMAGETOOL_SHA256="f0837e7448a0c1e4e650a93bb3e85802546e60654ef287576f46c71c126a9158"
+    ;;
   *) echo "❌ Error: unsupported architecture $(uname -m)"; exit 1 ;;
 esac
 export ARCH
@@ -43,12 +51,18 @@ export ARCH
 APPIMAGETOOL="$(command -v appimagetool || true)"
 if [[ -z "$APPIMAGETOOL" ]]; then
   # Kept out of $BUILD_DIR so it is never mistaken for a build output.
-  APPIMAGETOOL="$BUILD_DIR/tool/appimagetool-$ARCH.AppImage"
+  APPIMAGETOOL="$BUILD_DIR/tool/appimagetool-$APPIMAGETOOL_VERSION-$ARCH.AppImage"
   if [[ ! -x "$APPIMAGETOOL" ]]; then
     mkdir -p "$BUILD_DIR/tool"
-    echo "⬇️  Downloading appimagetool ($ARCH)"
-    curl -fsSL -o "$APPIMAGETOOL" \
-      "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$ARCH.AppImage"
+    echo "⬇️  Downloading appimagetool $APPIMAGETOOL_VERSION ($ARCH)"
+    curl -fsSL -o "$APPIMAGETOOL.part" \
+      "https://github.com/AppImage/appimagetool/releases/download/$APPIMAGETOOL_VERSION/appimagetool-$ARCH.AppImage"
+    if ! echo "$APPIMAGETOOL_SHA256  $APPIMAGETOOL.part" | sha256sum -c - >/dev/null 2>&1; then
+      rm -f "$APPIMAGETOOL.part"
+      echo "❌ Error: appimagetool download does not match its expected SHA-256."
+      exit 1
+    fi
+    mv "$APPIMAGETOOL.part" "$APPIMAGETOOL"
     chmod +x "$APPIMAGETOOL"
   fi
 fi
