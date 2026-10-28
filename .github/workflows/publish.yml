@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish to Maven Central
+    name: Publish
     runs-on: macOS-latest
     permissions:
       contents: write
@@ -32,43 +32,10 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY_CONTENTS }}
 
-      - name: Upload Library Artifacts to GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.event.release.tag_name }}
-        run: |
-          uploaded_any=false
-          for module in resource foundation component persistence; do
-            zip_name="kepko-${module}-${TAG}.zip"
-            files=()
-            while IFS= read -r -d '' file; do
-              files+=("${file}")
-            done < <(
-              find "${module}/build/libs" "${module}/build/outputs/aar" \
-                -type f \
-                \( -name '*.jar' -o -name '*.aar' -o -name '*.module' -o -name '*.pom' -o -name '*.klib' \) \
-                -print0 2>/dev/null
-            )
-
-            if [ "${#files[@]}" -eq 0 ]; then
-              echo "::notice::No artifacts found for ${module}; skipping release upload."
-              continue
-            fi
-
-            rm -f "${zip_name}"
-            zip -j "${zip_name}" "${files[@]}"
-            gh release upload "${TAG}" "${zip_name}" --clobber
-            uploaded_any=true
-          done
-
-          if [ "${uploaded_any}" = false ]; then
-            echo "::warning::No release artifacts were uploaded. Maven Central publish may still have succeeded."
-          fi
-
       - name: Publish to GitHub Packages
         continue-on-error: true
-        timeout-minutes: 30
-        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --no-configuration-cache
+        timeout-minutes: 45
+        run: ./gradlew publishAllPublicationsToGitHubPackagesRepository --no-configuration-cache --parallel
         env:
           ORG_GRADLE_PROJECT_GitHubPackagesUsername: ${{ github.actor }}
           ORG_GRADLE_PROJECT_GitHubPackagesPassword: ${{ secrets.GITHUB_TOKEN }}
@@ -169,7 +136,8 @@ jobs:
           gh release upload "${TAG}" "kepko-sample-js-${TAG}.zip" --clobber
 
   refresh-docs:
-    name: Context7
+    name: Refresh Context7 Docs
+    needs: publish
     uses: ./.github/workflows/context7.yml
     secrets: inherit
 
