@@ -6,5 +6,6 @@
     <string name="color_palette_black">Schwarz (AMOLED)</string>
     <string name="color_palette_dark">Dunkel</string>
     <string name="color_palette_light">Hell</string>
+    <string name="color_palette_system">System</string>
     <string name="preference_outline_title">Umrandung</string>
 </resources>
