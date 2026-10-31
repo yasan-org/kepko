@@ -1,6 +1,5 @@
 base_path: "."
 preserve_hierarchy: false
-export_only_approved: true
 commit_message: "Update translations (%language%)"
 pull_request_title: "Update Translations [skip ci]"
 
