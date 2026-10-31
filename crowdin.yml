@@ -15,7 +15,6 @@ files:
         "en-GB": "en-rGB"
         "no": "nb"
         "kmr": "ku"
-        "fil": "fil"
   - source: "/**/res/values/strings.xml"
     translation: "/%original_path%-%two_letters_code%/%original_file_name%"
     skip_untranslated_strings: true
@@ -25,8 +24,5 @@ files:
         "zh-CN": "zh-rCN"
         "zh-TW": "zh-rTW"
         "en-GB": "en-rGB"
-        "he": "iw"
-        "id": "in"
         "no": "nb"
         "kmr": "ku"
-        "fil": "fil"
