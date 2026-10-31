@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="back">Voltar</string>
+    <string name="go_back">Voltar</string>
+    <string name="preference_theme_screen_title">Tema</string>
+    <string name="color_palette_dark">Escuro</string>
+    <string name="color_palette_light">Claro</string>
+    <string name="color_palette_system">Sistema</string>
+    <string name="reset">Redefinir</string>
+    <string name="enabled">Ativado</string>
+    <string name="disabled">Desativado</string>
+</resources>

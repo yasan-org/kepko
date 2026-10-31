@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="back">Retour</string>
+    <string name="go_back">Revenir en arrière</string>
+    <string name="preference_theme_screen_title">Thème</string>
+    <string name="color_palette_dark">Sombre</string>
+    <string name="color_palette_light">Clair</string>
+    <string name="color_palette_system">Système</string>
+    <string name="reset">Réinitialiser</string>
+    <string name="enabled">Activé</string>
+    <string name="disabled">Désactivé</string>
+</resources>
