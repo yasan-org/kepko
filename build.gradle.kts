@@ -1,6 +1,8 @@
 import com.vanniktech.maven.publish.DeploymentValidation
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.plugins.signing.Sign
+import org.jetbrains.compose.ComposeExtension
+import org.jetbrains.compose.resources.ResourcesExtension
 
 plugins {
     alias(libs.plugins.jetbrains.kotlin.compose) apply false
@@ -125,10 +127,33 @@ fun Project.configurePublishing() {
     }
 }
 
+// Compose resources match a folder's language code exactly. Android 14 and older report Hebrew and
+// Indonesian with their legacy codes (iw, in), while newer Android, iOS, desktop and web report he and id,
+// so the he and id folders Crowdin exports are mirrored into iw and in at build time.
+fun Project.configureLegacyLocaleResources() {
+    val resources = file("src/commonMain/composeResources")
+    if (resources.isDirectory.not()) return
+
+    val mirror = tasks.register<Sync>("mirrorLegacyLocaleResources") {
+        from(resources)
+        from(resources.resolve("values-he")) { into("values-iw") }
+        from(resources.resolve("values-id")) { into("values-in") }
+        into(layout.buildDirectory.dir("generated/legacyLocaleResources/commonMain"))
+    }
+
+    (extensions.getByType<ComposeExtension>() as ExtensionAware).extensions
+        .getByType<ResourcesExtension>()
+        .customDirectory("commonMain", layout.dir(mirror.map { it.destinationDir }))
+}
+
 subprojects {
     val isSample = path.contains("sample")
 
     configureDetekt()
+
+    pluginManager.withPlugin("org.jetbrains.compose") {
+        configureLegacyLocaleResources()
+    }
 
     if (isSample.not()) {
         pluginManager.apply("org.jetbrains.dokka")
