@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="back">Zurück</string>
+    <string name="go_back">Zurückgehen</string>
     <string name="preference_grayscale_title">Graustufen</string>
     <string name="preference_theme_screen_title">Thema</string>
     <string name="preference_badge_new">Neu</string>
@@ -8,4 +10,7 @@
     <string name="color_palette_light">Hell</string>
     <string name="color_palette_system">System</string>
     <string name="preference_outline_title">Umrandung</string>
+    <string name="reset">Zurücksetzen</string>
+    <string name="enabled">Aktiviert</string>
+    <string name="disabled">Deaktiviert</string>
 </resources>
