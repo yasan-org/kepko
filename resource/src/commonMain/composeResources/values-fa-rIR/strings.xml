@@ -8,13 +8,13 @@
     <string name="preference_grayscale_description">Remove all colors from the interface</string>
     <string name="preference_light_palette_description">Color palette used when the system is in light mode</string>
     <string name="preference_light_palette_title">Light Palette</string>
-    <string name="preference_palette_mode_dynamic">Follow System</string>
+    <string name="preference_palette_mode_dynamic">طبق تنظیمات سیستم</string>
     <string name="preference_palette_mode_dynamic_description">Switch the color palette automatically when the system theme changes</string>
-    <string name="preference_theme_screen_title">Theme</string>
+    <string name="preference_theme_screen_title">تم</string>
     <string name="preference_palette_title">Color Palette</string>
     <string name="preference_static_palette_title">Color Palette</string>
     <string name="color_success">موفقیت</string>
-    <string name="color_information">Information</string>
+    <string name="color_information">اطلاعات</string>
     <string name="color_caution">احتیاط</string>
     <string name="color_danger">Danger</string>
     <string name="color_foreground">Foreground</string>
@@ -55,8 +55,8 @@
     <string name="preference_roundness_title">Roundness</string>
     <string name="reset">Reset</string>
     <string name="preference_follow_global_title">Follow global setting</string>
-    <string name="enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
+    <string name="enabled">فعال</string>
+    <string name="disabled">غیر فعال</string>
     <string name="grayscale_enabled">Grayscale enabled</string>
     <string name="grayscale_disabled">Grayscale disabled</string>
 </resources>
