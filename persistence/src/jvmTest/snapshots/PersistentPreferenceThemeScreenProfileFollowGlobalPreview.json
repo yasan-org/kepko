@@ -1,0 +1,60 @@
+{
+    "keys": [
+        "back",
+        "preference_follow_global_title",
+        "preference_grayscale_title",
+        "preference_static_palette_title",
+        "preference_theme_screen_title"
+    ],
+    "texts": [
+        {
+            "text": "COLOR PALETTE",
+            "x": 20,
+            "y": 130,
+            "width": 115,
+            "height": 20
+        },
+        {
+            "text": "Follow global setting",
+            "x": 20,
+            "y": 150,
+            "width": 117,
+            "height": 16
+        },
+        {
+            "text": "GRAYSCALE",
+            "x": 20,
+            "y": 206,
+            "width": 86,
+            "height": 20
+        },
+        {
+            "text": "Follow global setting",
+            "x": 20,
+            "y": 226,
+            "width": 117,
+            "height": 16
+        },
+        {
+            "text": "Back",
+            "x": 4,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        },
+        {
+            "text": "THEME",
+            "x": 56,
+            "y": 16,
+            "width": 968,
+            "height": 24
+        },
+        {
+            "text": "WORK",
+            "x": 505,
+            "y": 65,
+            "width": 37,
+            "height": 24
+        }
+    ]
+}

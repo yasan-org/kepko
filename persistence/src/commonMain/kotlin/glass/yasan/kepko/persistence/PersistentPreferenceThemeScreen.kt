@@ -443,6 +443,21 @@ private fun PersistentPreferenceThemeRoundness(
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_light",
+    "preference_badge_active",
+    "preference_dark_palette_title",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_light_palette_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenSystemLightPreview() {
     PreviewPersistentKepkoTheme(configure = {
@@ -454,6 +469,21 @@ internal fun PersistentPreferenceThemeScreenSystemLightPreview() {
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_dark",
+    "preference_badge_active",
+    "preference_dark_palette_title",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_light_palette_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenSystemDarkPreview() {
     PreviewPersistentKepkoTheme(
@@ -466,24 +496,68 @@ internal fun PersistentPreferenceThemeScreenSystemDarkPreview() {
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_light",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_static_palette_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenStyleSelectedPreview() {
     PreviewPersistentKepkoTheme(configure = { setPalettePrimary(null, ColorPalette.LIGHT) }) {
-        PersistentPreferenceThemeScreen(onBackClick = {})
+        PersistentPreferenceThemeScreen(onBackClick = {}, isSystemInDarkTheme = false)
     }
 }
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_dark",
+    "color_palette_light",
+    "preference_badge_active",
+    "preference_dark_palette_title",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_light_palette_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenGrayscalePreview() {
     PreviewPersistentKepkoTheme(configure = { setGrayscaleEnabled(null, true) }) {
-        PersistentPreferenceThemeScreen(onBackClick = {})
+        PersistentPreferenceThemeScreen(onBackClick = {}, isSystemInDarkTheme = false)
     }
 }
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_dark",
+    "color_palette_light",
+    "preference_badge_overridden_by",
+    "preference_dark_palette_title",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_light_palette_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_theme_screen_title",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenGlobalOverriddenSystemPreview() {
     PreviewPersistentKepkoTheme(configure = {
@@ -492,6 +566,7 @@ internal fun PersistentPreferenceThemeScreenGlobalOverriddenSystemPreview() {
     }) {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
+            isSystemInDarkTheme = false,
             activeProfile = previewProfile,
         )
     }
@@ -499,6 +574,20 @@ internal fun PersistentPreferenceThemeScreenGlobalOverriddenSystemPreview() {
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_light",
+    "preference_badge_overridden_by",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_static_palette_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenGlobalOverriddenStaticPreview() {
     PreviewPersistentKepkoTheme(configure = {
@@ -508,6 +597,7 @@ internal fun PersistentPreferenceThemeScreenGlobalOverriddenStaticPreview() {
     }) {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
+            isSystemInDarkTheme = false,
             activeProfile = previewProfile,
         )
     }
@@ -515,11 +605,24 @@ internal fun PersistentPreferenceThemeScreenGlobalOverriddenStaticPreview() {
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_light",
+    "preference_grayscale_description",
+    "preference_grayscale_title",
+    "preference_outline_title",
+    "preference_palette_mode_dynamic",
+    "preference_palette_mode_dynamic_description",
+    "preference_roundness_title",
+    "preference_static_palette_title",
+    "preference_theme_screen_title",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenDisabledWithTopContentPreview() {
     PreviewPersistentKepkoTheme(configure = { setPalettePrimary(null, ColorPalette.LIGHT) }) {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
+            isSystemInDarkTheme = false,
             enabled = false,
             topContent = {
                 PreferenceSwitch(

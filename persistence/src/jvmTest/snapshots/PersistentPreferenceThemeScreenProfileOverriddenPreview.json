@@ -1,0 +1,69 @@
+{
+    "keys": [
+        "back",
+        "color_palette_dark_solarized",
+        "enabled",
+        "preference_grayscale_title",
+        "preference_static_palette_title",
+        "preference_theme_screen_title",
+        "reset"
+    ],
+    "texts": [
+        {
+            "text": "COLOR PALETTE",
+            "x": 20,
+            "y": 130,
+            "width": 115,
+            "height": 20
+        },
+        {
+            "text": "Solarized Dark",
+            "x": 20,
+            "y": 150,
+            "width": 82,
+            "height": 16
+        },
+        {
+            "text": "GRAYSCALE",
+            "x": 20,
+            "y": 206,
+            "width": 86,
+            "height": 20
+        },
+        {
+            "text": "Enabled",
+            "x": 20,
+            "y": 226,
+            "width": 46,
+            "height": 16
+        },
+        {
+            "text": "Back",
+            "x": 4,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        },
+        {
+            "text": "THEME",
+            "x": 56,
+            "y": 16,
+            "width": 912,
+            "height": 24
+        },
+        {
+            "text": "Reset",
+            "x": 972,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        },
+        {
+            "text": "WORK",
+            "x": 505,
+            "y": 65,
+            "width": 37,
+            "height": 24
+        }
+    ]
+}

@@ -130,11 +130,19 @@ private fun PersistentPreferenceThemeProfileGrayscale(
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "preference_follow_global_title",
+    "preference_grayscale_title",
+    "preference_static_palette_title",
+    "preference_theme_screen_title",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenProfileFollowGlobalPreview() {
     PreviewPersistentKepkoTheme {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
+            isSystemInDarkTheme = false,
             targetProfile = previewProfile,
         )
     }
@@ -142,6 +150,15 @@ internal fun PersistentPreferenceThemeScreenProfileFollowGlobalPreview() {
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "back",
+    "color_palette_dark_solarized",
+    "enabled",
+    "preference_grayscale_title",
+    "preference_static_palette_title",
+    "preference_theme_screen_title",
+    "reset",
+)
 @Composable
 internal fun PersistentPreferenceThemeScreenProfileOverriddenPreview() {
     PreviewPersistentKepkoTheme(configure = {
@@ -150,6 +167,7 @@ internal fun PersistentPreferenceThemeScreenProfileOverriddenPreview() {
     }) {
         PersistentPreferenceThemeScreen(
             onBackClick = {},
+            isSystemInDarkTheme = false,
             activeProfile = previewProfile,
             targetProfile = previewProfile,
         )

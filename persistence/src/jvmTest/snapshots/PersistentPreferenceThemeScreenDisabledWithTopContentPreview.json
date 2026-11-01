@@ -1,0 +1,135 @@
+{
+    "keys": [
+        "back",
+        "color_palette_light",
+        "preference_grayscale_description",
+        "preference_grayscale_title",
+        "preference_outline_title",
+        "preference_palette_mode_dynamic",
+        "preference_palette_mode_dynamic_description",
+        "preference_roundness_title",
+        "preference_static_palette_title",
+        "preference_theme_screen_title"
+    ],
+    "texts": [
+        {
+            "text": "HOST CONTENT",
+            "x": 20,
+            "y": 93,
+            "width": 114,
+            "height": 24
+        },
+        {
+            "text": "FOLLOW SYSTEM",
+            "x": 20,
+            "y": 173,
+            "width": 123,
+            "height": 24
+        },
+        {
+            "text": "Switch the color palette automatically when the system theme changes",
+            "x": 20,
+            "y": 197,
+            "width": 434,
+            "height": 16
+        },
+        {
+            "text": "COLOR PALETTE",
+            "x": 20,
+            "y": 249,
+            "width": 115,
+            "height": 20
+        },
+        {
+            "text": "Light",
+            "x": 20,
+            "y": 269,
+            "width": 30,
+            "height": 16
+        },
+        {
+            "text": "GRAYSCALE",
+            "x": 20,
+            "y": 337,
+            "width": 89,
+            "height": 24
+        },
+        {
+            "text": "Remove all colors from the interface",
+            "x": 20,
+            "y": 361,
+            "width": 220,
+            "height": 16
+        },
+        {
+            "text": "OUTLINE",
+            "x": 20,
+            "y": 413,
+            "width": 65,
+            "height": 24
+        },
+        {
+            "text": "1",
+            "x": 981,
+            "y": 461,
+            "width": 7,
+            "height": 17
+        },
+        {
+            "text": "x",
+            "x": 994,
+            "y": 461,
+            "width": 8,
+            "height": 17
+        },
+        {
+            "text": "ROUNDNESS",
+            "x": 20,
+            "y": 533,
+            "width": 92,
+            "height": 24
+        },
+        {
+            "text": "1",
+            "x": 955,
+            "y": 581,
+            "width": 7,
+            "height": 17
+        },
+        {
+            "text": ".",
+            "x": 970,
+            "y": 581,
+            "width": 4,
+            "height": 17
+        },
+        {
+            "text": "0",
+            "x": 980,
+            "y": 581,
+            "width": 10,
+            "height": 17
+        },
+        {
+            "text": "x",
+            "x": 994,
+            "y": 581,
+            "width": 8,
+            "height": 17
+        },
+        {
+            "text": "Back",
+            "x": 4,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        },
+        {
+            "text": "THEME",
+            "x": 56,
+            "y": 16,
+            "width": 968,
+            "height": 24
+        }
+    ]
+}

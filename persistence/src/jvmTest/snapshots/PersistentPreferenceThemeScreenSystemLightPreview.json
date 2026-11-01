@@ -1,0 +1,159 @@
+{
+    "keys": [
+        "back",
+        "color_palette_light",
+        "preference_badge_active",
+        "preference_dark_palette_title",
+        "preference_grayscale_description",
+        "preference_grayscale_title",
+        "preference_light_palette_title",
+        "preference_outline_title",
+        "preference_palette_mode_dynamic",
+        "preference_palette_mode_dynamic_description",
+        "preference_roundness_title",
+        "preference_theme_screen_title",
+        "reset"
+    ],
+    "texts": [
+        {
+            "text": "FOLLOW SYSTEM",
+            "x": 20,
+            "y": 85,
+            "width": 123,
+            "height": 24
+        },
+        {
+            "text": "Switch the color palette automatically when the system theme changes",
+            "x": 20,
+            "y": 109,
+            "width": 434,
+            "height": 16
+        },
+        {
+            "text": "LIGHT PALETTE",
+            "x": 20,
+            "y": 161,
+            "width": 109,
+            "height": 20
+        },
+        {
+            "text": "Light",
+            "x": 20,
+            "y": 181,
+            "width": 30,
+            "height": 16
+        },
+        {
+            "text": "ACTIVE",
+            "x": 919,
+            "y": 169,
+            "width": 37,
+            "height": 20
+        },
+        {
+            "text": "DARK PALETTE",
+            "x": 20,
+            "y": 237,
+            "width": 106,
+            "height": 20
+        },
+        {
+            "text": "Light",
+            "x": 20,
+            "y": 257,
+            "width": 30,
+            "height": 16
+        },
+        {
+            "text": "GRAYSCALE",
+            "x": 20,
+            "y": 325,
+            "width": 89,
+            "height": 24
+        },
+        {
+            "text": "Remove all colors from the interface",
+            "x": 20,
+            "y": 349,
+            "width": 220,
+            "height": 16
+        },
+        {
+            "text": "OUTLINE",
+            "x": 20,
+            "y": 401,
+            "width": 65,
+            "height": 24
+        },
+        {
+            "text": "1",
+            "x": 981,
+            "y": 449,
+            "width": 7,
+            "height": 17
+        },
+        {
+            "text": "x",
+            "x": 994,
+            "y": 449,
+            "width": 8,
+            "height": 17
+        },
+        {
+            "text": "ROUNDNESS",
+            "x": 20,
+            "y": 521,
+            "width": 92,
+            "height": 24
+        },
+        {
+            "text": "1",
+            "x": 955,
+            "y": 569,
+            "width": 7,
+            "height": 17
+        },
+        {
+            "text": ".",
+            "x": 970,
+            "y": 569,
+            "width": 4,
+            "height": 17
+        },
+        {
+            "text": "0",
+            "x": 980,
+            "y": 569,
+            "width": 10,
+            "height": 17
+        },
+        {
+            "text": "x",
+            "x": 994,
+            "y": 569,
+            "width": 8,
+            "height": 17
+        },
+        {
+            "text": "Back",
+            "x": 4,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        },
+        {
+            "text": "THEME",
+            "x": 56,
+            "y": 16,
+            "width": 912,
+            "height": 24
+        },
+        {
+            "text": "Reset",
+            "x": 972,
+            "y": 4,
+            "width": 48,
+            "height": 48
+        }
+    ]
+}

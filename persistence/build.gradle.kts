@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.kotlin.compose)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.roborazzi)
 }
 
@@ -85,6 +86,7 @@ kotlin {
                 implementation(libs.roborazzi.compose.desktop)
                 implementation(libs.jetbrains.kotlin.test)
                 implementation(libs.jetbrains.compose.ui.test)
+                implementation(libs.kotlinx.serialization.json)
             }
         }
     }
@@ -105,7 +107,7 @@ configure<MavenPublishBaseExtension> {
 }
 
 tasks.register<Delete>("cleanSnapshots") {
-    delete(fileTree("src/jvmTest/snapshots") { include("*.png") })
+    delete(fileTree("src/jvmTest/snapshots") { include("*.png", "*.json") })
 }
 
 tasks.register("cleanRecordSnapshots") {

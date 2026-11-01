@@ -30,6 +30,9 @@ jobs:
       - name: Run Detekt
         run: ./gradlew detekt
 
+      - name: Run Detekt (Crowdin Screenshots Tool)
+        run: ./gradlew -p tools/crowdin-screenshots detekt
+
   jvm-build:
     name: JVM Build
     runs-on: ubuntu-latest
@@ -56,6 +59,12 @@ jobs:
 
       - name: Test
         run: ./gradlew jvmTest
+
+      - name: Test Crowdin Screenshots Tool
+        run: ./gradlew -p tools/crowdin-screenshots test
+
+      - name: Check Crowdin Screenshot Keys
+        run: ./gradlew -p tools/crowdin-screenshots run --args="--dry-run --strings resource/src/commonMain/composeResources/values/strings.xml persistence/src/jvmTest/snapshots"
 
       - name: Generate Coverage Report
         if: ${{ !cancelled() && !contains(github.event.pull_request.labels.*.name, 'dependencies') }}

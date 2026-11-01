@@ -65,6 +65,12 @@ public fun PersistenceManager.themeButtonDescription(
 
 @ExperimentalKepkoApi
 @PreviewWithTest
+@CrowdinStrings(
+    "color_palette_dark_solarized",
+    "grayscale_disabled",
+    "preference_follow_global_title",
+    "preference_theme_screen_title",
+)
 @Composable
 internal fun PersistentPreferenceThemeButtonPreview() {
     Column(

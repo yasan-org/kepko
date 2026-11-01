@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: write
+    outputs:
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -30,6 +32,7 @@ jobs:
         run: ./gradlew :resource:cleanRecordSnapshots :component:cleanRecordSnapshots :persistence:cleanRecordSnapshots :sample:composeApp:cleanRecordSnapshots
 
       - name: Commit Snapshots
+        id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -40,3 +43,14 @@ jobs:
             git commit -m "Regenerate snapshots"
             git push
           fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  # Pushes made with GITHUB_TOKEN don't trigger the Crowdin Screenshots workflow, so call it here.
+  upload-crowdin-screenshots:
+    name: Upload Crowdin Screenshots
+    needs: regenerate-snapshots
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/crowdin-screenshots.yml
+    with:
+      ref: ${{ needs.regenerate-snapshots.outputs.sha }}
+    secrets: inherit

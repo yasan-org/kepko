@@ -1,0 +1,74 @@
+name: Crowdin Screenshots
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - persistence/src/jvmTest/snapshots/**
+      - tools/crowdin-screenshots/**
+      - .github/workflows/crowdin-screenshots.yml
+  # Catches up on tags for strings the Crowdin GitHub integration synced after the last upload.
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Commit to upload the snapshots from
+        type: string
+        required: true
+
+jobs:
+
+  check-credentials:
+    name: Check Credentials
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - name: Check Crowdin Credentials
+        id: check
+        env:
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
+        run: |
+          if [ -n "$CROWDIN_PERSONAL_TOKEN" ] && [ -n "$CROWDIN_PROJECT_ID" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Set the CROWDIN_PERSONAL_TOKEN secret and CROWDIN_PROJECT_ID variable to upload screenshots."
+          fi
+
+  upload-screenshots:
+    name: Upload Screenshots
+    needs: check-credentials
+    if: needs.check-credentials.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: crowdin-screenshots
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    env:
+      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+      CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
+      CROWDIN_SOURCE_FILE: ${{ vars.CROWDIN_SOURCE_FILE || 'resource/src/commonMain/composeResources/values/strings.xml' }}
+      CROWDIN_BRANCH: ${{ vars.CROWDIN_BRANCH }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          lfs: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Upload and Tag Screenshots
+        run: ./gradlew -p tools/crowdin-screenshots run --args="--namespace kepko-persistence persistence/src/jvmTest/snapshots"

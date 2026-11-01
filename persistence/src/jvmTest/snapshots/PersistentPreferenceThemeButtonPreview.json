@@ -1,0 +1,136 @@
+{
+    "keys": [
+        "color_palette_dark_solarized",
+        "grayscale_disabled",
+        "preference_follow_global_title",
+        "preference_theme_screen_title"
+    ],
+    "texts": [
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 32,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Light / Dark",
+            "x": 72,
+            "y": 52,
+            "width": 68,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 108,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Solarized Dark",
+            "x": 72,
+            "y": 128,
+            "width": 82,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 184,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Solarized Light / Black (AMOLED)",
+            "x": 72,
+            "y": 204,
+            "width": 187,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 260,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Light / Dark, Grayscale",
+            "x": 72,
+            "y": 280,
+            "width": 129,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 336,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Follow global setting",
+            "x": 72,
+            "y": 356,
+            "width": 117,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 412,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Solarized Dark",
+            "x": 72,
+            "y": 432,
+            "width": 82,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 488,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Grayscale disabled",
+            "x": 72,
+            "y": 508,
+            "width": 107,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 564,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Solarized Dark, Grayscale enabled",
+            "x": 72,
+            "y": 584,
+            "width": 192,
+            "height": 16
+        },
+        {
+            "text": "THEME",
+            "x": 72,
+            "y": 640,
+            "width": 50,
+            "height": 20
+        },
+        {
+            "text": "Following Yasan Launcher",
+            "x": 72,
+            "y": 660,
+            "width": 148,
+            "height": 16
+        }
+    ]
+}
