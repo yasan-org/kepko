@@ -67,9 +67,12 @@ write_notes() {
     echo "## Pull requests"
     echo
     if [[ -n "$pull_requests" ]]; then
-      while IFS=$'\t' read -r number title url; do
-        echo "- $title ([#$number]($url))"
-      done <<<"$pull_requests"
+      # Pull requests with the same title are listed once, with all their links.
+      awk -F'\t' '
+        !($2 in links) { order[++count] = $2; links[$2] = "" }
+        { links[$2] = links[$2] (links[$2] == "" ? "" : ", ") "[#" $1 "](" $3 ")" }
+        END { for (i = 1; i <= count; i++) print "- " order[i] " (" links[order[i]] ")" }
+      ' <<<"$pull_requests"
     else
       echo "No pull requests were merged in this release."
     fi
