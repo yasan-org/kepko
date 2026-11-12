@@ -132,6 +132,28 @@ internal class PreferencesStoreTest {
     }
 
     @Test
+    fun givenAKeyPutAgainWithTheSameValueDuringItsWrite_whenIdle_thenItIsWrittenAgain() = runTest {
+        // Given
+        val dataStore = InMemoryPreferencesDataStore()
+        val store = createStore(dataStore)
+        var interfered = false
+        dataStore.afterWrite = {
+            if (!interfered) {
+                interfered = true
+                dataStore.updateData { testPreferences(STRING_KEY to "theirs") }
+                store.putString(STRING_KEY, "mine")
+            }
+        }
+
+        // When
+        store.putString(STRING_KEY, "mine")
+        runCurrent()
+
+        // Then
+        assertEquals(testPreferences(STRING_KEY to "mine"), dataStore.current)
+    }
+
+    @Test
     fun givenAKeyStoredAsAnotherType_whenPut_thenReplacesIt() = runTest {
         // Given
         val dataStore = InMemoryPreferencesDataStore(testPreferences(STRING_KEY to "text"))

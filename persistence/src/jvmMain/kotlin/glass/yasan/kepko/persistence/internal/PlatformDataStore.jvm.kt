@@ -43,11 +43,7 @@ internal class JavaPreferencesLegacySource(
     private val preferences: JavaPreferences,
 ) : TextLegacySettingsSource() {
 
-    override fun keys(): Set<String> = try {
-        preferences.keys().toSet()
-    } catch (_: BackingStoreException) {
-        emptySet()
-    }
+    override fun keys(): Set<String> = preferences.keys().toSet()
 
     override fun getText(key: String): String? = preferences.get(key, null)
 

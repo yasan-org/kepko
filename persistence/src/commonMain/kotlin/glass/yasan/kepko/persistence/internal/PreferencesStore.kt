@@ -55,7 +55,8 @@ internal class PreferencesStore(
     private val state = MutableStateFlow(
         State(
             values = initial.asMap().mapKeys { (key, _) -> key.name },
-            changedKeys = emptySet(),
+            changes = emptyMap(),
+            edits = 0,
         ),
     )
 
@@ -64,7 +65,7 @@ internal class PreferencesStore(
             var retryDelay = INITIAL_RETRY_DELAY
 
             while (true) {
-                val pending = state.first { it.changedKeys.isNotEmpty() }
+                val pending = state.first { it.changes.isNotEmpty() }
 
                 if (persist(pending)) {
                     markPersisted(pending)
@@ -104,13 +105,14 @@ internal class PreferencesStore(
      * Suspends until every change has been written, or returns false after [timeout].
      */
     suspend fun flush(timeout: Duration): Boolean =
-        withTimeoutOrNull(timeout) { state.first { it.changedKeys.isEmpty() } } != null
+        withTimeoutOrNull(timeout) { state.first { it.changes.isEmpty() } } != null
 
     private fun edit(key: String, value: Any?) {
         state.update { current ->
             State(
                 values = if (value == null) current.values - key else current.values + (key to value),
-                changedKeys = current.changedKeys + key,
+                changes = current.changes + (key to current.edits),
+                edits = current.edits + 1,
             )
         }
     }
@@ -127,29 +129,32 @@ internal class PreferencesStore(
         }
 
     /**
-     * Forgets the keys [written] wrote, unless they changed again meanwhile. A written key isn't written again,
-     * so it can't overwrite a newer value from another tab or process.
+     * Forgets the edits [written] wrote, keeping any key edited again meanwhile, even back to the same value.
+     * A written key isn't written again, so it can't overwrite a newer value from another tab or process.
      */
     private fun markPersisted(written: State) {
         state.update { current ->
-            val stillChanged = current.changedKeys.filterTo(mutableSetOf()) { key ->
-                key !in written.changedKeys || current.values[key] != written.values[key]
-            }
-            State(values = current.values, changedKeys = stillChanged)
+            State(
+                values = current.values,
+                changes = current.changes.filter { (key, edit) -> written.changes[key] != edit },
+                edits = current.edits,
+            )
         }
     }
 
     /**
-     * Only [changedKeys] are written, so a store that failed to load can't overwrite the values it never read.
+     * Only the keys in [changes] are written, so a store that failed to load can't overwrite the values it never
+     * read. Each maps to the number of the edit that last changed it, counted by [edits].
      */
     private class State(
         val values: Map<String, Any>,
-        val changedKeys: Set<String>,
+        val changes: Map<String, Long>,
+        val edits: Long,
     )
 
     private fun Preferences.withChangesFrom(pending: State): Preferences =
         toMutablePreferences().apply {
-            pending.changedKeys.forEach { name ->
+            pending.changes.keys.forEach { name ->
                 // Drops the entry whatever type it was stored as.
                 asMap().keys.filter { it.name == name }.forEach { this -= it }
                 pending.values[name]?.let { put(name, it) }

@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.CancellationException
 
 /**
  * Prefix of every key Kepko stored with multiplatform-settings.
@@ -27,6 +28,10 @@ private const val LEGACY_DIMENSION_PREFIX = "${LEGACY_KEY_PREFIX}dimension."
  */
 internal interface LegacySettingsSource {
 
+    /**
+     * Throws if the store can't be listed, so the migration is retried on a later launch instead of being
+     * recorded as done with nothing copied.
+     */
     fun keys(): Set<String>
 
     fun getString(key: String): String?
@@ -67,18 +72,33 @@ internal class LegacySettingsMigration(
 
     override suspend fun migrate(currentData: Preferences): Preferences {
         val existing = currentData.asMap().keys.mapTo(mutableSetOf()) { it.name }
+        val keys = legacyKeys()
+        migratedKeys = keys
 
         return currentData.toMutablePreferences().apply {
-            legacyKeys()
+            keys
                 .filterNot { it in existing }
                 .forEach { key -> copy(key) }
             this[migratedKey] = true
         }.toPreferences()
     }
 
+    /**
+     * Removes only the keys [migrate] saw, so a key another tab or app adds meanwhile isn't deleted unread.
+     * A failure leaves the keys behind rather than failing the load: they are already in DataStore.
+     */
+    @Suppress("TooGenericExceptionCaught") // Browser storage errors aren't Exceptions on web.
     override suspend fun cleanUp() {
-        source.remove(legacyKeys())
+        try {
+            source.remove(migratedKeys)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            // Left behind; never read again once the migrated marker is set.
+        }
     }
+
+    private var migratedKeys: Set<String> = emptySet()
 
     private val migratedKey = booleanPreferencesKey(LEGACY_MIGRATED_KEY)
 

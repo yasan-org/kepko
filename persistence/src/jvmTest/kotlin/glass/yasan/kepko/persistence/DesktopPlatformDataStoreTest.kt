@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.UUID
+import java.util.prefs.AbstractPreferences
+import java.util.prefs.BackingStoreException
 import java.util.prefs.Preferences
 import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
@@ -94,6 +96,25 @@ internal class DesktopPlatformDataStoreTest {
         } finally {
             home.deleteRecursively()
         }
+    }
+
+    @Test
+    fun givenABackendThatCannotBeRead_whenKeysListed_thenFails() {
+        // Given
+        val unreadable = object : AbstractPreferences(null, "") {
+            override fun keysSpi(): Array<String> = throw BackingStoreException("Unavailable")
+            override fun putSpi(key: String, value: String) = Unit
+            override fun getSpi(key: String): String? = null
+            override fun removeSpi(key: String) = Unit
+            override fun removeNodeSpi() = Unit
+            override fun childrenNamesSpi(): Array<String> = emptyArray()
+            override fun childSpi(name: String): AbstractPreferences = this
+            override fun syncSpi() = Unit
+            override fun flushSpi() = Unit
+        }
+
+        // Then
+        assertFailsWith<BackingStoreException> { JavaPreferencesLegacySource(unreadable).keys() }
     }
 
     @Test

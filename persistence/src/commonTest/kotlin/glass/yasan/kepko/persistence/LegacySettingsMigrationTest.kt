@@ -15,6 +15,7 @@ import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl.Companion.K
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -170,11 +171,50 @@ internal class LegacySettingsMigrationTest {
             APP_KEY to "dark",
         )
         val migration = LegacySettingsMigration(source)
+        migration.migrate(emptyPreferences())
 
         // When
         migration.cleanUp()
 
         // Then
         assertEquals(mapOf(APP_KEY to "dark"), source.values)
+    }
+
+    @Test
+    fun givenAKeyAddedAfterMigrating_whenCleanedUp_thenLeavesIt() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(KEY_STYLE to ColorPalette.BLACK.id)
+        val migration = LegacySettingsMigration(source)
+        migration.migrate(emptyPreferences())
+        source.values[KEY_GRAYSCALE] = "true"
+
+        // When
+        migration.cleanUp()
+
+        // Then
+        assertEquals(mapOf(KEY_GRAYSCALE to "true"), source.values)
+    }
+
+    @Test
+    fun givenASourceThatCannotRemove_whenCleanedUp_thenDoesNotFail() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(KEY_STYLE to ColorPalette.BLACK.id).apply { failRemovals = true }
+        val migration = LegacySettingsMigration(source)
+        migration.migrate(emptyPreferences())
+
+        // When
+        migration.cleanUp()
+
+        // Then
+        assertEquals(mapOf(KEY_STYLE to ColorPalette.BLACK.id), source.values)
+    }
+
+    @Test
+    fun givenASourceThatCannotBeListed_whenMigrated_thenFailsWithoutMarkingItDone() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(KEY_STYLE to ColorPalette.BLACK.id).apply { failKeys = true }
+
+        // Then
+        assertFailsWith<IllegalStateException> { LegacySettingsMigration(source).migrate(emptyPreferences()) }
     }
 }

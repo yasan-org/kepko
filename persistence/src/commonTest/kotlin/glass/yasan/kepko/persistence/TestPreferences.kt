@@ -66,6 +66,11 @@ internal class InMemoryPreferencesDataStore(
         emitAll(state)
     }
 
+    /**
+     * Runs right after a write is stored, before [updateData] returns to its caller.
+     */
+    var afterWrite: suspend () -> Unit = {}
+
     override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences {
         check(!failWrites) { "Disk full" }
 
@@ -74,6 +79,7 @@ internal class InMemoryPreferencesDataStore(
             state.value = updated
             writes++
         }
+        afterWrite()
 
         return updated
     }
@@ -91,7 +97,11 @@ internal class FakeLegacySettingsSource(
     var keyReads: Int = 0
         private set
 
+    var failKeys: Boolean = false
+    var failRemovals: Boolean = false
+
     override fun keys(): Set<String> {
+        check(!failKeys) { "Unlistable" }
         keyReads++
         return values.keys.toSet()
     }
@@ -99,6 +109,7 @@ internal class FakeLegacySettingsSource(
     override fun getText(key: String): String? = values[key]
 
     override fun remove(keys: Set<String>) {
+        check(!failRemovals) { "Unremovable" }
         values -= keys
     }
 }
