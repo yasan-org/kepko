@@ -15,15 +15,20 @@ import kotlinx.coroutines.CancellationException
 internal const val LEGACY_KEY_PREFIX: String = "glass.yasan.kepko."
 
 /**
- * How many times the legacy store has been migrated. Underscores keep it outside [LEGACY_KEY_PREFIX].
+ * How far the legacy migration has got: [LEGACY_COPIED] or [LEGACY_CLEAN]. Underscores keep it outside
+ * [LEGACY_KEY_PREFIX].
  */
-internal const val LEGACY_MIGRATION_PASSES_KEY: String = "glass_yasan_kepko.legacy_migration_passes"
+internal const val LEGACY_MIGRATION_STATE_KEY: String = "glass_yasan_kepko.legacy_migration_state"
 
 /**
- * The migration runs on two launches: the first copies and cleans up, the second only cleans up, so keys a
- * failed clean-up left behind get a second attempt. After that the legacy store isn't read again.
+ * The legacy values are in DataStore, but their keys may still be in the legacy store.
  */
-internal const val LEGACY_MIGRATION_PASSES: Int = 2
+internal const val LEGACY_COPIED: Int = 1
+
+/**
+ * A launch found no legacy keys left, so the legacy store isn't read again.
+ */
+internal const val LEGACY_CLEAN: Int = 2
 
 private const val LEGACY_STYLE_PREFIX = "${LEGACY_KEY_PREFIX}style."
 private const val LEGACY_GRAYSCALE_PREFIX = "${LEGACY_KEY_PREFIX}grayscale"
@@ -64,8 +69,9 @@ internal abstract class TextLegacySettingsSource : LegacySettingsSource {
 }
 
 /**
- * Moves Kepko's keys from [source] into DataStore, then deletes them from [source]. Runs on the first
- * [LEGACY_MIGRATION_PASSES] launches; afterwards [source] isn't read again.
+ * Moves Kepko's keys from [source] into DataStore, then deletes them from [source]. The first launch copies
+ * and cleans up; later launches only retry the clean-up, until one finds no legacy keys left. After that
+ * [source] isn't read again.
  *
  * Values already in DataStore win and unparseable values are dropped. Keys this migration doesn't know,
  * with or without [LEGACY_KEY_PREFIX], are left alone.
@@ -75,7 +81,7 @@ internal class LegacySettingsMigration(
 ) : DataMigration<Preferences> {
 
     override suspend fun shouldMigrate(currentData: Preferences): Boolean =
-        passes(currentData) < LEGACY_MIGRATION_PASSES
+        state(currentData) < LEGACY_CLEAN
 
     override suspend fun migrate(currentData: Preferences): Preferences {
         val existing = currentData.asMap().keys.mapTo(mutableSetOf()) { it.name }
@@ -83,19 +89,21 @@ internal class LegacySettingsMigration(
         migratedKeys = keys
 
         return currentData.toMutablePreferences().apply {
-            // Later passes only clean up: copying again would bring back a value the user has since cleared.
-            if (passes(currentData) == 0) {
+            // Copies once: copying again would bring back a value the user has since cleared.
+            if (state(currentData) < LEGACY_COPIED) {
                 keys
                     .filterNot { it in existing }
                     .forEach { key -> copy(key) }
+                this[stateKey] = LEGACY_COPIED
+            } else if (keys.isEmpty()) {
+                this[stateKey] = LEGACY_CLEAN
             }
-            this[passesKey] = passes(currentData) + 1
         }.toPreferences()
     }
 
     /**
      * Removes only the keys [migrate] saw, so a key another tab or app adds meanwhile isn't deleted unread.
-     * A failure doesn't fail the load, since the keys are already in DataStore; the next pass removes them.
+     * A failure doesn't fail the load, since the keys are already in DataStore; the next launch retries.
      */
     @Suppress("TooGenericExceptionCaught") // Browser storage errors aren't Exceptions on web.
     override suspend fun cleanUp() {
@@ -104,15 +112,15 @@ internal class LegacySettingsMigration(
         } catch (e: CancellationException) {
             throw e
         } catch (_: Throwable) {
-            // Left for the next pass.
+            // Retried on the next launch.
         }
     }
 
     private var migratedKeys: Set<String> = emptySet()
 
-    private val passesKey = intPreferencesKey(LEGACY_MIGRATION_PASSES_KEY)
+    private val stateKey = intPreferencesKey(LEGACY_MIGRATION_STATE_KEY)
 
-    private fun passes(data: Preferences): Int = data[passesKey] ?: 0
+    private fun state(data: Preferences): Int = data[stateKey] ?: 0
 
     private fun legacyKeys(): Set<String> = source.keys().filterTo(mutableSetOf()) { it.isLegacyKey() }
 
