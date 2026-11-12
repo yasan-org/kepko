@@ -27,7 +27,7 @@ internal actual fun <T> blockingOrNull(block: suspend () -> T): T? = runBlocking
 // Android gives no exit callback; DataStore writes finish within milliseconds of a change.
 internal actual fun flushOnExit(flush: suspend () -> Unit): Unit = Unit
 
-private class SharedPreferencesLegacySource(
+internal class SharedPreferencesLegacySource(
     private val preferences: SharedPreferences,
 ) : LegacySettingsSource {
 

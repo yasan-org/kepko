@@ -4,6 +4,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.persistence.internal.LEGACY_MIGRATED_KEY
 import glass.yasan.kepko.persistence.internal.LegacySettingsMigration
+import glass.yasan.kepko.persistence.internal.LegacySettingsSource
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl.Companion.KEY_DARK_STYLE
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl.Companion.KEY_GRAYSCALE
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl.Companion.KEY_LIGHT_STYLE
@@ -15,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Suppress("VisibleForTests")
@@ -104,6 +106,35 @@ internal class LegacySettingsMigrationTest {
 
         // Then
         assertEquals(testPreferences(LEGACY_MIGRATED_KEY to true), migrated)
+    }
+
+    @Test
+    fun givenKeysWhoseValuesAreGone_whenMigrated_thenSkipsThem() = runTest {
+        // Given
+        val source = object : LegacySettingsSource {
+            override fun keys(): Set<String> = setOf(KEY_STYLE, KEY_GRAYSCALE, KEY_ROUNDNESS)
+            override fun getString(key: String): String? = null
+            override fun getBoolean(key: String): Boolean? = null
+            override fun getFloat(key: String): Float? = null
+            override fun remove(keys: Set<String>) = Unit
+        }
+
+        // When
+        val migrated = LegacySettingsMigration(source).migrate(emptyPreferences())
+
+        // Then
+        assertEquals(testPreferences(LEGACY_MIGRATED_KEY to true), migrated)
+    }
+
+    @Test
+    fun givenAMissingKey_whenReadFromATextSource_thenReturnsNull() {
+        // Given
+        val source = FakeLegacySettingsSource()
+
+        // Then
+        assertNull(source.getString(KEY_STYLE))
+        assertNull(source.getBoolean(KEY_GRAYSCALE))
+        assertNull(source.getFloat(KEY_ROUNDNESS))
     }
 
     @Test

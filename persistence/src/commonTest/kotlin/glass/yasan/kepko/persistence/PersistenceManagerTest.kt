@@ -367,4 +367,19 @@ internal class PersistenceManagerTest {
         // Then
         assertEquals(420.dp, manager.listPaneWidth)
     }
+
+    @Test
+    fun givenStoredDimensions_whenCreated_thenReadsThemBack() {
+        // Given
+        val manager = createManager(
+            PersistenceManagerImpl.KEY_OUTLINE to 2f,
+            PersistenceManagerImpl.KEY_ROUNDNESS to 0.25f,
+            PersistenceManagerImpl.KEY_LIST_PANE_WIDTH to 320f,
+        )
+
+        // Then
+        assertEquals(2.dp, manager.outline)
+        assertEquals(0.25f, manager.roundness)
+        assertEquals(320.dp, manager.listPaneWidth)
+    }
 }

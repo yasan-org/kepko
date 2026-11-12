@@ -7,6 +7,7 @@ import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl
 import glass.yasan.kepko.persistence.internal.SingletonPersistenceManager
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.runBlocking
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -47,6 +48,25 @@ internal class LocalKepkoPersistenceManagerTest {
 
         // Then
         assertSame(SingletonPersistenceManager.instanceOrBlockingLoad(), current)
+    }
+
+    @Test
+    fun givenALoadedInstance_whenAwaited_thenReturnsTheSameInstance() = runBlocking {
+        // Given
+        val awaited = SingletonPersistenceManager.awaitInstance()
+
+        // Then
+        assertSame(awaited, SingletonPersistenceManager.instanceOrBlockingLoad())
+        assertSame(awaited, SingletonPersistenceManager.awaitInstance())
+    }
+
+    @Test
+    fun givenPreloaded_whenInstanceRequested_thenReturnsIt() {
+        // When
+        SingletonPersistenceManager.preload()
+
+        // Then
+        assertNotNull(SingletonPersistenceManager.instanceOrBlockingLoad())
     }
 
     @Test

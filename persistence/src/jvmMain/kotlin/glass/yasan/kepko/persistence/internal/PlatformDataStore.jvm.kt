@@ -12,12 +12,17 @@ import java.util.prefs.Preferences as JavaPreferences
 
 @OptIn(ExperimentalKepkoApi::class)
 internal actual fun createPlatformDataStore(): DataStore<Preferences> =
+    createDesktopDataStore(home = System.getProperty("user.home"), legacyPreferences = JavaPreferences.userRoot())
+
+/**
+ * Creates the DataStore under [home], migrating the values multiplatform-settings stored in [legacyPreferences].
+ */
+@OptIn(ExperimentalKepkoApi::class)
+internal fun createDesktopDataStore(home: String, legacyPreferences: JavaPreferences): DataStore<Preferences> =
     PreferenceDataStoreFactory.create(
         corruptionHandler = resetOnCorruption(),
-        migrations = listOf(LegacySettingsMigration(JavaPreferencesLegacySource(JavaPreferences.userRoot()))),
-        produceFile = {
-            desktopStoreFile(home = System.getProperty("user.home"), appId = KepkoDesktopPersistence.appId)
-        },
+        migrations = listOf(LegacySettingsMigration(JavaPreferencesLegacySource(legacyPreferences))),
+        produceFile = { desktopStoreFile(home = home, appId = KepkoDesktopPersistence.appId) },
     )
 
 /**
