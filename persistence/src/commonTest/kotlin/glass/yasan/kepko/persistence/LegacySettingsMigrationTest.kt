@@ -214,6 +214,23 @@ internal class LegacySettingsMigrationTest {
     }
 
     @Test
+    fun givenAKepkoKeyTheMigrationDoesNotKnow_whenCleanedUp_thenLeavesIt() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(
+            KEY_STYLE to ColorPalette.BLACK.id,
+            "glass.yasan.kepko.unknown" to "value",
+        )
+        val migration = LegacySettingsMigration(source)
+        migration.migrate(emptyPreferences())
+
+        // When
+        migration.cleanUp()
+
+        // Then
+        assertEquals(mapOf("glass.yasan.kepko.unknown" to "value"), source.values)
+    }
+
+    @Test
     fun givenAKeyAddedAfterMigrating_whenCleanedUp_thenLeavesIt() = runTest {
         // Given
         val source = FakeLegacySettingsSource(KEY_STYLE to ColorPalette.BLACK.id)

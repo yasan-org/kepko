@@ -67,8 +67,8 @@ internal abstract class TextLegacySettingsSource : LegacySettingsSource {
  * Moves Kepko's keys from [source] into DataStore, then deletes them from [source]. Runs on the first
  * [LEGACY_MIGRATION_PASSES] launches; afterwards [source] isn't read again.
  *
- * Values already in DataStore win, unparseable values are dropped, and keys without [LEGACY_KEY_PREFIX]
- * are left alone.
+ * Values already in DataStore win and unparseable values are dropped. Keys this migration doesn't know,
+ * with or without [LEGACY_KEY_PREFIX], are left alone.
  */
 internal class LegacySettingsMigration(
     private val source: LegacySettingsSource,
@@ -111,7 +111,10 @@ internal class LegacySettingsMigration(
 
     private fun passes(data: Preferences): Int = data[passesKey] ?: 0
 
-    private fun legacyKeys(): Set<String> = source.keys().filterTo(mutableSetOf()) { it.startsWith(LEGACY_KEY_PREFIX) }
+    private fun legacyKeys(): Set<String> = source.keys().filterTo(mutableSetOf()) { it.isLegacyKey() }
+
+    private fun String.isLegacyKey(): Boolean =
+        startsWith(LEGACY_STYLE_PREFIX) || startsWith(LEGACY_GRAYSCALE_PREFIX) || startsWith(LEGACY_DIMENSION_PREFIX)
 
     private fun MutablePreferences.copy(key: String) {
         when {
