@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import glass.yasan.kepko.persistence.internal.PreferencesStore
 import glass.yasan.kepko.persistence.internal.TextLegacySettingsSource
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 
 /**
- * Builds [Preferences] from String, Boolean and Float values.
+ * Builds [Preferences] from String, Boolean, Float and Int values.
  */
 internal fun testPreferences(vararg values: Pair<String, Any>): Preferences =
     emptyPreferences().toMutablePreferences().apply {
@@ -25,6 +26,7 @@ internal fun testPreferences(vararg values: Pair<String, Any>): Preferences =
                 is String -> this[stringPreferencesKey(key)] = value
                 is Boolean -> this[booleanPreferencesKey(key)] = value
                 is Float -> this[floatPreferencesKey(key)] = value
+                is Int -> this[intPreferencesKey(key)] = value
                 else -> error("Unsupported test preference type: ${value::class}")
             }
         }

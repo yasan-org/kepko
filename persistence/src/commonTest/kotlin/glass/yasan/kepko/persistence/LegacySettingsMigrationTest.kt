@@ -2,7 +2,7 @@ package glass.yasan.kepko.persistence
 
 import androidx.datastore.preferences.core.emptyPreferences
 import glass.yasan.kepko.foundation.theme.ColorPalette
-import glass.yasan.kepko.persistence.internal.LEGACY_MIGRATED_KEY
+import glass.yasan.kepko.persistence.internal.LEGACY_MIGRATION_PASSES_KEY
 import glass.yasan.kepko.persistence.internal.LegacySettingsMigration
 import glass.yasan.kepko.persistence.internal.LegacySettingsSource
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl.Companion.KEY_DARK_STYLE
@@ -39,16 +39,49 @@ internal class LegacySettingsMigrationTest {
     }
 
     @Test
-    fun givenAlreadyMigrated_whenChecked_thenShouldNotMigrateOrReadTheSource() = runTest {
+    fun givenMigratedOnce_whenChecked_thenShouldMigrateAgain() = runTest {
+        // Given
+        val migration = LegacySettingsMigration(FakeLegacySettingsSource(KEY_GRAYSCALE to "true"))
+        val migrated = migration.migrate(emptyPreferences())
+
+        // Then
+        assertTrue(migration.shouldMigrate(migrated))
+    }
+
+    @Test
+    fun givenMigratedTwice_whenChecked_thenShouldNotMigrateOrReadTheSource() = runTest {
         // Given
         val source = FakeLegacySettingsSource(KEY_GRAYSCALE to "true")
         val migration = LegacySettingsMigration(source)
-        val migrated = migration.migrate(emptyPreferences())
+        val migrated = migration.migrate(migration.migrate(emptyPreferences()))
         val readsBefore = source.keyReads
 
         // Then
         assertFalse(migration.shouldMigrate(migrated))
         assertEquals(readsBefore, source.keyReads)
+    }
+
+    @Test
+    fun givenACleanUpThatFailed_whenMigratedAgain_thenTheSecondCleanUpRemovesTheKeys() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(KEY_STYLE to ColorPalette.BLACK.id, APP_KEY to "dark")
+        val first = LegacySettingsMigration(source)
+        source.failRemovals = true
+        val migratedOnce = first.migrate(emptyPreferences())
+        first.cleanUp()
+        source.failRemovals = false
+
+        // When
+        val second = LegacySettingsMigration(source)
+        val migratedTwice = second.migrate(migratedOnce)
+        second.cleanUp()
+
+        // Then
+        assertEquals(mapOf(APP_KEY to "dark"), source.values)
+        assertEquals(
+            testPreferences(KEY_STYLE to ColorPalette.BLACK.id, LEGACY_MIGRATION_PASSES_KEY to 2),
+            migratedTwice,
+        )
     }
 
     @Test
@@ -85,7 +118,7 @@ internal class LegacySettingsMigrationTest {
                 KEY_LIST_PANE_WIDTH to 420f,
                 PROFILE_PALETTE_KEY to ColorPalette.LIGHT.id,
                 PROFILE_GRAYSCALE_KEY to false,
-                LEGACY_MIGRATED_KEY to true,
+                LEGACY_MIGRATION_PASSES_KEY to 1,
             ),
             migrated,
         )
@@ -106,7 +139,7 @@ internal class LegacySettingsMigrationTest {
         val migrated = migration.migrate(emptyPreferences())
 
         // Then
-        assertEquals(testPreferences(LEGACY_MIGRATED_KEY to true), migrated)
+        assertEquals(testPreferences(LEGACY_MIGRATION_PASSES_KEY to 1), migrated)
     }
 
     @Test
@@ -124,7 +157,7 @@ internal class LegacySettingsMigrationTest {
         val migrated = LegacySettingsMigration(source).migrate(emptyPreferences())
 
         // Then
-        assertEquals(testPreferences(LEGACY_MIGRATED_KEY to true), migrated)
+        assertEquals(testPreferences(LEGACY_MIGRATION_PASSES_KEY to 1), migrated)
     }
 
     @Test
@@ -156,7 +189,7 @@ internal class LegacySettingsMigrationTest {
             testPreferences(
                 KEY_STYLE to ColorPalette.LIGHT.id,
                 KEY_GRAYSCALE to true,
-                LEGACY_MIGRATED_KEY to true,
+                LEGACY_MIGRATION_PASSES_KEY to 1,
             ),
             migrated,
         )
