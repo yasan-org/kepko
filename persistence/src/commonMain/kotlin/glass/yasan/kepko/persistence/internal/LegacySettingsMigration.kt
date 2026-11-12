@@ -20,8 +20,8 @@ internal const val LEGACY_KEY_PREFIX: String = "glass.yasan.kepko."
 internal const val LEGACY_MIGRATION_PASSES_KEY: String = "glass_yasan_kepko.legacy_migration_passes"
 
 /**
- * The migration runs on two launches, so keys a failed clean-up left behind get a second attempt. After that
- * the legacy store isn't read again.
+ * The migration runs on two launches: the first copies and cleans up, the second only cleans up, so keys a
+ * failed clean-up left behind get a second attempt. After that the legacy store isn't read again.
  */
 internal const val LEGACY_MIGRATION_PASSES: Int = 2
 
@@ -83,9 +83,12 @@ internal class LegacySettingsMigration(
         migratedKeys = keys
 
         return currentData.toMutablePreferences().apply {
-            keys
-                .filterNot { it in existing }
-                .forEach { key -> copy(key) }
+            // Later passes only clean up: copying again would bring back a value the user has since cleared.
+            if (passes(currentData) == 0) {
+                keys
+                    .filterNot { it in existing }
+                    .forEach { key -> copy(key) }
+            }
             this[passesKey] = passes(currentData) + 1
         }.toPreferences()
     }

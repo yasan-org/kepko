@@ -214,6 +214,27 @@ internal class LegacySettingsMigrationTest {
     }
 
     @Test
+    fun givenAValueClearedAfterAFailedCleanUp_whenMigratedAgain_thenItDoesNotComeBack() = runTest {
+        // Given
+        val source = FakeLegacySettingsSource(PROFILE_PALETTE_KEY to ColorPalette.BLACK.id)
+        val first = LegacySettingsMigration(source)
+        source.failRemovals = true
+        first.migrate(emptyPreferences())
+        first.cleanUp()
+        source.failRemovals = false
+        val cleared = testPreferences(LEGACY_MIGRATION_PASSES_KEY to 1)
+
+        // When
+        val second = LegacySettingsMigration(source)
+        val migratedTwice = second.migrate(cleared)
+        second.cleanUp()
+
+        // Then
+        assertEquals(testPreferences(LEGACY_MIGRATION_PASSES_KEY to 2), migratedTwice)
+        assertEquals(emptyMap(), source.values)
+    }
+
+    @Test
     fun givenAKepkoKeyTheMigrationDoesNotKnow_whenCleanedUp_thenLeavesIt() = runTest {
         // Given
         val source = FakeLegacySettingsSource(
