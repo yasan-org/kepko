@@ -3,18 +3,31 @@ package glass.yasan.kepko.persistence
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
-import com.russhwolf.settings.MapSettings
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.persistence.internal.PersistenceManagerImpl
 import glass.yasan.kepko.persistence.internal.SingletonPersistenceManager
+import kotlinx.coroutines.CompletableDeferred
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 
 @OptIn(ExperimentalTestApi::class, ExperimentalKepkoApi::class)
 internal class LocalKepkoPersistenceManagerTest {
+
+    @BeforeTest
+    fun useInMemoryDataStore() {
+        SingletonPersistenceManager.resetForTesting { InMemoryPreferencesDataStore() }
+    }
+
+    @AfterTest
+    fun restoreDefaultDataStore() {
+        SingletonPersistenceManager.resetForTesting()
+    }
 
     @Test
     fun givenDefaultPersistentTheme_whenReadingManager_thenReturnsPublicDefaultInstance() {
@@ -33,7 +46,53 @@ internal class LocalKepkoPersistenceManagerTest {
         }
 
         // Then
-        assertSame(SingletonPersistenceManager.instance, current)
+        assertSame(SingletonPersistenceManager.instanceOrBlockingLoad(), current)
+    }
+
+    @Test
+    fun givenAManagerThatLoadsLater_whenRendered_thenComposesNothingUntilItArrives() {
+        // Given
+        val manager = PersistenceManagerImpl(testPreferencesStore())
+        val pending = CompletableDeferred<PersistenceManager>()
+        var current: PersistenceManager? = null
+
+        runDesktopComposeUiTest {
+            setContent {
+                current = rememberLoadedPersistenceManager(loadOrNull = { null }, await = pending::await)
+            }
+            waitForIdle()
+
+            // Then
+            assertNull(current)
+
+            // When
+            pending.complete(manager)
+            waitForIdle()
+
+            // Then
+            assertSame(manager, current)
+        }
+    }
+
+    @Test
+    fun givenAManagerAvailableImmediately_whenRendered_thenNeverAwaits() {
+        // Given
+        val manager = PersistenceManagerImpl(testPreferencesStore())
+        var current: PersistenceManager? = null
+
+        // When
+        runDesktopComposeUiTest {
+            setContent {
+                current = rememberLoadedPersistenceManager(
+                    loadOrNull = { manager },
+                    await = { error("Must not await a manager that is already loaded.") },
+                )
+            }
+            waitForIdle()
+        }
+
+        // Then
+        assertSame(manager, current)
     }
 
     @Test
@@ -60,7 +119,7 @@ internal class LocalKepkoPersistenceManagerTest {
         // When
         runDesktopComposeUiTest {
             setContent {
-                val manager = PersistenceManagerImpl(MapSettings())
+                val manager = PersistenceManagerImpl(testPreferencesStore())
                 provided = manager
 
                 CompositionLocalProvider(LocalKepkoPersistenceManager provides manager) {

@@ -1,15 +1,12 @@
 package glass.yasan.kepko.persistence
 
-import com.russhwolf.settings.MapSettings
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.ColorPalette.BLACK
 import glass.yasan.kepko.foundation.theme.ColorPalette.SOLARIZED_DARK
 import glass.yasan.kepko.persistence.internal.ProfilePersistenceManagerImpl
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 internal class ProfilePersistenceManagerImplTest {
 
@@ -22,7 +19,7 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenEmptySettings_whenGetProfilePalette_thenReturnsNull() {
         // Given
-        val manager = ProfilePersistenceManagerImpl(MapSettings())
+        val manager = ProfilePersistenceManagerImpl(testPreferencesStore())
 
         // Then
         assertNull(manager.getProfilePalette(PROFILE_ID))
@@ -31,7 +28,7 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenPaletteSet_whenGetProfilePalette_thenReadsBackSamePalette() {
         // Given
-        val manager = ProfilePersistenceManagerImpl(MapSettings())
+        val manager = ProfilePersistenceManagerImpl(testPreferencesStore())
 
         // When
         manager.setProfilePalette(PROFILE_ID, SOLARIZED_DARK)
@@ -43,21 +40,21 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenPaletteSet_thenPersistsPaletteIdUnderProfileKey() {
         // Given
-        val settings = MapSettings()
-        val manager = ProfilePersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = ProfilePersistenceManagerImpl(store)
 
         // When
         manager.setProfilePalette(PROFILE_ID, SOLARIZED_DARK)
 
         // Then
-        assertEquals(ColorPalette.SOLARIZED_DARK.id, settings.getString(PALETTE_KEY, ""))
+        assertEquals(ColorPalette.SOLARIZED_DARK.id, store.getStringOrNull(PALETTE_KEY))
     }
 
     @Test
     fun givenPaletteSet_whenSetToNull_thenRemovesKeyAndReturnsNull() {
         // Given
-        val settings = MapSettings()
-        val manager = ProfilePersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = ProfilePersistenceManagerImpl(store)
         manager.setProfilePalette(PROFILE_ID, BLACK)
 
         // When
@@ -65,13 +62,13 @@ internal class ProfilePersistenceManagerImplTest {
 
         // Then
         assertNull(manager.getProfilePalette(PROFILE_ID))
-        assertFalse(settings.hasKey(PALETTE_KEY))
+        assertNull(store.getStringOrNull(PALETTE_KEY))
     }
 
     @Test
     fun givenEmptySettings_whenGetProfileGrayscale_thenReturnsNull() {
         // Given
-        val manager = ProfilePersistenceManagerImpl(MapSettings())
+        val manager = ProfilePersistenceManagerImpl(testPreferencesStore())
 
         // Then
         assertNull(manager.getProfileGrayscale(PROFILE_ID))
@@ -80,15 +77,15 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenGrayscaleSet_whenGetProfileGrayscale_thenReadsBackSameValue() {
         // Given
-        val settings = MapSettings()
-        val manager = ProfilePersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = ProfilePersistenceManagerImpl(store)
 
         // When
         manager.setProfileGrayscale(PROFILE_ID, true)
 
         // Then
         assertEquals(true, manager.getProfileGrayscale(PROFILE_ID))
-        assertTrue(settings.getBoolean(GRAYSCALE_KEY, false))
+        assertEquals(true, store.getBooleanOrNull(GRAYSCALE_KEY))
 
         // When
         manager.setProfileGrayscale(PROFILE_ID, false)
@@ -100,8 +97,8 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenGrayscaleSet_whenSetToNull_thenRemovesKeyAndReturnsNull() {
         // Given
-        val settings = MapSettings()
-        val manager = ProfilePersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = ProfilePersistenceManagerImpl(store)
         manager.setProfileGrayscale(PROFILE_ID, true)
 
         // When
@@ -109,13 +106,13 @@ internal class ProfilePersistenceManagerImplTest {
 
         // Then
         assertNull(manager.getProfileGrayscale(PROFILE_ID))
-        assertFalse(settings.hasKey(GRAYSCALE_KEY))
+        assertNull(store.getBooleanOrNull(GRAYSCALE_KEY))
     }
 
     @Test
     fun givenTwoProfiles_whenValuesSet_thenProfilesDoNotLeakIntoEachOther() {
         // Given
-        val manager = ProfilePersistenceManagerImpl(MapSettings())
+        val manager = ProfilePersistenceManagerImpl(testPreferencesStore())
 
         // When
         manager.setProfilePalette("work", SOLARIZED_DARK)
@@ -132,8 +129,8 @@ internal class ProfilePersistenceManagerImplTest {
     @Test
     fun givenInvalidPaletteIdInSettings_whenGetProfilePalette_thenReturnsNull() {
         // Given
-        val settings = MapSettings(mutableMapOf<String, Any>(PALETTE_KEY to "nonexistent"))
-        val manager = ProfilePersistenceManagerImpl(settings)
+        val store = testPreferencesStore(PALETTE_KEY to "nonexistent")
+        val manager = ProfilePersistenceManagerImpl(store)
 
         // Then
         assertNull(manager.getProfilePalette(PROFILE_ID))
