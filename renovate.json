@@ -35,6 +35,44 @@
   },
   "minimumReleaseAge": "28 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "customDatasources": {
+    "android-platforms": {
+      "description": "Reads the Android API levels from Google's Android SDK repository manifest",
+      "defaultRegistryUrlTemplate": "https://dl.google.com/android/repository/repository2-3.xml",
+      "format": "plain",
+      "transformTemplates": [
+        "{\"releases\": [$distinct(releases.$match(version, /path=\"platforms;android-(\\d+)(\\.\\d+)?\"/).groups[0]).{\"version\": $}]}"
+      ]
+    }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track the Android compile SDK in the version catalog",
+      "managerFilePatterns": [
+        "/(^|/)gradle/libs\\.versions\\.toml$/"
+      ],
+      "matchStrings": [
+        "android-sdk-compile = \"(?<currentValue>\\d+)\""
+      ],
+      "depNameTemplate": "android-compile-sdk",
+      "datasourceTemplate": "custom.android-platforms",
+      "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the Android target SDK in the version catalog",
+      "managerFilePatterns": [
+        "/(^|/)gradle/libs\\.versions\\.toml$/"
+      ],
+      "matchStrings": [
+        "android-sdk-target = \"(?<currentValue>\\d+)\""
+      ],
+      "depNameTemplate": "android-target-sdk",
+      "datasourceTemplate": "custom.android-platforms",
+      "versioningTemplate": "loose"
+    }
+  ],
   "packageRules": [
     {
       "description": "Minor updates settle for two weeks; the 28-day default above covers major and everything else",
@@ -79,6 +117,16 @@
       "groupSlug": "all",
       "separateMajorMinor": false,
       "separateMultipleMajor": false
+    },
+    {
+      "description": "Android API level bumps get their own pull request and wait for a person: a new compile SDK can need a newer Android Gradle Plugin, and a new target SDK changes how the sample behaves on devices, which CI does not see; after the shared group so it wins",
+      "matchDepNames": [
+        "android-compile-sdk",
+        "android-target-sdk"
+      ],
+      "groupName": "Android SDK",
+      "groupSlug": "android-sdk",
+      "automerge": false
     }
   ]
 }
