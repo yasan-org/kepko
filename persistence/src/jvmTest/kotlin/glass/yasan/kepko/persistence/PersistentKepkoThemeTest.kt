@@ -2,7 +2,6 @@ package glass.yasan.kepko.persistence
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
-import com.russhwolf.settings.MapSettings
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.KepkoTheme
@@ -24,7 +23,7 @@ internal class PersistentKepkoThemeTest {
     fun givenDefaultSettings_whenRendered_thenUsesSystemDefaultPalette() {
         // When
         var palette: ColorPalette? = null
-        val provided = PersistenceManagerImpl(MapSettings())
+        val provided = PersistenceManagerImpl(testPreferencesStore())
         runDesktopComposeUiTest {
             setContent {
                 PersistentKepkoTheme(persistenceManager = provided) {
@@ -44,7 +43,7 @@ internal class PersistentKepkoThemeTest {
         // When
         var palette: ColorPalette? = null
         val provided = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.BLACK.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.BLACK.id),
         )
         runDesktopComposeUiTest {
             setContent {
@@ -66,12 +65,7 @@ internal class PersistentKepkoThemeTest {
         var grayscaleSuccess: Color? = null
         var normalSuccess: Color? = null
         val grayscaleManager = PersistenceManagerImpl(
-            MapSettings(
-                mutableMapOf(
-                    KEY_STYLE to ColorPalette.LIGHT.id,
-                    KEY_GRAYSCALE to true,
-                ),
-            ),
+            testPreferencesStore(KEY_STYLE to ColorPalette.LIGHT.id, KEY_GRAYSCALE to true),
         )
         runDesktopComposeUiTest {
             setContent {
@@ -83,7 +77,7 @@ internal class PersistentKepkoThemeTest {
             waitForIdle()
         }
         val normalManager = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.LIGHT.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.LIGHT.id),
         )
         runDesktopComposeUiTest {
             setContent {
@@ -103,8 +97,8 @@ internal class PersistentKepkoThemeTest {
     fun givenPersistenceManagerOverload_whenRendered_thenUsesProvidedManager() {
         // Given
         var manager: PersistenceManager? = null
-        val settings = MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id))
-        val provided = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id)
+        val provided = PersistenceManagerImpl(store)
 
         // When
         runDesktopComposeUiTest {
@@ -125,8 +119,8 @@ internal class PersistentKepkoThemeTest {
     fun givenPersistenceManagerOverload_whenRendered_thenAppliesManagerPalette() {
         // Given
         var palette: ColorPalette? = null
-        val settings = MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id))
-        val provided = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id)
+        val provided = PersistenceManagerImpl(store)
 
         // When
         runDesktopComposeUiTest {
@@ -148,7 +142,7 @@ internal class PersistentKepkoThemeTest {
         // Given
         var palette: ColorPalette? = null
         val provided = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.SOLARIZED_DARK.id),
         )
 
         // When
@@ -171,7 +165,7 @@ internal class PersistentKepkoThemeTest {
         // Given
         var palette: ColorPalette? = null
         val provided = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.BLACK.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.BLACK.id),
         )
         provided.profileManager.setProfilePalette("work", ColorPalette.SOLARIZED_DARK)
 
@@ -195,7 +189,7 @@ internal class PersistentKepkoThemeTest {
         // Given
         var palette: ColorPalette? = null
         val provided = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.BLACK.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.BLACK.id),
         )
 
         // When
@@ -219,7 +213,7 @@ internal class PersistentKepkoThemeTest {
         var grayscaleSuccess: Color? = null
         var normalSuccess: Color? = null
         val grayscaleManager = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.LIGHT.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.LIGHT.id),
         )
         grayscaleManager.profileManager.setProfileGrayscale("work", true)
         runDesktopComposeUiTest {
@@ -232,7 +226,7 @@ internal class PersistentKepkoThemeTest {
             waitForIdle()
         }
         val normalManager = PersistenceManagerImpl(
-            MapSettings(mutableMapOf(KEY_STYLE to ColorPalette.LIGHT.id)),
+            testPreferencesStore(KEY_STYLE to ColorPalette.LIGHT.id),
         )
         runDesktopComposeUiTest {
             setContent {

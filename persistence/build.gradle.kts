@@ -26,7 +26,7 @@ kotlin {
     android {
         namespace = "glass.yasan.kepko.$artifactId"
         compileSdk = libs.versions.android.sdk.compile.get().toInt()
-        minSdk = libs.versions.android.sdk.min.get().toInt()
+        minSdk = libs.versions.persistence.android.sdk.min.get().toInt()
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -61,7 +61,8 @@ kotlin {
         val commonMain = getByName("commonMain") {
             dependencies {
                 api(project(":component"))
-                implementation(libs.multiplatform.settings.no.arg)
+                implementation(libs.androidx.datastore.preferences.core)
+                implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.jetbrains.compose.foundation)
                 implementation(libs.jetbrains.compose.material3)
@@ -72,7 +73,12 @@ kotlin {
         val commonTest = getByName("commonTest") {
             dependencies {
                 implementation(libs.jetbrains.kotlin.test)
-                implementation(libs.multiplatform.settings.test)
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
+        androidMain {
+            dependencies {
+                implementation(libs.androidx.startup.runtime)
             }
         }
         val jvmMain = getByName("jvmMain") {

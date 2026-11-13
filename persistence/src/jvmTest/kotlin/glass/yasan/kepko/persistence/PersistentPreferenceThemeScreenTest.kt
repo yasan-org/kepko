@@ -11,7 +11,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.v2.runDesktopComposeUiTest
-import com.russhwolf.settings.MapSettings
 import glass.yasan.kepko.component.Text
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
@@ -35,7 +34,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenDefaultSettings_whenRendered_thenSystemIsSelected() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             lateinit var dynamicString: String
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -59,7 +58,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenSystemSetting_whenRendered_thenLightAndDarkOptionsAreVisible() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setPalettePrimary(null, null)
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -77,7 +76,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenStaticSetting_whenRendered_thenMatchingPrimaryPaletteIsVisibleAndSubPickersHidden() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setPalettePrimary(null, SOLARIZED_DARK)
             lateinit var solarizedDarkString: String
             setContent {
@@ -100,7 +99,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenDynamicSetting_whenModeToggledAndPaletteSelected_thenStaticSelectionReflectedOnScreen() {
         runDesktopComposeUiTest(width = 1024, height = 1200) {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setPalettePrimary(null, null)
             persistenceManager.paletteLight = LIGHT
             persistenceManager.paletteDark = DARK
@@ -139,7 +138,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenStaticSetting_whenModeToggled_thenDynamicOptionsAreVisible() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setPalettePrimary(null, SOLARIZED_DARK)
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -164,7 +163,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenSystemSetting_whenLightAndDarkPickersOpenedAndPalettesSelected_thenSelectionsReflectedOnScreen() {
         runDesktopComposeUiTest(width = 1024, height = 1200) {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setPalettePrimary(null, null)
             persistenceManager.paletteLight = BLACK
             persistenceManager.paletteDark = SOLARIZED_LIGHT
@@ -214,7 +213,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenGrayscaleOff_whenToggled_thenPersistenceUpdated() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
                     PersistentPreferenceThemeScreen(onBackClick = {})
@@ -233,7 +232,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenTargetProfile_whenRendered_thenOnlyProfileControlsVisible() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
                     PersistentPreferenceThemeScreen(onBackClick = {}, targetProfile = testProfile)
@@ -257,7 +256,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenTargetProfile_whenRendered_thenFollowGlobalIsDefaultSelection() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             lateinit var followGlobalString: String
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -279,7 +278,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenTargetProfile_whenPaletteSelected_thenProfileOverrideSetAndGlobalUntouched() {
         runDesktopComposeUiTest(width = 1024, height = 1200) {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             lateinit var blackString: String
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -305,7 +304,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenProfilePaletteOverride_whenFollowGlobalSelected_thenOverrideCleared() {
         runDesktopComposeUiTest(width = 1024, height = 1200) {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.profileManager.setProfilePalette(testProfile.id, SOLARIZED_DARK)
             persistenceManager.profileManager.setProfileGrayscale(testProfile.id, true)
             lateinit var followGlobalString: String
@@ -329,7 +328,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenTargetProfile_whenGrayscaleEnabledSelected_thenProfileOverrideSetAndGlobalUntouched() {
         runDesktopComposeUiTest(width = 1024, height = 1200) {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             lateinit var enabledString: String
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
@@ -355,7 +354,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenProfileOverrides_whenResetClicked_thenOverridesCleared() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.profileManager.setProfilePalette(testProfile.id, SOLARIZED_DARK)
             persistenceManager.profileManager.setProfileGrayscale(testProfile.id, true)
             lateinit var resetString: String
@@ -379,7 +378,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenSlots_whenRendered_thenHostContentIsInsideTheScrollingColumn() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
                     PersistentPreferenceThemeScreen(
@@ -401,7 +400,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenDisabled_whenRendered_thenControlsAreReadOnlyAndResetIsHidden() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             persistenceManager.setGrayscaleEnabled(null, true)
             lateinit var resetString: String
             setContent {
@@ -431,7 +430,7 @@ internal class PersistentPreferenceThemeScreenTest {
     @Test
     fun givenDisabled_whenControlClicked_thenPreferencesAreUnchanged() {
         runDesktopComposeUiTest {
-            val persistenceManager = PersistenceManagerImpl(MapSettings())
+            val persistenceManager = PersistenceManagerImpl(testPreferencesStore())
             setContent {
                 PersistentKepkoTheme(persistenceManager = persistenceManager) {
                     PersistentPreferenceThemeScreen(onBackClick = {}, enabled = false)
