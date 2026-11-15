@@ -25,6 +25,9 @@ internal object TextMarkdownPreviewSamples {
 
         > A quote.
 
+        > [!NOTE]
+        > An alert.
+
         ```
         a code block
         ```
@@ -47,7 +50,10 @@ internal object TextMarkdownPreviewSamples {
         ##### Heading 5
 
         ###### Heading 6
-        %%
+        """
+
+    const val HEADING_FORMS: String =
+        """
         Setext heading 1
         ================
 
@@ -73,6 +79,17 @@ internal object TextMarkdownPreviewSamples {
 
         The second one starts after a blank line and is long enough to wrap onto a second line.
         %%
+        Three
+
+        short
+
+        paragraphs.
+        %%
+        Emoji and symbols: 🎉 → ✓ ½ “quotes” — dash.
+        """
+
+    const val LINE_BREAKS: String =
+        """
         A hard line break with a backslash\
         puts this on the next line.
         %%
@@ -81,14 +98,6 @@ internal object TextMarkdownPreviewSamples {
         %%
         A soft line break after this line
         keeps this in the same paragraph.
-        %%
-        Three
-
-        short
-
-        paragraphs.
-        %%
-        Emoji and symbols: 🎉 → ✓ ½ “quotes” — dash.
         """
 
     const val EMPHASIS: String =
@@ -100,18 +109,24 @@ internal object TextMarkdownPreviewSamples {
         Bold and italic ***together***, and **bold with *italic* inside**.
         %%
         Emphasis in**side** a w*or*d, and snake_case_words left alone.
-        %%
+        """
+
+    const val STRIKETHROUGH: String =
+        """
         Strikethrough with ~~two tildes~~ and ~one tilde~.
         %%
         **Bold `code`**, *italic `code`* and ~~struck `code`~~.
         """
 
-    const val CODE: String =
+    const val INLINE_CODE: String =
         """
         Inline code such as `value` and `a_longer_name`.
         %%
         Inline code with a backtick in it: `` a ` b ``.
-        %%
+        """
+
+    const val CODE_BLOCKS: String =
+        """
         A fenced code block:
 
         ```kotlin
@@ -144,13 +159,16 @@ internal object TextMarkdownPreviewSamples {
         %%
         A **[bold link](https://example.com/)** and a link with [`code`](https://example.com/).
         %%
+        A relative link to [a section](#section) and to [a file](docs/file.md).
+        """
+
+    const val REFERENCE_LINKS_AND_AUTOLINKS: String =
+        """
         A reference link to [a page][page], a collapsed one to [page][] and a shortcut to [page].
 
         [page]: https://example.com/page
         %%
         Autolinks: <https://example.com/> and <someone@example.com>.
-        %%
-        A relative link to [a section](#section) and to [a file](docs/file.md).
         %%
         A very long link: <https://example.com/a/very/long/path/that/wraps/onto/another/line/of/text>.
         """
@@ -164,7 +182,10 @@ internal object TextMarkdownPreviewSamples {
         ![A wide picture](https://example.com/picture.png)
         %%
         An image with no description: ![](https://example.com/picture.png) shows nothing.
-        %%
+        """
+
+    const val IMAGE_FORMS: String =
+        """
         An image with a title: ![Picture](https://example.com/picture.png "The title").
         %%
         A linked image: [![Picture](https://example.com/picture.png)](https://example.com/).
@@ -174,7 +195,7 @@ internal object TextMarkdownPreviewSamples {
         [picture]: https://example.com/picture.png
         """
 
-    const val LISTS: String =
+    const val BULLET_LISTS: String =
         """
         A bullet list:
 
@@ -190,6 +211,20 @@ internal object TextMarkdownPreviewSamples {
         + Plus one
         + Plus two
         %%
+        A loose list, with blank lines between items:
+
+        - One
+
+        - Two
+
+        - Three
+        %%
+        - Text that is only a list
+        - with two items
+        """
+
+    const val NUMBERED_LISTS: String =
+        """
         A numbered list:
 
         1. Open the menu
@@ -207,20 +242,9 @@ internal object TextMarkdownPreviewSamples {
 
         1) First
         2) Second
-        %%
-        A loose list, with blank lines between items:
-
-        - One
-
-        - Two
-
-        - Three
-        %%
-        - Text that is only a list
-        - with two items
         """
 
-    const val LIST_ITEMS: String =
+    const val NESTED_LISTS: String =
         """
         A nested list:
 
@@ -233,6 +257,16 @@ internal object TextMarkdownPreviewSamples {
           1. Wash
           2. Peel
         %%
+        A list between paragraphs:
+
+        - One
+        - Two
+
+        The paragraph after the list.
+        """
+
+    const val LIST_ITEMS: String =
+        """
         Items with formatting and long text:
 
         - **Bold**: an item long enough to wrap onto a second line, and then a little further still.
@@ -245,13 +279,6 @@ internal object TextMarkdownPreviewSamples {
 
           Second paragraph of the same item.
         - Next item.
-        %%
-        A list between paragraphs:
-
-        - One
-        - Two
-
-        The paragraph after the list.
         %%
         An item with a quote and code:
 
@@ -272,6 +299,13 @@ internal object TextMarkdownPreviewSamples {
         > A quote whose second line is lazy,
         with no marker in front of it.
         %%
+        A quote under a paragraph:
+
+        > Quoted text.
+        """
+
+    const val BLOCK_QUOTE_CONTENT: String =
+        """
         > A quote with **bold** and
         >
         > a second paragraph.
@@ -279,10 +313,6 @@ internal object TextMarkdownPreviewSamples {
         > Nested quotes:
         >
         > > An inner quote.
-        %%
-        A quote under a paragraph:
-
-        > Quoted text.
         %%
         > ### A quote with a heading
         >
@@ -320,7 +350,10 @@ internal object TextMarkdownPreviewSamples {
         Escaped characters stay literal: \*not italic\*, \`not code\`, \# not a heading, 2 \* 3 = 6.
         %%
         An escaped link: \[not a link\](https://example.com/).
-        %%
+        """
+
+    const val ENTITIES: String =
+        """
         Named entities: &copy; &amp; &lt;tag&gt; &nbsp; &hearts;.
         %%
         Numeric entities: &#169; and &#x1F600;.
@@ -354,7 +387,10 @@ internal object TextMarkdownPreviewSamples {
         |:---|:---:|---:|
         | **bold** | `code` | 100 |
         | a longer cell | [link](https://example.com/) | 2 |
-        %%
+        """
+
+    const val TABLE_FORMS: String =
+        """
         A wide table:
 
         | One | Two | Three | Four | Five | Six |
@@ -368,16 +404,26 @@ internal object TextMarkdownPreviewSamples {
         | a \| b | |
         """
 
-    const val GITHUB_EXTENSIONS: String =
+    const val TASK_LISTS: String =
         """
         A task list:
 
         - [x] Done
         - [x] Also done
         - [ ] Not done
-        %%
+        """
+
+    const val GITHUB_EXTENSIONS: String =
+        """
         Bare addresses: https://example.com/a/page/, www.example.com and someone@example.com.
         %%
+        A footnote reference[^1] in a sentence.
+
+        [^1]: The footnote text.
+        """
+
+    const val ALERTS: String =
+        """
         > [!NOTE]
         > An alert with a note.
         %%
@@ -392,13 +438,35 @@ internal object TextMarkdownPreviewSamples {
         %%
         > [!CAUTION]
         > An alert with a caution.
-        %%
-        A footnote reference[^1] in a sentence.
-
-        [^1]: The footnote text.
         """
 
-    const val BEYOND: String =
+    const val ALERT_FORMS: String =
+        """
+        > [!NOTE]
+        > An alert with **bold**, `code` and a [link](https://example.com/), long enough to wrap onto a
+        > second line.
+        %%
+        > [!WARNING]
+        > An alert with two paragraphs.
+        >
+        > - And a list
+        > - of two items
+        %%
+        A paragraph above an alert.
+
+        > [!TIP]
+        > The alert.
+
+        A paragraph below it.
+        %%
+        > [!note]
+        > A kind in lower case.
+        %%
+        > [!UNKNOWN]
+        > A kind that does not exist.
+        """
+
+    const val BEYOND_INLINE: String =
         """
         An emoji shortcode: :tada: and :smile:.
         %%
@@ -407,7 +475,10 @@ internal object TextMarkdownPreviewSamples {
         Highlighted ==text== and inserted ++text++.
         %%
         Subscript H~2~O and superscript x^2^.
-        %%
+        """
+
+    const val BEYOND_BLOCKS: String =
+        """
         Inline math ${'$'}a^2 + b^2 = c^2${'$'} and a block:
 
         ${'$'}${'$'}
@@ -426,7 +497,7 @@ internal object TextMarkdownPreviewSamples {
         ```
         """
 
-    const val EDGE_CASES: String =
+    const val UNCLOSED: String =
         """
         Unclosed **bold stays as typed.
         %%
@@ -435,7 +506,10 @@ internal object TextMarkdownPreviewSamples {
         A broken link [text](not a url and [text] alone.
         %%
         Stars * between * words stay literal.
-        %%
+        """
+
+    const val LITERALS: String =
+        """
         It costs ${'$'}4.99, is 100% faster, and scores 5 < 6 > 4.
         %%
         1. Text that starts with a number and a dot.
@@ -445,7 +519,10 @@ internal object TextMarkdownPreviewSamples {
         %%
         %%
         A very long unbroken word: Supercalifragilisticexpialidociousandthensomemorelettersthatcannotwrap.
-        %%
+        """
+
+    const val EVERYTHING: String =
+        """
         Everything at once: **bold**, *italic*, ~~struck~~, `code`, [link](https://example.com/).
 
         1. First
