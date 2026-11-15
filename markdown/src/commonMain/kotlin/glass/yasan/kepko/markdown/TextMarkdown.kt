@@ -35,7 +35,7 @@ import org.intellij.markdown.ast.ASTNode
  *
  * Text with no markdown in it reads as `Text` shows it. An image shows its description, since no
  * image is loaded. An alert (`> [!NOTE]`) is a `Button` in the colour of its kind, with
- * the kind's icon and title and the alert's text, without formatting, as its description.
+ * the kind's icon and the alert's text, without formatting.
  *
  * @param text The markdown to render.
  * @param typography The styles of body text, headings, code and quotes.

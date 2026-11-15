@@ -1,13 +1,18 @@
 package glass.yasan.kepko.markdown
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.components.MarkdownComponentModel
 import com.mikepenz.markdown.model.MarkdownAlertType
 import com.mikepenz.markdown.utils.findAlertType
 import glass.yasan.kepko.component.Button
+import glass.yasan.kepko.component.Icon
+import glass.yasan.kepko.component.Text
 import glass.yasan.kepko.resource.Icons
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
@@ -17,10 +22,10 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * An alert, such as `> [!NOTE]`, as a [Button] in the colour of its kind: the kind's icon and
- * title, with the alert's text as the description.
+ * An alert, such as `> [!NOTE]`, as a [Button] in the colour of its kind, with the kind's icon and
+ * the alert's text. The kind's name is not shown: it is the icon's description.
  *
- * A description is plain text, so the alert's text is shown without its formatting.
+ * The text is plain, so the alert's formatting is not shown.
  */
 @Composable
 internal fun TextMarkdownAlert(
@@ -29,16 +34,26 @@ internal fun TextMarkdownAlert(
 ) {
     // The parser only makes an alert of one of the five kinds.
     val type = model.node.findAlertType(model.content) ?: MarkdownAlertType.NOTE
-    val description = remember(model.node, model.content) { model.node.alertText(model.content) }
+    val text = remember(model.node, model.content) { model.node.alertText(model.content) }
 
     Button(
-        text = stringResource(type.title()),
-        description = description.ifEmpty { null },
+        text = null,
         // An alert is read, not pressed.
         onClick = {},
-        leadingIcon = type.icon(),
         containerColor = colors.containerColorOf(type),
         hapticFeedbackEnabled = false,
+        leadingContent = {
+            Icon(
+                painter = type.icon(),
+                contentDescription = stringResource(type.title()),
+                modifier = Modifier.padding(end = 12.dp),
+            )
+            Text(
+                text = text,
+                style = model.typography.text,
+                modifier = Modifier.weight(1f),
+            )
+        },
     )
 }
 
