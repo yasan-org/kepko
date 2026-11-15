@@ -34,7 +34,8 @@ import org.intellij.markdown.ast.ASTNode
  * headings, lists, quotes, alerts, rules, code blocks and tables.
  *
  * Text with no markdown in it reads as `Text` shows it. An image shows its description, since no
- * image is loaded. An alert (`> [!NOTE]`) is a card with the icon, title and colour of its kind.
+ * image is loaded. An alert (`> [!NOTE]`) is a `Button` in the colour of its kind, with
+ * the kind's icon and title and the alert's text, without formatting, as its description.
  *
  * @param text The markdown to render.
  * @param typography The styles of body text, headings, code and quotes.
@@ -69,12 +70,8 @@ public fun TextMarkdown(
             annotator = remember {
                 markdownAnnotator { content, child -> annotateImageAsDescription(content, child) }
             },
-            components = remember(colors, blockSpacing) {
-                markdownComponents(
-                    alert = { model ->
-                        TextMarkdownAlert(model = model, colors = colors, blockSpacing = blockSpacing)
-                    },
-                )
+            components = remember(colors) {
+                markdownComponents(alert = { model -> TextMarkdownAlert(model = model, colors = colors) })
             },
             // Parsed during composition: parsing afterwards would show nothing for a frame, then
             // resize whatever the text sits in.

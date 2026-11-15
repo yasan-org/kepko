@@ -1,30 +1,15 @@
 package glass.yasan.kepko.markdown
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Size
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import com.mikepenz.markdown.compose.LocalMarkdownComponents
-import com.mikepenz.markdown.compose.MarkdownElement
 import com.mikepenz.markdown.compose.components.MarkdownComponentModel
 import com.mikepenz.markdown.model.MarkdownAlertType
 import com.mikepenz.markdown.utils.findAlertType
-import glass.yasan.kepko.component.Icon
-import glass.yasan.kepko.component.Text
+import glass.yasan.kepko.component.Button
 import glass.yasan.kepko.resource.Icons
+import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.MarkdownTokenTypes
 import org.intellij.markdown.ast.ASTNode
 import org.intellij.markdown.flavours.gfm.GFMTokenTypes
@@ -32,67 +17,117 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * An alert, such as `> [!NOTE]`: a card with an accent bar down its side, the icon and title of its
- * kind, and the alert's blocks under them.
+ * An alert, such as `> [!NOTE]`, as a [Button] in the colour of its kind: the kind's icon and
+ * title, with the alert's text as the description.
+ *
+ * A description is plain text, so the alert's text is shown without its formatting.
  */
 @Composable
 internal fun TextMarkdownAlert(
     model: MarkdownComponentModel,
     colors: TextMarkdownColors,
-    blockSpacing: Dp,
 ) {
     // The parser only makes an alert of one of the five kinds.
     val type = model.node.findAlertType(model.content) ?: MarkdownAlertType.NOTE
-    val accent = colors.accentOf(type)
-    val components = LocalMarkdownComponents.current
+    val description = remember(model.node, model.content) { model.node.alertText(model.content) }
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(blockSpacing),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(TextMarkdownDefaults.AlertShape)
-            .background(colors.alertContainerColor)
-            .drawBehind { drawRect(color = accent, size = Size(BarWidth.toPx(), size.height)) }
-            .padding(start = BarWidth + 12.dp, top = 8.dp, end = 12.dp, bottom = 8.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(painter = type.icon(), tint = accent, size = 16.dp)
-            Text(
-                text = stringResource(type.title()),
-                style = model.typography.alertTitle,
-                color = colors.textColor,
-            )
+    Button(
+        text = stringResource(type.title()),
+        description = description.ifEmpty { null },
+        // An alert is read, not pressed.
+        onClick = {},
+        leadingIcon = type.icon(),
+        containerColor = colors.containerColorOf(type),
+        hapticFeedbackEnabled = false,
+    )
+}
+
+/**
+ * The alert's text. The parser leaves the alert's title and the `> ` markers of its lines in the
+ * tree: everything up to the title, and the markers after it, are not content.
+ */
+private fun ASTNode.alertText(content: String): String {
+    val blocks = children
+        .dropWhile { it.type != GFMTokenTypes.ALERT_TITLE }
+        .drop(1)
+        .filterNot { it.type in lineTokens }
+    return blocks
+        .joinToString(separator = "\n") { block ->
+            buildString { appendPlainText(node = block, content = content, inParagraph = false) }
         }
-        model.node.blocks().forEach { block ->
-            key(block.startOffset) {
-                MarkdownElement(
-                    node = block,
-                    components = components,
-                    content = model.content,
-                    includeSpacer = false,
+        .lines()
+        .joinToString(separator = "\n") { line -> line.replace(spaces, " ").trim() }
+        .trim()
+}
+
+private fun StringBuilder.appendPlainText(
+    node: ASTNode,
+    content: String,
+    inParagraph: Boolean,
+) {
+    when (node.type) {
+        in markupTokens -> Unit
+
+        // A line break inside a paragraph does not end the line.
+        MarkdownTokenTypes.EOL -> append(if (inParagraph) ' ' else '\n')
+
+        MarkdownElementTypes.INLINE_LINK,
+        MarkdownElementTypes.FULL_REFERENCE_LINK,
+        MarkdownElementTypes.SHORT_REFERENCE_LINK,
+        MarkdownElementTypes.IMAGE,
+        -> node.children
+            .firstOrNull { it.type in linkTexts || it.type in links }
+            ?.let { appendPlainText(node = it, content = content, inParagraph = inParagraph) }
+
+        // The text between the brackets.
+        in linkTexts -> node.children.drop(1).dropLast(1).forEach { child ->
+            appendPlainText(node = child, content = content, inParagraph = inParagraph)
+        }
+
+        else -> if (node.children.isEmpty()) {
+            append(content, node.startOffset, node.endOffset)
+        } else {
+            node.children.forEach { child ->
+                appendPlainText(
+                    node = child,
+                    content = content,
+                    inParagraph = inParagraph || node.type == MarkdownElementTypes.PARAGRAPH,
                 )
             }
         }
     }
 }
 
-/**
- * The alert's blocks. The parser leaves the alert's title and the `> ` markers of its lines in
- * the tree: everything up to the title, and the markers after it, are not content.
- */
-private fun ASTNode.blocks(): List<ASTNode> = children
-    .dropWhile { it.type != GFMTokenTypes.ALERT_TITLE }
-    .drop(1)
-    .filterNot {
-        it.type == MarkdownTokenTypes.EOL ||
-            it.type == MarkdownTokenTypes.WHITE_SPACE ||
-            it.type == MarkdownTokenTypes.BLOCK_QUOTE
-    }
+private val lineTokens = setOf(
+    MarkdownTokenTypes.EOL,
+    MarkdownTokenTypes.WHITE_SPACE,
+    MarkdownTokenTypes.BLOCK_QUOTE,
+)
 
-private fun TextMarkdownColors.accentOf(type: MarkdownAlertType): Color = when (type) {
+private val markupTokens = setOf(
+    MarkdownTokenTypes.EMPH,
+    MarkdownTokenTypes.BACKTICK,
+    MarkdownTokenTypes.BLOCK_QUOTE,
+    MarkdownTokenTypes.CODE_FENCE_START,
+    MarkdownTokenTypes.CODE_FENCE_END,
+    MarkdownTokenTypes.FENCE_LANG,
+    GFMTokenTypes.TILDE,
+)
+
+private val links = setOf(
+    MarkdownElementTypes.INLINE_LINK,
+    MarkdownElementTypes.FULL_REFERENCE_LINK,
+    MarkdownElementTypes.SHORT_REFERENCE_LINK,
+)
+
+private val linkTexts = setOf(
+    MarkdownElementTypes.LINK_TEXT,
+    MarkdownElementTypes.LINK_LABEL,
+)
+
+private val spaces = Regex(" {2,}")
+
+private fun TextMarkdownColors.containerColorOf(type: MarkdownAlertType): Color = when (type) {
     MarkdownAlertType.NOTE -> noteColor
     MarkdownAlertType.TIP -> tipColor
     MarkdownAlertType.IMPORTANT -> importantColor
@@ -116,5 +151,3 @@ private fun MarkdownAlertType.icon(): Painter = when (this) {
     MarkdownAlertType.WARNING -> Icons.warning
     MarkdownAlertType.CAUTION -> Icons.report
 }
-
-private val BarWidth = 4.dp
