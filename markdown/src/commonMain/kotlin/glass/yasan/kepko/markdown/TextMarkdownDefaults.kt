@@ -5,7 +5,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -20,10 +19,6 @@ public object TextMarkdownDefaults {
     /** The space between two blocks, such as two paragraphs or a paragraph and a list. */
     public val BlockSpacing: Dp = 4.dp
 
-    /** The shape of the card an alert, such as `> [!NOTE]`, is set on. */
-    public val AlertShape: Shape
-        @Composable get() = KepkoTheme.shapes.small
-
     @Composable
     public fun colors(
         textColor: Color = LocalContentColor.current,
@@ -31,7 +26,6 @@ public object TextMarkdownDefaults {
         codeColor: Color = KepkoTheme.colors.content,
         codeContainerColor: Color = KepkoTheme.colors.background,
         dividerColor: Color = KepkoTheme.colors.outline,
-        alertContainerColor: Color = KepkoTheme.colors.foreground,
         noteColor: Color = KepkoTheme.colors.information,
         tipColor: Color = KepkoTheme.colors.success,
         importantColor: Color = KepkoTheme.colors.information,
@@ -43,7 +37,6 @@ public object TextMarkdownDefaults {
         codeColor = codeColor,
         codeContainerColor = codeContainerColor,
         dividerColor = dividerColor,
-        alertContainerColor = alertContainerColor,
         noteColor = noteColor,
         tipColor = tipColor,
         importantColor = importantColor,
