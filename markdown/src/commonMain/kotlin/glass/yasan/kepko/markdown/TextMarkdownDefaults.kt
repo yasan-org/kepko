@@ -6,12 +6,12 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import glass.yasan.kepko.foundation.theme.KepkoTheme
-import glass.yasan.kepko.foundation.typography.rubikMonoTypography
 import glass.yasan.kepko.foundation.typography.rubikTypography
 
 public object TextMarkdownDefaults {
@@ -36,12 +36,11 @@ public object TextMarkdownDefaults {
 
     /**
      * Styles from the theme's type scale: body text is the current text style, headings step down
-     * the scale in bold, and code is body text in the theme's monospace typeface.
+     * the scale in bold, and code is body text in the platform's monospace typeface.
      */
     @Composable
     public fun typography(
         typography: Typography = rubikTypography(),
-        monoTypography: Typography = rubikMonoTypography(),
         text: TextStyle = LocalTextStyle.current,
         heading1: TextStyle = typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
         heading2: TextStyle = typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
@@ -49,7 +48,7 @@ public object TextMarkdownDefaults {
         heading4: TextStyle = typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         heading5: TextStyle = typography.titleSmall.copy(fontWeight = FontWeight.Bold),
         heading6: TextStyle = typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-        code: TextStyle = text.copy(fontFamily = monoTypography.bodyLarge.fontFamily),
+        code: TextStyle = text.copy(fontFamily = FontFamily.Monospace),
         quote: TextStyle = text.copy(fontStyle = FontStyle.Italic),
     ): TextMarkdownTypography = TextMarkdownTypography(
         text = text,
