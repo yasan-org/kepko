@@ -42,6 +42,9 @@ public object Icons {
     public val changeCircle: Painter
         @Composable get() = painterResource(Res.drawable.ic_change_circle)
 
+    public val chatInfo: Painter
+        @Composable get() = painterResource(Res.drawable.ic_chat_info)
+
     public val check: Painter
         @Composable get() = painterResource(Res.drawable.ic_check)
 
@@ -122,6 +125,9 @@ public object Icons {
 
     public val lightMode: Painter
         @Composable get() = painterResource(Res.drawable.ic_light_mode)
+
+    public val lightbulb: Painter
+        @Composable get() = painterResource(Res.drawable.ic_lightbulb)
 
     public val lock: Painter
         @Composable get() = painterResource(Res.drawable.ic_lock)

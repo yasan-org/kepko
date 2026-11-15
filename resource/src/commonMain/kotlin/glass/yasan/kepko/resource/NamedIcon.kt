@@ -55,6 +55,10 @@ public enum class NamedIcon(
         id = "change_circle",
         painter = { Icons.changeCircle }
     ),
+    CHAT_INFO(
+        id = "chat_info",
+        painter = { Icons.chatInfo }
+    ),
     CHECK(
         id = "check",
         painter = { Icons.check }
@@ -162,6 +166,10 @@ public enum class NamedIcon(
     LIGHT_MODE(
         id = "light_mode",
         painter = { Icons.lightMode }
+    ),
+    LIGHTBULB(
+        id = "lightbulb",
+        painter = { Icons.lightbulb }
     ),
     LOCK(
         id = "lock",
