@@ -73,3 +73,13 @@ internal fun TextMarkdownImagesPreview() {
 internal fun TextMarkdownImageFormsPreview() {
     TextMarkdownPreviewContent(samples = TextMarkdownPreviewSamples.IMAGE_FORMS)
 }
+
+/** Images from `example.com` and its subdomains are loaded; the snapshot test stands in for them. */
+@PreviewWithTest
+@Composable
+internal fun TextMarkdownLoadedImagesPreview() {
+    TextMarkdownPreviewContent(
+        samples = TextMarkdownPreviewSamples.LOADED_IMAGES,
+        imageDomains = listOf("example.com"),
+    )
+}

@@ -195,6 +195,21 @@ internal object TextMarkdownPreviewSamples {
         [picture]: https://example.com/picture.png
         """
 
+    const val LOADED_IMAGES: String =
+        """
+        An image in a sentence: ![A small icon](https://example.com/icon.png) is loaded.
+        %%
+        An image on its own line:
+
+        ![A wide picture](https://images.example.com/picture.png)
+        %%
+        An image from another domain: ![Another picture](https://example.org/picture.png) shows its
+        description.
+        %%
+        An image over `http`: ![An insecure picture](http://example.com/picture.png) shows its
+        description.
+        """
+
     const val BULLET_LISTS: String =
         """
         A bullet list:

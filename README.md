@@ -123,7 +123,16 @@ TextMarkdown(
 )
 ```
 
-Colors and text styles come from [`TextMarkdownDefaults`](https://github.com/yasan-org/kepko/blob/main/markdown/src/commonMain/kotlin/glass/yasan/kepko/markdown/TextMarkdownDefaults.kt). A link opens with the platform's handler unless `onLinkClick` is given. No image is loaded, so an image shows its description.
+Colors and text styles come from [`TextMarkdownDefaults`](https://github.com/yasan-org/kepko/blob/main/markdown/src/commonMain/kotlin/glass/yasan/kepko/markdown/TextMarkdownDefaults.kt). A link opens with the platform's handler unless `onLinkClick` is given.
+
+An image shows its description unless its domain is allowed. Images from the domains in `imageDomains`, and their subdomains, are loaded over `https` with [Coil](https://coil-kt.github.io/coil/), which needs one of its [network artifacts](https://coil-kt.github.io/coil/network/) in your app:
+
+```kotlin
+TextMarkdown(
+    text = "![A picture](https://example.com/picture.png)",
+    imageDomains = listOf("example.com"),
+)
+```
 
 ## Navigation
 

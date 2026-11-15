@@ -58,6 +58,8 @@ kotlin {
             dependencies {
                 api(project(":component"))
                 implementation(libs.multiplatform.markdown.renderer)
+                implementation(libs.multiplatform.markdown.renderer.coil3)
+                implementation(libs.coil.compose)
                 implementation(libs.jetbrains.compose.components.resources)
                 implementation(libs.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.jetbrains.compose.foundation)
@@ -73,6 +75,7 @@ kotlin {
         }
         val jvmTest = getByName("jvmTest") {
             dependencies {
+                implementation(libs.coil.test)
                 implementation(libs.composable.preview.scanner.jvm)
                 implementation(libs.roborazzi.compose.desktop)
                 implementation(libs.jetbrains.kotlin.test)
