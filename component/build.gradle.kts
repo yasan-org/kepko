@@ -65,7 +65,6 @@ kotlin {
                 implementation(libs.jetbrains.compose.material3)
                 implementation(libs.jetbrains.compose.runtime)
                 implementation(libs.jetbrains.compose.ui)
-                implementation(libs.multiplatform.markdown.renderer)
             }
         }
 
