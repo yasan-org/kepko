@@ -69,6 +69,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(project(":markdown"))
                 implementation(project(":navigation"))
                 implementation(project(":persistence"))
                 implementation(project(":serialization"))

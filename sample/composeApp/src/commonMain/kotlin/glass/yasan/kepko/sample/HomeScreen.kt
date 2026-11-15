@@ -198,6 +198,13 @@ private fun LazyListScope.navigationButtons(
             )
         }
     }
+    screenButtons(onNavigate = onNavigate, selectedRoute = selectedRoute)
+}
+
+private fun LazyListScope.screenButtons(
+    onNavigate: (Route) -> Unit,
+    selectedRoute: Route?,
+) {
     item {
         Button(
             text = "Icons",
@@ -205,6 +212,16 @@ private fun LazyListScope.navigationButtons(
             onClick = { onNavigate(Route.Icons) },
             selected = selectedRoute == Route.Icons,
             leadingIcon = Icons.shapes,
+            trailingIcon = Icons.chevronForward,
+        )
+    }
+    item {
+        Button(
+            text = "Markdown",
+            description = "Write markdown and see it rendered.",
+            onClick = { onNavigate(Route.Markdown) },
+            selected = selectedRoute == Route.Markdown,
+            leadingIcon = Icons.formatQuote,
             trailingIcon = Icons.chevronForward,
         )
     }
