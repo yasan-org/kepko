@@ -20,3 +20,7 @@ component_management:
       name: ":persistence"
       paths:
         - "persistence/src/**"
+    - component_id: markdown
+      name: ":markdown"
+      paths:
+        - "markdown/src/**"

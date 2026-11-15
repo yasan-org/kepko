@@ -1,7 +1,6 @@
-package glass.yasan.kepko.component
+package glass.yasan.kepko.markdown
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -14,14 +13,9 @@ import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.isSpecified
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.components.MarkdownComponentModel
 import com.mikepenz.markdown.compose.components.markdownComponents
@@ -34,7 +28,6 @@ import com.mikepenz.markdown.model.MarkdownTypography
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.markdownPadding
 import com.mikepenz.markdown.utils.resolveImageAlt
-import glass.yasan.kepko.foundation.theme.KepkoTheme
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.ast.ASTNode
 
@@ -42,11 +35,11 @@ import org.intellij.markdown.ast.ASTNode
  * Text written in GitHub Flavored Markdown, rendered in the theme: emphasis, links, inline code,
  * headings, lists, quotes, rules, code blocks and tables.
  *
- * Text with no markdown in it reads as [Text] shows it. An image shows its description, since no
+ * Text with no markdown in it reads as `Text` shows it. An image shows its description, since no
  * image is loaded, and an alert (`> [!NOTE]`) shows as the quote it is written as.
  *
  * @param text The markdown to render.
- * @param style The style of body text. Headings and code are derived from it.
+ * @param typography The styles of body text, headings, code and quotes.
  * @param blockSpacing The space between two blocks, such as two paragraphs.
  * @param onLinkClick Called with a link's address when it is clicked. `null` opens the link with
  * the platform's handler.
@@ -55,8 +48,8 @@ import org.intellij.markdown.ast.ASTNode
 public fun TextMarkdown(
     text: String,
     modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current,
     colors: TextMarkdownColors = TextMarkdownDefaults.colors(),
+    typography: TextMarkdownTypography = TextMarkdownDefaults.typography(),
     blockSpacing: Dp = TextMarkdownDefaults.BlockSpacing,
     onLinkClick: ((String) -> Unit)? = null,
 ) {
@@ -73,7 +66,7 @@ public fun TextMarkdown(
         Markdown(
             content = text,
             colors = colors.toMarkdownColors(),
-            typography = textMarkdownTypography(style = style, colors = colors),
+            typography = typography.toMarkdownTypography(colors),
             padding = textMarkdownPadding(blockSpacing = blockSpacing),
             annotator = remember {
                 markdownAnnotator { content, child -> annotateImageAsDescription(content, child) }
@@ -129,24 +122,20 @@ private fun textMarkdownPadding(blockSpacing: Dp): MarkdownPadding = markdownPad
     blockQuoteText = PaddingValues(0.dp),
 )
 
-@Composable
-private fun textMarkdownTypography(
-    style: TextStyle,
-    colors: TextMarkdownColors,
-): MarkdownTypography {
-    val text = style.copy(color = colors.textColor)
-    val code = text.copy(fontFamily = FontFamily.Monospace, color = colors.codeColor)
+private fun TextMarkdownTypography.toMarkdownTypography(colors: TextMarkdownColors): MarkdownTypography {
+    val text = text.copy(color = colors.textColor)
+    val code = code.copy(color = colors.codeColor)
     return DefaultMarkdownTypography(
-        h1 = text.heading(scale = 1.5f),
-        h2 = text.heading(scale = 1.3f),
-        h3 = text.heading(scale = 1.15f),
-        h4 = text.heading(scale = 1f),
-        h5 = text.heading(scale = 1f),
-        h6 = text.heading(scale = 1f),
+        h1 = heading1.copy(color = colors.textColor),
+        h2 = heading2.copy(color = colors.textColor),
+        h3 = heading3.copy(color = colors.textColor),
+        h4 = heading4.copy(color = colors.textColor),
+        h5 = heading5.copy(color = colors.textColor),
+        h6 = heading6.copy(color = colors.textColor),
         text = text,
         code = code,
         inlineCode = code,
-        quote = text.copy(fontStyle = FontStyle.Italic),
+        quote = quote.copy(color = colors.textColor),
         paragraph = text,
         ordered = text,
         bullet = text,
@@ -159,40 +148,4 @@ private fun textMarkdownTypography(
         ),
         table = text,
     )
-}
-
-private fun TextStyle.heading(scale: Float): TextStyle = copy(
-    fontWeight = FontWeight.Bold,
-    fontSize = if (fontSize.isSpecified) fontSize * scale else fontSize,
-    lineHeight = if (lineHeight.isSpecified) lineHeight * scale else lineHeight,
-)
-
-@PreviewWithTest
-@Composable
-internal fun TextMarkdownLightPreview() {
-    KepkoTheme(palette = LIGHT) { TextMarkdownPreviewContent(TextMarkdownPreviewSamples.OVERVIEW) }
-}
-
-@PreviewWithTest
-@Composable
-internal fun TextMarkdownDarkPreview() {
-    KepkoTheme(palette = DARK) { TextMarkdownPreviewContent(TextMarkdownPreviewSamples.OVERVIEW) }
-}
-
-@PreviewWithTest
-@Composable
-internal fun TextMarkdownBlackPreview() {
-    KepkoTheme(palette = BLACK) { TextMarkdownPreviewContent(TextMarkdownPreviewSamples.OVERVIEW) }
-}
-
-@PreviewWithTest
-@Composable
-internal fun TextMarkdownSolarizedLightPreview() {
-    KepkoTheme(palette = SOLARIZED_LIGHT) { TextMarkdownPreviewContent(TextMarkdownPreviewSamples.OVERVIEW) }
-}
-
-@PreviewWithTest
-@Composable
-internal fun TextMarkdownSolarizedDarkPreview() {
-    KepkoTheme(palette = SOLARIZED_DARK) { TextMarkdownPreviewContent(TextMarkdownPreviewSamples.OVERVIEW) }
 }

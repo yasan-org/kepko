@@ -1,4 +1,4 @@
-package glass.yasan.kepko.component
+package glass.yasan.kepko.markdown
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
