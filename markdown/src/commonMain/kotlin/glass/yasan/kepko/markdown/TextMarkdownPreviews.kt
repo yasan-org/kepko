@@ -114,6 +114,7 @@ internal fun TextMarkdownHotPinkPreview() {
 internal fun TextMarkdownPreviewContent(
     samples: String,
     palette: ColorPalette = LIGHT,
+    imageDomains: List<String> = emptyList(),
 ) {
     val texts = samples.trimIndent().split(TextMarkdownPreviewSamples.separator).map { it.trim('\n') }
 
@@ -125,7 +126,7 @@ internal fun TextMarkdownPreviewContent(
                 .padding(16.dp)
                 .width(328.dp),
         ) {
-            texts.forEach { text -> TextMarkdown(text = text) }
+            texts.forEach { text -> TextMarkdown(text = text, imageDomains = imageDomains) }
         }
     }
 }

@@ -10,7 +10,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
@@ -25,16 +24,13 @@ import com.mikepenz.markdown.model.MarkdownPadding
 import com.mikepenz.markdown.model.MarkdownTypography
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.markdownPadding
-import com.mikepenz.markdown.utils.resolveImageAlt
-import org.intellij.markdown.MarkdownElementTypes
-import org.intellij.markdown.ast.ASTNode
 
 /**
  * Text written in GitHub Flavored Markdown, rendered in the theme: emphasis, links, inline code,
  * headings, lists, quotes, alerts, rules, code blocks and tables.
  *
- * Text with no markdown in it reads as `Text` shows it. An image shows its description, since no
- * image is loaded. An alert (`> [!NOTE]`) is a `Button` in the colour of its kind, with
+ * Text with no markdown in it reads as `Text` shows it. An image shows its description unless it
+ * is loaded, see [imageDomains]. An alert (`> [!NOTE]`) is a `Button` in the colour of its kind, with
  * the kind's icon and the alert's text, without formatting.
  *
  * @param text The markdown to render.
@@ -42,6 +38,9 @@ import org.intellij.markdown.ast.ASTNode
  * @param blockSpacing The space between two blocks, such as two paragraphs.
  * @param onLinkClick Called with a link's address when it is clicked. `null` opens the link with
  * the platform's handler.
+ * @param imageDomains The domains images are loaded from, such as `example.com`. An image is
+ * loaded when its address is `https` and its host is one of these or a subdomain of one. Images
+ * are loaded with Coil, which needs one of its network artifacts in the app to load from the web.
  */
 @Composable
 public fun TextMarkdown(
@@ -51,7 +50,9 @@ public fun TextMarkdown(
     typography: TextMarkdownTypography = TextMarkdownDefaults.typography(),
     blockSpacing: Dp = TextMarkdownDefaults.BlockSpacing,
     onLinkClick: ((String) -> Unit)? = null,
+    imageDomains: List<String> = emptyList(),
 ) {
+    val images = remember(imageDomains) { ImageDomains(imageDomains) }
     val platformUriHandler = LocalUriHandler.current
     val currentOnLinkClick = rememberUpdatedState(onLinkClick)
     val uriHandler = remember(platformUriHandler) {
@@ -67,9 +68,10 @@ public fun TextMarkdown(
             colors = colors.toMarkdownColors(),
             typography = typography.toMarkdownTypography(colors),
             padding = textMarkdownPadding(blockSpacing = blockSpacing),
-            annotator = remember {
-                markdownAnnotator { content, child -> annotateImageAsDescription(content, child) }
+            annotator = remember(images) {
+                markdownAnnotator { content, child -> annotateImageAsDescription(content, child, images) }
             },
+            imageTransformer = remember(images) { DomainImageTransformer(images) },
             components = remember(colors) {
                 markdownComponents(alert = { model -> TextMarkdownAlert(model = model, colors = colors) })
             },
@@ -88,15 +90,6 @@ private fun Modifier.withoutSpaceAbove(space: Dp): Modifier = layout { measurabl
     layout(placeable.width, placeable.height - cut) {
         placeable.place(0, -cut)
     }
-}
-
-private fun AnnotatedString.Builder.annotateImageAsDescription(
-    content: String,
-    child: ASTNode,
-): Boolean {
-    if (child.type != MarkdownElementTypes.IMAGE) return false
-    append(child.resolveImageAlt(content).orEmpty())
-    return true
 }
 
 private fun TextMarkdownColors.toMarkdownColors(): MarkdownColors = DefaultMarkdownColors(

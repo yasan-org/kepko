@@ -61,6 +61,7 @@ internal fun MarkdownScreen(
                 onTextClick = { applyPreset(MarkdownPresets.text) },
                 onBlocksClick = { applyPreset(MarkdownPresets.blocks) },
                 onAlertsClick = { applyPreset(MarkdownPresets.alerts) },
+                onImagesClick = { applyPreset(MarkdownPresets.images) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
@@ -107,6 +108,7 @@ private fun ComposableSection(
     TextMarkdown(
         text = markdown,
         onLinkClick = onLinkClick,
+        imageDomains = MarkdownPresets.imageDomains,
         modifier = Modifier.fillMaxWidth(),
     )
     lastLink?.let { link ->
@@ -126,6 +128,7 @@ private fun PresetButtonsRow(
     onTextClick: () -> Unit,
     onBlocksClick: () -> Unit,
     onAlertsClick: () -> Unit,
+    onImagesClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val padding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
@@ -151,6 +154,13 @@ private fun PresetButtonsRow(
         TextButton(
             onClick = onAlertsClick,
             content = { Text(text = "Alerts", maxLines = 1) },
+            contentPadding = padding,
+            modifier = Modifier.weight(1f),
+        )
+
+        TextButton(
+            onClick = onImagesClick,
+            content = { Text(text = "Images", maxLines = 1) },
             contentPadding = padding,
             modifier = Modifier.weight(1f),
         )
