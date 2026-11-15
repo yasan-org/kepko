@@ -3,7 +3,6 @@ package glass.yasan.kepko.markdown
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -109,8 +108,7 @@ internal fun TextMarkdownHotPinkPreview() {
 }
 
 /**
- * Each part of [samples] between lines of `%%` as a [TextMarkdown] of its own, laid out in up to
- * four columns.
+ * Each part of [samples] between lines of `%%` as a [TextMarkdown] of its own, one under another.
  */
 @Composable
 internal fun TextMarkdownPreviewContent(
@@ -118,25 +116,16 @@ internal fun TextMarkdownPreviewContent(
     palette: ColorPalette = LIGHT,
 ) {
     val texts = samples.trimIndent().split(TextMarkdownPreviewSamples.separator).map { it.trim('\n') }
-    val columns = texts.chunked(size = (texts.size + PREVIEW_COLUMNS - 1) / PREVIEW_COLUMNS)
 
     KepkoTheme(palette = palette) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .background(KepkoTheme.colors.midground)
-                .padding(16.dp),
+                .padding(16.dp)
+                .width(328.dp),
         ) {
-            columns.forEach { column ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.width(296.dp),
-                ) {
-                    column.forEach { text -> TextMarkdown(text = text) }
-                }
-            }
+            texts.forEach { text -> TextMarkdown(text = text) }
         }
     }
 }
-
-private const val PREVIEW_COLUMNS = 4
