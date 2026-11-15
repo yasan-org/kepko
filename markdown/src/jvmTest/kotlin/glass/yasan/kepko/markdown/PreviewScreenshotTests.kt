@@ -13,9 +13,9 @@ import kotlin.test.Test
 internal class PreviewScreenshotTests {
 
     companion object {
-        // A preview shows every kind of markdown at once, which is far taller than the default window.
+        // A group of samples is four columns wide, which is wider than the default window.
         private const val WINDOW_WIDTH = 1400
-        private const val WINDOW_HEIGHT = 8000
+        private const val WINDOW_HEIGHT = 2000
 
         private val previews by lazy {
             JvmAnnotationScanner("glass.yasan.kepko.markdown.PreviewWithTest")
