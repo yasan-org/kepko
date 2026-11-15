@@ -1,11 +1,15 @@
 package glass.yasan.kepko.markdown
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalUriHandler
@@ -19,24 +23,32 @@ import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.components.MarkdownComponentModel
 import com.mikepenz.markdown.compose.components.markdownComponents
-import com.mikepenz.markdown.compose.elements.MarkdownBlockQuote
+import com.mikepenz.markdown.compose.elements.MarkdownAlert
 import com.mikepenz.markdown.model.DefaultMarkdownColors
 import com.mikepenz.markdown.model.DefaultMarkdownTypography
+import com.mikepenz.markdown.model.MarkdownAlertType
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownPadding
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.markdownAlertColors
+import com.mikepenz.markdown.model.markdownAlertPadding
 import com.mikepenz.markdown.model.markdownAnnotator
 import com.mikepenz.markdown.model.markdownPadding
+import com.mikepenz.markdown.utils.findAlertType
 import com.mikepenz.markdown.utils.resolveImageAlt
 import org.intellij.markdown.MarkdownElementTypes
 import org.intellij.markdown.ast.ASTNode
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
 
 /**
  * Text written in GitHub Flavored Markdown, rendered in the theme: emphasis, links, inline code,
- * headings, lists, quotes, rules, code blocks and tables.
+ * headings, lists, quotes, alerts, rules, code blocks and tables.
  *
  * Text with no markdown in it reads as `Text` shows it. An image shows its description, since no
- * image is loaded, and an alert (`> [!NOTE]`) shows as the quote it is written as.
+ * image is loaded. An alert (`> [!NOTE]`) is a card with the icon, title and colour of its kind.
  *
  * @param text The markdown to render.
  * @param typography The styles of body text, headings, code and quotes.
@@ -71,7 +83,9 @@ public fun TextMarkdown(
             annotator = remember {
                 markdownAnnotator { content, child -> annotateImageAsDescription(content, child) }
             },
-            components = remember { markdownComponents(alert = { model -> AlertAsBlockQuote(model) }) },
+            components = remember(colors) {
+                markdownComponents(alert = { model -> Alert(model = model, colors = colors) })
+            },
             // Parsed during composition: parsing afterwards would show nothing for a frame, then
             // resize whatever the text sits in.
             immediate = true,
@@ -90,8 +104,43 @@ private fun Modifier.withoutSpaceAbove(space: Dp): Modifier = layout { measurabl
 }
 
 @Composable
-private fun AlertAsBlockQuote(model: MarkdownComponentModel) {
-    MarkdownBlockQuote(content = model.content, node = model.node)
+private fun Alert(
+    model: MarkdownComponentModel,
+    colors: TextMarkdownColors,
+) {
+    // The parser only makes an alert of one of the five kinds.
+    val type = model.node.findAlertType(model.content) ?: MarkdownAlertType.NOTE
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(TextMarkdownDefaults.AlertShape)
+            .background(colors.alertContainerColor),
+    ) {
+        MarkdownAlert(
+            content = model.content,
+            node = model.node,
+            type = type,
+            title = stringResource(type.title()),
+            icon = vectorResource(type.icon()),
+            style = model.typography.alertTitle,
+        )
+    }
+}
+
+private fun MarkdownAlertType.title(): StringResource = when (this) {
+    MarkdownAlertType.NOTE -> Res.string.text_markdown_alert_note
+    MarkdownAlertType.TIP -> Res.string.text_markdown_alert_tip
+    MarkdownAlertType.IMPORTANT -> Res.string.text_markdown_alert_important
+    MarkdownAlertType.WARNING -> Res.string.text_markdown_alert_warning
+    MarkdownAlertType.CAUTION -> Res.string.text_markdown_alert_caution
+}
+
+private fun MarkdownAlertType.icon(): DrawableResource = when (this) {
+    MarkdownAlertType.NOTE -> Res.drawable.ic_info
+    MarkdownAlertType.TIP -> Res.drawable.ic_lightbulb_2
+    MarkdownAlertType.IMPORTANT -> Res.drawable.ic_chat_info
+    MarkdownAlertType.WARNING -> Res.drawable.ic_warning
+    MarkdownAlertType.CAUTION -> Res.drawable.ic_report
 }
 
 private fun AnnotatedString.Builder.annotateImageAsDescription(
@@ -103,12 +152,20 @@ private fun AnnotatedString.Builder.annotateImageAsDescription(
     return true
 }
 
+@Composable
 private fun TextMarkdownColors.toMarkdownColors(): MarkdownColors = DefaultMarkdownColors(
     text = textColor,
     codeBackground = codeContainerColor,
     inlineCodeBackground = codeContainerColor,
     dividerColor = dividerColor,
     tableBackground = Color.Transparent,
+    alert = markdownAlertColors(
+        note = noteColor,
+        tip = tipColor,
+        important = importantColor,
+        warning = warningColor,
+        caution = cautionColor,
+    ),
     highlightText = codeColor,
     highlightBackground = codeContainerColor,
 )
@@ -120,6 +177,11 @@ private fun textMarkdownPadding(blockSpacing: Dp): MarkdownPadding = markdownPad
     listItemTop = 0.dp,
     listItemBottom = blockSpacing,
     blockQuoteText = PaddingValues(0.dp),
+    // The alert's card clips its accent bar, which then runs the card's full height.
+    alert = markdownAlertPadding(
+        content = PaddingValues(vertical = 8.dp),
+        bar = PaddingValues.Absolute(left = 2.dp, top = 0.dp, right = 4.dp, bottom = 0.dp),
+    ),
 )
 
 private fun TextMarkdownTypography.toMarkdownTypography(colors: TextMarkdownColors): MarkdownTypography {

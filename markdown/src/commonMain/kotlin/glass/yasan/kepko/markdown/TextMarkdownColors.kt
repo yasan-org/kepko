@@ -10,4 +10,10 @@ public data class TextMarkdownColors(
     val codeColor: Color,
     val codeContainerColor: Color,
     val dividerColor: Color,
+    val alertContainerColor: Color,
+    val noteColor: Color,
+    val tipColor: Color,
+    val importantColor: Color,
+    val warningColor: Color,
+    val cautionColor: Color,
 )
