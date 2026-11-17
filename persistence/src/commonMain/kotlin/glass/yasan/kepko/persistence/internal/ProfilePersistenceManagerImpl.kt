@@ -1,37 +1,36 @@
 package glass.yasan.kepko.persistence.internal
 
 import androidx.compose.runtime.mutableStateMapOf
-import com.russhwolf.settings.Settings
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.persistence.ProfilePersistenceManager
 
 internal class ProfilePersistenceManagerImpl(
-    private val settings: Settings,
+    private val store: PreferencesStore,
 ) : ProfilePersistenceManager {
 
     private val palette = OverlaidProfileSetting(
         read = { profileId ->
-            settings.getStringOrNull(profilePaletteKey(profileId))
+            store.getStringOrNull(profilePaletteKey(profileId))
                 ?.let { id -> ColorPalette.fromIdOrNull(id) }
         },
         write = { profileId, value ->
             if (value != null) {
-                settings.putString(profilePaletteKey(profileId), value.id)
+                store.putString(profilePaletteKey(profileId), value.id)
             } else {
-                settings.remove(profilePaletteKey(profileId))
+                store.remove(profilePaletteKey(profileId))
             }
         },
     )
 
     private val grayscale = OverlaidProfileSetting(
         read = { profileId ->
-            settings.getBooleanOrNull(profileGrayscaleKey(profileId))
+            store.getBooleanOrNull(profileGrayscaleKey(profileId))
         },
         write = { profileId, value ->
             if (value != null) {
-                settings.putBoolean(profileGrayscaleKey(profileId), value)
+                store.putBoolean(profileGrayscaleKey(profileId), value)
             } else {
-                settings.remove(profileGrayscaleKey(profileId))
+                store.remove(profileGrayscaleKey(profileId))
             }
         },
     )
