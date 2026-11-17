@@ -1,0 +1,126 @@
+# Material Symbols used by Kepko (https://fonts.google.com/icons).
+# Run `./gradlew :resource:syncIcons` after editing; it downloads the drawables and regenerates
+# Icons.kt and NamedIcon.kt. Unlisted ic_*.xml drawables are deleted.
+# `./gradlew :resource:checkIcons` fails if the generated sources or the set of drawables are out
+# of sync (offline); add `--download` to also compare the drawable contents.
+#
+# The name is the drawable (ic_<name>), the Icons property (camelCase) and the serialized
+# NamedIcon id, so renaming an icon breaks previously serialized data.
+#
+# `defaults` apply to every icon; any of them can be overridden per icon.
+#   style:  outlined | rounded | sharp
+#   fill:   true | false
+#   weight: 100 | 200 | 300 | 400 | 500 | 600 | 700
+#   grade:  -25 | 0 | 200
+#   size:   20 | 24 | 40 | 48 (optical size, also the drawable size in dp)
+#
+# An icon is either a symbol name (`add`), or a mapping when the Kepko name differs
+# from the symbol name or a setting is overridden:
+#   - name: chevron_down          # -> ic_chevron_down.xml, Icons.chevronDown, NamedIcon.CHEVRON_DOWN
+#     symbol: keyboard_arrow_down # Material Symbols name (may start with a digit, e.g. 3d_rotation)
+#     fill: false
+
+defaults:
+  style: rounded
+  fill: true
+  weight: 400
+  grade: 0
+  size: 24
+
+icons:
+  - add
+  - archive
+  - attach_file
+  - attachment
+  - auto_awesome
+  - autorenew
+  - bug_report
+  - build
+  - cached
+  - cake
+  - celebration
+  - change_circle
+  - chat_info
+  - check
+  - chevron_backward
+  - name: chevron_down
+    symbol: keyboard_arrow_down
+  - chevron_forward
+  - close
+  - cloud_sync
+  - code
+  - content_copy
+  - content_cut
+  - content_paste
+  - delete
+  - directory_sync
+  - download
+  - edit
+  - error
+  - experiment
+  - extension
+  - extension_off
+  - favorite
+  - name: filter_bw
+    symbol: filter_b_and_w
+  - folder
+  - folder_copy
+  - format_quote
+  - history
+  - home
+  - info
+  - light_mode
+  - name: lightbulb
+    symbol: lightbulb_2
+  - lock
+  - lock_open
+  - mail
+  - manage_history
+  - memory
+  - menu
+  - mic
+  - mode_night
+  - mode_off_on
+  - model_training
+  - music_note
+  - new_window
+  - open_in_browser
+  - open_in_new
+  - palette
+  - pause
+  - person
+  - play_arrow
+  - privacy_tip
+  - public
+  - public_off
+  - refresh
+  - release_alert
+  - report
+  - reset_settings
+  - restart_alt
+  - rocket
+  - rocket_launch
+  - save
+  - search
+  - send
+  - settings
+  - settings_backup_restore
+  - shape_line
+  - shapes
+  - skip_next
+  - skip_previous
+  - sort
+  - star
+  - support
+  - sync
+  - sync_disabled
+  - sync_problem
+  - thumb_down
+  - thumb_up
+  - update
+  - upload
+  - verified
+  - visibility
+  - visibility_off
+  - wand_stars
+  - warning

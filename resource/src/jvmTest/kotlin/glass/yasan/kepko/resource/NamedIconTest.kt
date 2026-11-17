@@ -22,13 +22,13 @@ internal class NamedIconTest {
 
     @Test
     fun givenIconsObject_whenComparedToNamedIconEntries_thenEveryPainterIsCovered() {
-        val expectedIds = Icons::class.memberProperties
+        val expectedProperties = Icons::class.memberProperties
             .filter { it.returnType.classifier == Painter::class }
-            .map { it.name.toSnakeCase() }
+            .map { it.name }
             .sorted()
-        val actualIds = NamedIcon.entries.map { it.id }.sorted()
+        val actualProperties = NamedIcon.entries.map { it.id.toCamelCase() }.sorted()
 
-        assertEquals(expectedIds, actualIds)
+        assertEquals(expectedProperties, actualProperties)
     }
 
     @Test
@@ -37,6 +37,7 @@ internal class NamedIconTest {
         assertEquals(ids.size, ids.toSet().size)
     }
 
-    private fun String.toSnakeCase(): String =
-        replace(Regex("([a-z0-9])([A-Z])"), "$1_$2").lowercase()
+    // Same mapping the icon generator uses; snake_case to camelCase is lossless, unlike the reverse.
+    private fun String.toCamelCase(): String =
+        replace(Regex("_([a-z0-9])")) { it.groupValues[1].uppercase() }
 }
