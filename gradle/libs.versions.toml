@@ -4,21 +4,24 @@ android-sdk-compile = "37"
 android-sdk-min = "21"
 androidx-activity-compose = "1.13.0"
 androidx-core = "1.19.1"
+androidx-datastore = "1.3.0"
 androidx-compose-ui-tooling = "1.12.1"
 androidx-navigation3-runtime = "1.2.1"
 androidx-navigation3-ui = "1.2.0"
+androidx-startup = "1.2.0"
 detekt = "2.0.0-alpha.6"
 jetbrains-compose = "1.12.2"
 jetbrains-compose-material3 = "1.9.0"
 jetbrains-kover = "0.9.11"
 jetbrains-dokka = "2.3.0"
 jetbrains-kotlin = "2.4.21"
+kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.12.0"
-multiplatform-settings = "1.3.0"
 composable-preview-scanner = "0.9.3"
 roborazzi = "1.77.0"
 platformtools-darkmodedetector = "0.7.5"
 navigation-android-sdk-min = "24"
+persistence-android-sdk-min = "24"
 sample-android-sdk-compile = "37"
 sample-android-sdk-min = "24"
 sample-android-sdk-target = "37"
@@ -37,14 +40,16 @@ jetbrains-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", ver
 jetbrains-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "jetbrains-kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui-tooling" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidx-navigation3-runtime" }
 androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3-ui" }
+androidx-startup-runtime = { module = "androidx.startup:startup-runtime", version.ref = "androidx-startup" }
 composable-preview-scanner-jvm = { module = "io.github.sergio-sastre.ComposablePreviewScanner:jvm", version.ref = "composable-preview-scanner" }
 roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
-multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
-multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatform-settings" }
 platformtools-darkmodedetector = { module = "io.github.kdroidfilter:platformtools.darkmodedetector", version.ref = "platformtools-darkmodedetector" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 

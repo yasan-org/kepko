@@ -3,6 +3,7 @@ package glass.yasan.kepko.persistence
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.dimension.Dimensions
@@ -29,7 +30,10 @@ public fun PersistentKepkoTheme(
     profileId: String? = null,
     content: @Composable () -> Unit,
 ) {
-    val persistenceManager = remember { SingletonPersistenceManager.instance }
+    val persistenceManager = rememberLoadedPersistenceManager(
+        loadOrNull = SingletonPersistenceManager::instanceOrBlockingLoad,
+        await = SingletonPersistenceManager::awaitInstance,
+    ) ?: return
 
     PersistentKepkoTheme(
         persistenceManager = persistenceManager,
@@ -86,6 +90,23 @@ public fun PersistentKepkoTheme(
             content = content,
         )
     }
+}
+
+/**
+ * Returns [loadOrNull]'s manager, or null until [await] delivers it.
+ *
+ * Only web gets null: it can't block, so nothing is composed until the preferences load.
+ */
+@Composable
+internal fun rememberLoadedPersistenceManager(
+    loadOrNull: () -> PersistenceManager?,
+    await: suspend () -> PersistenceManager,
+): PersistenceManager? {
+    val loadedManager = remember { loadOrNull() }
+
+    return produceState(initialValue = loadedManager) {
+        if (value == null) value = await()
+    }.value
 }
 
 /**

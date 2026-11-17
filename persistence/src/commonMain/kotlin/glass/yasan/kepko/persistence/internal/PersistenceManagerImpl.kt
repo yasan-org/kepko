@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.russhwolf.settings.Settings
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.persistence.PersistenceManager
@@ -14,7 +13,7 @@ import glass.yasan.kepko.persistence.PersistenceManager.Companion.PALETTE_ID_SYS
 import glass.yasan.kepko.persistence.ProfilePersistenceManager
 
 internal class PersistenceManagerImpl(
-    private val settings: Settings,
+    private val store: PreferencesStore,
 ) : PersistenceManager {
 
     internal companion object {
@@ -42,14 +41,14 @@ internal class PersistenceManagerImpl(
         const val KEY_LIST_PANE_WIDTH = "$PREFIX.dimension.list_pane_width"
     }
 
-    override val profileManager: ProfilePersistenceManager = ProfilePersistenceManagerImpl(settings)
+    override val profileManager: ProfilePersistenceManager = ProfilePersistenceManagerImpl(store)
 
     internal fun resolvedPalette(
         isSystemInDarkTheme: Boolean,
     ): ColorPalette = getPalettePrimary(null) ?: if (isSystemInDarkTheme) paletteDark else paletteLight
 
     private var _palettePrimary by mutableStateOf(
-        settings.getStringOrNull(KEY_STYLE)?.let { ColorPalette.fromIdOrNull(it) }
+        store.getStringOrNull(KEY_STYLE)?.let { ColorPalette.fromIdOrNull(it) }
     )
 
     override fun getPalettePrimary(profileId: String?): ColorPalette? {
@@ -66,39 +65,36 @@ internal class PersistenceManagerImpl(
             profileManager.setProfilePalette(profileId, value)
         } else {
             _palettePrimary = value
-            settings.putString(KEY_STYLE, value?.id ?: PALETTE_ID_SYSTEM)
+            store.putString(KEY_STYLE, value?.id ?: PALETTE_ID_SYSTEM)
         }
     }
 
     private var _paletteLight by mutableStateOf(
         value = ColorPalette.fromIdOrNull(
-            id = settings.getStringOrNull(KEY_LIGHT_STYLE)
+            id = store.getStringOrNull(KEY_LIGHT_STYLE)
         ) ?: getDefaultSnapshot().paletteLight
     )
     override var paletteLight: ColorPalette
         get() = _paletteLight
         set(value) {
             _paletteLight = value
-            settings.putString(KEY_LIGHT_STYLE, value.id)
+            store.putString(KEY_LIGHT_STYLE, value.id)
         }
 
     private var _paletteDark by mutableStateOf(
         value = ColorPalette.fromIdOrNull(
-            id = settings.getStringOrNull(KEY_DARK_STYLE)
+            id = store.getStringOrNull(KEY_DARK_STYLE)
         ) ?: getDefaultSnapshot().paletteDark
     )
     override var paletteDark: ColorPalette
         get() = _paletteDark
         set(value) {
             _paletteDark = value
-            settings.putString(KEY_DARK_STYLE, value.id)
+            store.putString(KEY_DARK_STYLE, value.id)
         }
 
     private var _grayscale by mutableStateOf(
-        settings.getBoolean(
-            KEY_GRAYSCALE,
-            getDefaultSnapshot().grayscale
-        )
+        store.getBooleanOrNull(KEY_GRAYSCALE) ?: getDefaultSnapshot().grayscale
     )
 
     override fun isGrayscaleEnabled(profileId: String?): Boolean {
@@ -115,31 +111,31 @@ internal class PersistenceManagerImpl(
             profileManager.setProfileGrayscale(profileId, value)
         } else {
             _grayscale = value
-            settings.putBoolean(KEY_GRAYSCALE, value)
+            store.putBoolean(KEY_GRAYSCALE, value)
         }
     }
 
     private var _outline by mutableStateOf(
-        settings.getFloat(KEY_OUTLINE, getDefaultSnapshot().outline.value).dp
+        (store.getFloatOrNull(KEY_OUTLINE) ?: getDefaultSnapshot().outline.value).dp
     )
     override var outline: Dp
         get() = _outline
         set(value) {
             _outline = value
-            settings.putFloat(KEY_OUTLINE, value.value)
+            store.putFloat(KEY_OUTLINE, value.value)
         }
 
     private var _roundness by mutableStateOf(
-        settings.getFloat(KEY_ROUNDNESS, getDefaultSnapshot().roundness)
+        store.getFloatOrNull(KEY_ROUNDNESS) ?: getDefaultSnapshot().roundness
     )
     override var roundness: Float
         get() = _roundness
         set(value) {
             _roundness = value
-            settings.putFloat(KEY_ROUNDNESS, value)
+            store.putFloat(KEY_ROUNDNESS, value)
         }
 
-    private var _listPaneWidth by mutableStateOf(settings.getFloatOrNull(KEY_LIST_PANE_WIDTH)?.dp)
+    private var _listPaneWidth by mutableStateOf(store.getFloatOrNull(KEY_LIST_PANE_WIDTH)?.dp)
 
     @ExperimentalKepkoApi
     override var listPaneWidth: Dp?
@@ -147,9 +143,9 @@ internal class PersistenceManagerImpl(
         set(value) {
             _listPaneWidth = value
             if (value == null) {
-                settings.remove(KEY_LIST_PANE_WIDTH)
+                store.remove(KEY_LIST_PANE_WIDTH)
             } else {
-                settings.putFloat(KEY_LIST_PANE_WIDTH, value.value)
+                store.putFloat(KEY_LIST_PANE_WIDTH, value.value)
             }
         }
 }

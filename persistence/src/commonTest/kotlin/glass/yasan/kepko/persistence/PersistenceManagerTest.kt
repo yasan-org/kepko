@@ -1,7 +1,6 @@
 package glass.yasan.kepko.persistence
 
 import androidx.compose.ui.unit.dp
-import com.russhwolf.settings.MapSettings
 import glass.yasan.kepko.foundation.annotation.ExperimentalKepkoApi
 import glass.yasan.kepko.foundation.theme.ColorPalette
 import glass.yasan.kepko.foundation.theme.ColorPalette.BLACK
@@ -20,12 +19,7 @@ internal class PersistenceManagerTest {
 
     private fun createManager(
         vararg keyValues: Pair<String, Any>,
-    ): PersistenceManager {
-        val map = mutableMapOf<String, Any>()
-        keyValues.forEach { map[it.first] = it.second }
-
-        return PersistenceManagerImpl(MapSettings(map))
-    }
+    ): PersistenceManager = PersistenceManagerImpl(testPreferencesStore(*keyValues))
 
     @Test
     fun givenEmptySettings_whenCreated_thenReturnsGetDefaultSnapshot() {
@@ -42,8 +36,8 @@ internal class PersistenceManagerTest {
     @Test
     fun givenEmptySettings_whenPalettePrimarySet_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.setPalettePrimary(null, SOLARIZED_DARK)
@@ -52,15 +46,15 @@ internal class PersistenceManagerTest {
         assertEquals(ColorPalette.SOLARIZED_DARK, manager.getPalettePrimary(null))
         assertEquals(
             ColorPalette.SOLARIZED_DARK.id,
-            settings.getString(PersistenceManagerImpl.KEY_STYLE, "")
+            store.getStringOrNull(PersistenceManagerImpl.KEY_STYLE)
         )
     }
 
     @Test
     fun givenPalettePrimarySet_whenSetToNull_thenPersistsSystemId() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
         manager.setPalettePrimary(null, BLACK)
 
         // When
@@ -70,15 +64,15 @@ internal class PersistenceManagerTest {
         assertNull(manager.getPalettePrimary(null))
         assertEquals(
             PersistenceManager.PALETTE_ID_SYSTEM,
-            settings.getString(PersistenceManagerImpl.KEY_STYLE, "")
+            store.getStringOrNull(PersistenceManagerImpl.KEY_STYLE)
         )
     }
 
     @Test
     fun givenEmptySettings_whenPaletteLightSet_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.paletteLight = SOLARIZED_LIGHT
@@ -87,15 +81,15 @@ internal class PersistenceManagerTest {
         assertEquals(ColorPalette.SOLARIZED_LIGHT, manager.paletteLight)
         assertEquals(
             ColorPalette.SOLARIZED_LIGHT.id,
-            settings.getString(PersistenceManagerImpl.KEY_LIGHT_STYLE, "")
+            store.getStringOrNull(PersistenceManagerImpl.KEY_LIGHT_STYLE)
         )
     }
 
     @Test
     fun givenEmptySettings_whenPaletteDarkSet_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.paletteDark = BLACK
@@ -104,15 +98,15 @@ internal class PersistenceManagerTest {
         assertEquals(ColorPalette.BLACK, manager.paletteDark)
         assertEquals(
             ColorPalette.BLACK.id,
-            settings.getString(PersistenceManagerImpl.KEY_DARK_STYLE, "")
+            store.getStringOrNull(PersistenceManagerImpl.KEY_DARK_STYLE)
         )
     }
 
     @Test
     fun givenEmptySettings_whenGrayscaleSet_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.setGrayscaleEnabled(null, true)
@@ -121,7 +115,7 @@ internal class PersistenceManagerTest {
         assertTrue(manager.isGrayscaleEnabled(null))
         assertEquals(
             true,
-            settings.getBoolean(PersistenceManagerImpl.KEY_GRAYSCALE, false)
+            store.getBooleanOrNull(PersistenceManagerImpl.KEY_GRAYSCALE)
         )
     }
 
@@ -170,8 +164,8 @@ internal class PersistenceManagerTest {
     @Test
     fun givenGrayscaleTrue_whenSetToFalse_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings(mutableMapOf(PersistenceManagerImpl.KEY_GRAYSCALE to true))
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore(PersistenceManagerImpl.KEY_GRAYSCALE to true)
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.setGrayscaleEnabled(null, false)
@@ -180,7 +174,7 @@ internal class PersistenceManagerTest {
         assertFalse(manager.isGrayscaleEnabled(null))
         assertEquals(
             false,
-            settings.getBoolean(PersistenceManagerImpl.KEY_GRAYSCALE, true)
+            store.getBooleanOrNull(PersistenceManagerImpl.KEY_GRAYSCALE)
         )
     }
 
@@ -298,8 +292,8 @@ internal class PersistenceManagerTest {
     @Test
     fun givenProfileSetters_whenUsed_thenWriteThroughProfileManager() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.setPalettePrimary("work", SOLARIZED_DARK)
@@ -326,15 +320,15 @@ internal class PersistenceManagerTest {
     @Test
     fun givenEmptySettings_whenListPaneWidthSet_thenPersistsAndReadsBack() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
 
         // When
         manager.listPaneWidth = 420.dp
 
         // Then
         assertEquals(420.dp, manager.listPaneWidth)
-        assertEquals(420f, settings.getFloat(PersistenceManagerImpl.KEY_LIST_PANE_WIDTH, 0f))
+        assertEquals(420f, store.getFloatOrNull(PersistenceManagerImpl.KEY_LIST_PANE_WIDTH))
     }
 
     @Test
@@ -349,8 +343,8 @@ internal class PersistenceManagerTest {
     @Test
     fun givenAListPaneWidth_whenSetToNull_thenRemovesIt() {
         // Given
-        val settings = MapSettings()
-        val manager = PersistenceManagerImpl(settings)
+        val store = testPreferencesStore()
+        val manager = PersistenceManagerImpl(store)
         manager.listPaneWidth = 420.dp
 
         // When
@@ -358,7 +352,7 @@ internal class PersistenceManagerTest {
 
         // Then
         assertNull(manager.listPaneWidth)
-        assertFalse(settings.hasKey(PersistenceManagerImpl.KEY_LIST_PANE_WIDTH))
+        assertNull(store.getFloatOrNull(PersistenceManagerImpl.KEY_LIST_PANE_WIDTH))
     }
 
     @Test
@@ -372,5 +366,20 @@ internal class PersistenceManagerTest {
 
         // Then
         assertEquals(420.dp, manager.listPaneWidth)
+    }
+
+    @Test
+    fun givenStoredDimensions_whenCreated_thenReadsThemBack() {
+        // Given
+        val manager = createManager(
+            PersistenceManagerImpl.KEY_OUTLINE to 2f,
+            PersistenceManagerImpl.KEY_ROUNDNESS to 0.25f,
+            PersistenceManagerImpl.KEY_LIST_PANE_WIDTH to 320f,
+        )
+
+        // Then
+        assertEquals(2.dp, manager.outline)
+        assertEquals(0.25f, manager.roundness)
+        assertEquals(320.dp, manager.listPaneWidth)
     }
 }

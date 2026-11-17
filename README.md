@@ -75,6 +75,14 @@ An optional module that automatically persists and restores theme preferences ac
 implementation("glass.yasan.kepko:persistence:<version>")
 ```
 
+Preferences are stored with [DataStore](https://developer.android.com/kotlin/multiplatform/datastore), so on Android this module requires API 24 or higher. Preferences saved by earlier versions are moved over on first launch.
+
+On desktop, preferences are kept in `~/.kepko/`, which every Kepko app shares by default. Give your app its own file by setting an id before the first `PersistentKepkoTheme` is composed:
+
+```kotlin
+KepkoDesktopPersistence.appId = "com.example.app"
+```
+
 Use [`PersistentKepkoTheme`](https://github.com/yasan-org/kepko/blob/main/persistence/src/commonMain/kotlin/glass/yasan/kepko/persistence/PersistentKepkoTheme.kt) instead of `KepkoTheme` to automatically persist and restore theme preferences:
 
 ```kotlin
