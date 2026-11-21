@@ -30,6 +30,9 @@ jobs:
       - name: Run Detekt
         run: ./gradlew detekt
 
+      - name: Check Icons
+        run: ./gradlew :resource:checkIcons
+
   jvm-build:
     name: JVM Build
     runs-on: ubuntu-latest

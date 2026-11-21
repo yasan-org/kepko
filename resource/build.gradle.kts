@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val artifactId = "resource"
+val resourcePackage = "glass.yasan.kepko.$artifactId"
 
 plugins {
     alias(libs.plugins.jetbrains.kotlin.multiplatform)
@@ -11,6 +12,7 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.roborazzi)
+    id("glass.yasan.kepko.icons")
 }
 
 kotlin {
@@ -23,7 +25,7 @@ kotlin {
     }
 
     android {
-        namespace = "glass.yasan.kepko.$artifactId"
+        namespace = resourcePackage
         compileSdk = libs.versions.android.sdk.compile.get().toInt()
         minSdk = libs.versions.android.sdk.min.get().toInt()
 
@@ -76,8 +78,12 @@ kotlin {
 
 compose.resources {
     publicResClass = false
-    packageOfResClass = "glass.yasan.kepko.$artifactId"
+    packageOfResClass = resourcePackage
     generateResClass = auto
+}
+
+kepkoIcons {
+    packageName = resourcePackage
 }
 
 configure<MavenPublishBaseExtension> {
