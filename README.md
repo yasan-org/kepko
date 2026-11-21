@@ -109,6 +109,31 @@ PersistentPreferenceThemeScreen(
 - [`LocalKepkoColorPalette`](https://github.com/yasan-org/kepko/blob/main/persistence/src/commonMain/kotlin/glass/yasan/kepko/persistence/PersistenceManager.kt): the currently active [`ColorPalette`](https://github.com/yasan-org/kepko/blob/main/foundation/src/commonMain/kotlin/glass/yasan/kepko/foundation/theme/ColorPalette.kt)
 - [`LocalKepkoPersistenceManager`](https://github.com/yasan-org/kepko/blob/main/persistence/src/commonMain/kotlin/glass/yasan/kepko/persistence/PersistenceManager.kt): the [`PersistenceManager`](https://github.com/yasan-org/kepko/blob/main/persistence/src/commonMain/kotlin/glass/yasan/kepko/persistence/PersistenceManager.kt) instance for direct access to persistence state
 
+## Markdown
+
+An optional module with [`TextMarkdown`](https://github.com/yasan-org/kepko/blob/main/markdown/src/commonMain/kotlin/glass/yasan/kepko/markdown/TextMarkdown.kt), which renders [GitHub Flavored Markdown](https://github.github.com/gfm/) in the theme.
+
+```kotlin
+implementation("glass.yasan.kepko:markdown:<version>")
+```
+
+```kotlin
+TextMarkdown(
+    text = "A paragraph with **bold** and a [link](https://example.com/).",
+)
+```
+
+Colors and text styles come from [`TextMarkdownDefaults`](https://github.com/yasan-org/kepko/blob/main/markdown/src/commonMain/kotlin/glass/yasan/kepko/markdown/TextMarkdownDefaults.kt). A link opens with the platform's handler unless `onLinkClick` is given.
+
+An image shows its description unless its domain is allowed. Images from the domains in `imageDomains`, and their subdomains, are loaded over `https` with [Coil](https://coil-kt.github.io/coil/), which needs one of its [network artifacts](https://coil-kt.github.io/coil/network/) in your app:
+
+```kotlin
+TextMarkdown(
+    text = "![A picture](https://example.com/picture.png)",
+    imageDomains = listOf("example.com"),
+)
+```
+
 ## Navigation
 
 An optional experimental module with [Navigation 3](https://developer.android.com/guide/navigation/navigation-3) scenes for large windows. On Android it needs API 24 or later.

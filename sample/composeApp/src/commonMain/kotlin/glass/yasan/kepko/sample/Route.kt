@@ -24,6 +24,10 @@ internal sealed interface Route {
         override val path = "icons"
     }
 
+    data object Markdown : Route {
+        override val path = "markdown"
+    }
+
     data object Serialization : Route {
         override val path = "serialization"
     }
@@ -37,7 +41,8 @@ internal sealed interface Route {
 
         fun fromPath(path: String): Route? = when {
             path.startsWith(PROFILE_THEME_PREFIX) -> ProfileTheme(path.removePrefix(PROFILE_THEME_PREFIX))
-            else -> listOf(Home, Theme, Profiles, Icons, Serialization, TitleBar).firstOrNull { it.path == path }
+            else -> listOf(Home, Theme, Profiles, Icons, Markdown, Serialization, TitleBar)
+                .firstOrNull { it.path == path }
         }
     }
 }
