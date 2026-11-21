@@ -15,7 +15,7 @@
   "assignAutomerge": true,
   "timezone": "Europe/Prague",
   "schedule": [
-    "* 1-5 * * *"
+    "* 20-21 * * *"
   ],
   "gitIgnoredAuthors": [
     "346567311+yasan-glass-bot[bot]@users.noreply.github.com"
@@ -24,17 +24,14 @@
   "automergeStrategy": "squash",
   "platformAutomerge": false,
   "vulnerabilityAlerts": {
-    "description": "Security fixes skip the release-age wait, the night window and the shared group: their own pull request, merged once CI passes",
+    "description": "Security fixes skip the night window and the shared group: their own pull request, merged once CI passes",
     "groupName": null,
-    "minimumReleaseAge": null,
     "schedule": [],
     "automerge": true,
     "addLabels": [
       "security"
     ]
   },
-  "minimumReleaseAge": "28 days",
-  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "customDatasources": {
     "android-platforms": {
       "description": "Reads the Android API levels from Google's Android SDK repository manifest",
@@ -74,33 +71,6 @@
     }
   ],
   "packageRules": [
-    {
-      "description": "Minor updates settle for two weeks; the 28-day default above covers major and everything else",
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "minimumReleaseAge": "14 days"
-    },
-    {
-      "description": "Patches settle for a week",
-      "matchUpdateTypes": [
-        "patch"
-      ],
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Below 1.0 a minor bump is a breaking one, so it waits as long as a major",
-      "matchCurrentVersion": "/^v?0\\./",
-      "matchUpdateTypes": [
-        "minor"
-      ],
-      "minimumReleaseAge": "28 days"
-    },
-    {
-      "description": "Alpha and beta bumps change APIs whatever their update type says, so they wait as long as a major",
-      "matchCurrentVersion": "/(alpha|beta|rc|dev|eap)/i",
-      "minimumReleaseAge": "28 days"
-    },
     {
       "description": "kotlinx-datetime's -compat builds are a compatibility artifact for 0.6.x consumers, not newer releases",
       "matchPackageNames": [
