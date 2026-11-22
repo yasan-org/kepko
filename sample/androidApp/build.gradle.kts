@@ -15,7 +15,10 @@ kotlin {
 
 android {
     namespace = "glass.yasan.kepko.sample"
-    compileSdk = libs.versions.sample.android.sdk.compile.get().toInt()
+    compileSdk {
+        val (major, minor) = libs.versions.sample.android.sdk.compile.get().split('.').map(String::toInt)
+        version = release(major) { minorApiLevel = minor }
+    }
 
     defaultConfig {
         applicationId = "glass.yasan.kepko.sample"
