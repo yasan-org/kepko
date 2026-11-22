@@ -26,8 +26,8 @@ kotlin {
     android {
         namespace = "glass.yasan.kepko.$artifactId"
         compileSdk {
-            val sdk = libs.versions.android.sdk.compile.get().split('.').map(String::toInt)
-            version = release(sdk[0]) { minorApiLevel = sdk.getOrNull(1) }
+            val (major, minor) = libs.versions.android.sdk.compile.get().split('.').map(String::toInt)
+            version = release(major) { minorApiLevel = minor }
         }
         minSdk = libs.versions.persistence.android.sdk.min.get().toInt()
 
