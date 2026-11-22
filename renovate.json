@@ -50,7 +50,7 @@
         "/(^|/)gradle/libs\\.versions\\.toml$/"
       ],
       "matchStrings": [
-        "android-sdk-compile = \"(?<currentValue>\\d+)\""
+        "android-sdk-compile-major = \"(?<currentValue>\\d+)\""
       ],
       "depNameTemplate": "android-compile-sdk",
       "datasourceTemplate": "custom.android-platforms",

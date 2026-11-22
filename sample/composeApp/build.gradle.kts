@@ -22,7 +22,11 @@ kotlin {
 
     android {
         namespace = "glass.yasan.kepko.sample.shared"
-        compileSdk = libs.versions.sample.android.sdk.compile.get().toInt()
+        compileSdk {
+            version = release(libs.versions.sample.android.sdk.compile.major.get().toInt()) {
+                minorApiLevel = libs.versions.sample.android.sdk.compile.minor.get().toInt()
+            }
+        }
         minSdk = libs.versions.sample.android.sdk.min.get().toInt()
 
         compilerOptions {

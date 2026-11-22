@@ -25,7 +25,11 @@ kotlin {
 
     android {
         namespace = "glass.yasan.kepko.$artifactId"
-        compileSdk = libs.versions.android.sdk.compile.get().toInt()
+        compileSdk {
+            version = release(libs.versions.android.sdk.compile.major.get().toInt()) {
+                minorApiLevel = libs.versions.android.sdk.compile.minor.get().toInt()
+            }
+        }
         minSdk = libs.versions.persistence.android.sdk.min.get().toInt()
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
