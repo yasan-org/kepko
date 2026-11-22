@@ -40,6 +40,14 @@
       "transformTemplates": [
         "{\"releases\": [$distinct(releases.$match(version, /path=\"platforms;android-(\\d+)(\\.\\d+)?\"/).groups[0]).{\"version\": $}]}"
       ]
+    },
+    "android-platforms-minor": {
+      "description": "Reads the Android API levels, including minor releases such as 37.2, from Google's Android SDK repository manifest",
+      "defaultRegistryUrlTemplate": "https://dl.google.com/android/repository/repository2-3.xml",
+      "format": "plain",
+      "transformTemplates": [
+        "{\"releases\": [$distinct(releases.$match(version, /path=\"platforms;android-(\\d+(?:\\.\\d+)?)\"/).groups[0]).{\"version\": $}]}"
+      ]
     }
   },
   "customManagers": [
@@ -50,10 +58,10 @@
         "/(^|/)gradle/libs\\.versions\\.toml$/"
       ],
       "matchStrings": [
-        "android-sdk-compile-major = \"(?<currentValue>\\d+)\""
+        "android-sdk-compile = \"(?<currentValue>\\d+(?:\\.\\d+)?)\""
       ],
       "depNameTemplate": "android-compile-sdk",
-      "datasourceTemplate": "custom.android-platforms",
+      "datasourceTemplate": "custom.android-platforms-minor",
       "versioningTemplate": "loose"
     },
     {
