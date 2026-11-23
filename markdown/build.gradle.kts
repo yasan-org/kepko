@@ -25,7 +25,10 @@ kotlin {
 
     android {
         namespace = "glass.yasan.kepko.$artifactId"
-        compileSdk = libs.versions.android.sdk.compile.get().toInt()
+        compileSdk {
+            val (major, minor) = libs.versions.android.sdk.compile.get().split('.').map(String::toInt)
+            version = release(major) { minorApiLevel = minor }
+        }
         minSdk = libs.versions.android.sdk.min.get().toInt()
 
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -63,7 +66,8 @@ kotlin {
                 implementation(libs.jetbrains.compose.components.resources)
                 implementation(libs.jetbrains.compose.ui.tooling.preview)
                 implementation(libs.jetbrains.compose.foundation)
-                implementation(libs.jetbrains.compose.material3)
+                // TextMarkdownDefaults.typography takes a Material 3 Typography.
+                api(libs.jetbrains.compose.material3)
                 implementation(libs.jetbrains.compose.runtime)
                 implementation(libs.jetbrains.compose.ui)
             }
