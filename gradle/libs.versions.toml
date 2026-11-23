@@ -1,6 +1,7 @@
 [versions]
 agp = "9.5.2"
 android-sdk-compile = "37.1"
+android-tools-sdk-common = "32.5.2"
 android-sdk-min = "21"
 androidx-activity-compose = "1.13.0"
 androidx-core = "1.19.1"
@@ -19,6 +20,8 @@ kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.13.0"
 composable-preview-scanner = "0.9.3"
 roborazzi = "1.79.0"
+snakeyaml-engine = "3.2"
+squareup-kotlinpoet = "2.4.0"
 platformtools-darkmodedetector = "0.7.5"
 navigation-android-sdk-min = "24"
 persistence-android-sdk-min = "24"
@@ -52,6 +55,9 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+android-tools-sdk-common = { module = "com.android.tools:sdk-common", version.ref = "android-tools-sdk-common" }
+snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version.ref = "snakeyaml-engine" }
+squareup-kotlinpoet = { module = "com.squareup:kotlinpoet", version.ref = "squareup-kotlinpoet" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
