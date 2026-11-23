@@ -1,8 +1,6 @@
 package glass.yasan.kepko.markdown
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.AnnotatedString
 import com.mikepenz.markdown.coil3.Coil3ImageTransformerImpl
 import com.mikepenz.markdown.model.ImageData
@@ -45,18 +43,16 @@ internal class ImageDomains(domains: List<String>) {
 }
 
 /**
- * Loads the images [domains] allows, with Coil. Any other image is not loaded.
+ * Loads the images [domains] allows, with Coil. Any other image is not loaded. Everything else,
+ * such as an image's size, is Coil's.
  */
 internal class DomainImageTransformer(
     private val domains: ImageDomains,
-) : ImageTransformer {
+) : ImageTransformer by Coil3ImageTransformerImpl {
 
     @Composable
     override fun transform(link: String): ImageData? =
         if (domains.allows(link)) Coil3ImageTransformerImpl.transform(link) else null
-
-    @Composable
-    override fun intrinsicSize(painter: Painter): Size = Coil3ImageTransformerImpl.intrinsicSize(painter)
 }
 
 /**

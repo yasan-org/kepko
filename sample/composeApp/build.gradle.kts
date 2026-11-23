@@ -174,6 +174,8 @@ compose.desktop {
                 TargetFormat.Exe,
                 TargetFormat.Pkg,
             )
+            // The Ktor Java engine, which loads the Markdown screen's images, needs java.net.http.
+            modules("java.net.http")
             packageName = "Kepko"
             packageVersion = project.version.toString()
             description = "Explore the Kepko design system for Compose Multiplatform"

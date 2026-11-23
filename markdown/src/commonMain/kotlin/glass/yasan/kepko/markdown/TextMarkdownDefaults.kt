@@ -19,11 +19,15 @@ public object TextMarkdownDefaults {
     /** The space between two blocks, such as two paragraphs or a paragraph and a list. */
     public val BlockSpacing: Dp = 4.dp
 
+    /**
+     * Links and code follow [textColor], so they read on whatever surface the text sits on. On a
+     * coloured surface, also pass a [codeContainerColor] that suits it.
+     */
     @Composable
     public fun colors(
         textColor: Color = LocalContentColor.current,
-        linkColor: Color = KepkoTheme.colors.content,
-        codeColor: Color = KepkoTheme.colors.content,
+        linkColor: Color = textColor,
+        codeColor: Color = textColor,
         codeContainerColor: Color = KepkoTheme.colors.background,
         dividerColor: Color = KepkoTheme.colors.outline,
         noteColor: Color = KepkoTheme.colors.information,

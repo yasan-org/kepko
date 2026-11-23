@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.offset
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.compose.components.markdownComponents
 import com.mikepenz.markdown.model.DefaultMarkdownColors
@@ -29,9 +30,11 @@ import com.mikepenz.markdown.model.markdownPadding
  * Text written in GitHub Flavored Markdown, rendered in the theme: emphasis, links, inline code,
  * headings, lists, quotes, alerts, rules, code blocks and tables.
  *
- * Text with no markdown in it reads as `Text` shows it. An image shows its description unless it
- * is loaded, see [imageDomains]. An alert (`> [!NOTE]`) is a `Button` in the colour of its kind, with
- * the kind's icon and the alert's text, without formatting.
+ * Plain text reads as `Text` shows it, except that a single line break joins two lines into one
+ * paragraph, as in any markdown: leave an empty line between paragraphs. An image shows its
+ * description unless it may be loaded, see [imageDomains]. An alert (`> [!NOTE]`) looks like a
+ * `Button` in the colour of its kind, with the kind's icon and the alert's text, without
+ * formatting. It is read as text, not as a button.
  *
  * @param text The markdown to render.
  * @param typography The styles of body text, headings, code and quotes.
@@ -41,6 +44,8 @@ import com.mikepenz.markdown.model.markdownPadding
  * @param imageDomains The domains images are loaded from, such as `example.com`. An image is
  * loaded when its address is `https` and its host is one of these or a subdomain of one. Images
  * are loaded with Coil, which needs one of its network artifacts in the app to load from the web.
+ * Only the image's own address is checked: a redirect it answers with is followed to any host. An
+ * image that fails to load leaves its space empty.
  */
 @Composable
 public fun TextMarkdown(
@@ -62,11 +67,13 @@ public fun TextMarkdown(
             }
         }
     }
+    val markdownColors = remember(colors) { colors.toMarkdownColors() }
+    val markdownTypography = remember(typography, colors) { typography.toMarkdownTypography(colors) }
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         Markdown(
             content = text,
-            colors = colors.toMarkdownColors(),
-            typography = typography.toMarkdownTypography(colors),
+            colors = markdownColors,
+            typography = markdownTypography,
             padding = textMarkdownPadding(blockSpacing = blockSpacing),
             annotator = remember(images) {
                 markdownAnnotator { content, child -> annotateImageAsDescription(content, child, images) }
@@ -85,9 +92,11 @@ public fun TextMarkdown(
 }
 
 private fun Modifier.withoutSpaceAbove(space: Dp): Modifier = layout { measurable, constraints ->
-    val placeable = measurable.measure(constraints)
-    val cut = space.roundToPx().coerceAtMost(placeable.height)
-    layout(placeable.width, placeable.height - cut) {
+    val spacePx = space.roundToPx()
+    // The space cut away at the top is given back to the content.
+    val placeable = measurable.measure(constraints.offset(vertical = spacePx))
+    val cut = spacePx.coerceAtMost(placeable.height)
+    layout(placeable.width, (placeable.height - cut).coerceIn(constraints.minHeight, constraints.maxHeight)) {
         placeable.place(0, -cut)
     }
 }

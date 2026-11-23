@@ -53,18 +53,23 @@ internal class PreviewScreenshotTests {
                 .build(),
         )
 
-        previews.forEach { preview ->
-            runDesktopComposeUiTest(width = WINDOW_WIDTH, height = WINDOW_HEIGHT) {
-                setContent {
-                    CompositionLocalProvider(LocalDensity provides snapshotDensity) {
-                        preview()
+        try {
+            previews.forEach { preview ->
+                runDesktopComposeUiTest(width = WINDOW_WIDTH, height = WINDOW_HEIGHT) {
+                    setContent {
+                        CompositionLocalProvider(LocalDensity provides snapshotDensity) {
+                            preview()
+                        }
                     }
+                    waitForIdle()
+                    onRoot().captureRoboImage(
+                        filePath = "src/jvmTest/snapshots/${preview.methodName}.png",
+                    )
                 }
-                waitForIdle()
-                onRoot().captureRoboImage(
-                    filePath = "src/jvmTest/snapshots/${preview.methodName}.png",
-                )
             }
+        } finally {
+            // Later tests in the same JVM get Coil's own loader back.
+            SingletonImageLoader.reset()
         }
     }
 }
