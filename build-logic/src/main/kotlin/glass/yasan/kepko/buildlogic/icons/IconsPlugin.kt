@@ -56,14 +56,20 @@ public class IconsPlugin : Plugin<Project> {
             download.convention(!check)
         }
 
-        project.tasks.register<SyncIconsTask>("syncIcons") {
+        val syncIcons = project.tasks.register<SyncIconsTask>("syncIcons") {
             description = "Downloads the Material Symbols listed in the icon manifest and regenerates Icons and NamedIcon."
             configureFrom(check = false)
         }
-        project.tasks.register<SyncIconsTask>("checkIcons") {
+        val checkIcons = project.tasks.register<SyncIconsTask>("checkIcons") {
             description = "Fails if the generated icon sources or the set of drawables are out of sync with the icon manifest. " +
                 "Pass --download to also compare the drawable contents."
             configureFrom(check = true)
         }
+
+        // syncIcons rewrites sources and resources, so anything else in the same build waits for it.
+        project.tasks.configureEach {
+            if (name != syncIcons.name) mustRunAfter(syncIcons)
+        }
+        project.tasks.named { it == "check" }.configureEach { dependsOn(checkIcons) }
     }
 }

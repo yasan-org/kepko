@@ -14,12 +14,15 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.gradle.work.DisableCachingByDefault
 import java.io.File
+import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.time.Duration
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 
 /**
  * Syncs the icons listed in the manifest into the module.
@@ -58,7 +61,7 @@ public abstract class SyncIconsTask : DefaultTask() {
     public abstract val checkOnly: Property<Boolean>
 
     @get:Input
-    @get:Option(option = "download", description = "Also download every icon and compare the drawable contents.")
+    @get:Option(option = "download", description = "checkIcons only: also download every icon and compare the drawable contents.")
     public abstract val download: Property<Boolean>
 
     private val rootDirectory: File = project.rootDir
@@ -70,6 +73,9 @@ public abstract class SyncIconsTask : DefaultTask() {
         val drawables = drawableDirectory.get().asFile
         val sources = sourceDirectory.get().asFile
         val check = checkOnly.get()
+        if (!check && !download.get()) {
+            throw GradleException("--no-download only applies to checkIcons. syncIcons always downloads every icon.")
+        }
 
         val expected = linkedMapOf<File, String>()
         if (!check || download.get()) {
@@ -102,7 +108,7 @@ public abstract class SyncIconsTask : DefaultTask() {
                 logger.lifecycle("updated: ${it.relativeTo(rootDirectory)}")
             }
             stale.forEach {
-                it.delete()
+                if (!it.delete()) throw GradleException("Could not delete ${it.relativeTo(rootDirectory)}")
                 logger.lifecycle("removed: ${it.relativeTo(rootDirectory)}")
             }
         }
@@ -117,35 +123,62 @@ public abstract class SyncIconsTask : DefaultTask() {
             .use { client -> download(client, icons) }
 
     private fun download(client: HttpClient, icons: List<Icon>): List<Pair<Icon, String>> {
-        val requests = icons.map { icon ->
-            val request = HttpRequest.newBuilder(URI.create(icon.url))
-                .timeout(Duration.ofSeconds(TIMEOUT_SECONDS))
-                .header("User-Agent", "kepko-sync-icons")
-                .build()
-            icon to client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        val executor = Executors.newFixedThreadPool(MAX_PARALLEL_DOWNLOADS)
+        try {
+            val downloads = icons.map { icon -> icon to executor.submit(Callable { fetch(client, icon) }) }
+            val errors = mutableListOf<String>()
+            val results = downloads.mapNotNull { (icon, future) ->
+                runCatching { icon to VectorDrawableConverter.convert(future.get(), temporaryDir, icon.name) }
+                    .onFailure {
+                        val cause = if (it is ExecutionException) it.cause ?: it else it
+                        errors += "${icon.name}: ${cause.message} (${icon.url})"
+                    }
+                    .getOrNull()
+            }
+            if (errors.isNotEmpty()) {
+                throw GradleException("Failed to sync icons:\n" + errors.sorted().joinToString("\n") { "  $it" })
+            }
+            return results
+        } finally {
+            executor.shutdownNow()
         }
-        CompletableFuture.allOf(*requests.map { it.second }.toTypedArray()).exceptionally { null }.join()
+    }
 
-        val errors = mutableListOf<String>()
-        val results = requests.mapNotNull { (icon, future) ->
-            runCatching {
-                val response = future.join()
-                when (response.statusCode()) {
-                    HTTP_OK -> icon to VectorDrawableConverter.convert(response.body(), temporaryDir, icon.name)
-                    HTTP_NOT_FOUND -> error("symbol '${icon.symbol}' not found")
-                    else -> error("HTTP ${response.statusCode()}")
-                }
-            }.onFailure { errors += "${icon.name}: ${it.cause?.message ?: it.message} (${icon.url})" }.getOrNull()
+    /** Downloads one icon, retrying connection failures, throttling and server errors with a growing delay. */
+    private fun fetch(client: HttpClient, icon: Icon): String {
+        val request = HttpRequest.newBuilder(URI.create(icon.url))
+            .timeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+            .header("User-Agent", "kepko-sync-icons")
+            .build()
+        fun send() = runCatching { client.send(request, HttpResponse.BodyHandlers.ofString()) }
+        var result = send()
+        var attempt = 1
+        while (attempt < MAX_ATTEMPTS && result.isRetryable()) {
+            Thread.sleep(RETRY_DELAY_MILLIS * attempt)
+            attempt++
+            result = send()
         }
-        if (errors.isNotEmpty()) {
-            throw GradleException("Failed to sync icons:\n" + errors.sorted().joinToString("\n") { "  $it" })
+        val response = result.getOrThrow()
+        return when (response.statusCode()) {
+            HTTP_OK -> response.body()
+            HTTP_NOT_FOUND -> error("symbol '${icon.symbol}' not found")
+            else -> error("HTTP ${response.statusCode()}")
         }
-        return results
+    }
+
+    private fun Result<HttpResponse<*>>.isRetryable(): Boolean {
+        val status = getOrNull()?.statusCode() ?: return exceptionOrNull() is IOException
+        return status == HTTP_TOO_MANY_REQUESTS || status >= HTTP_SERVER_ERROR
     }
 
     private companion object {
         const val TIMEOUT_SECONDS = 30L
+        const val MAX_PARALLEL_DOWNLOADS = 16
+        const val MAX_ATTEMPTS = 3
+        const val RETRY_DELAY_MILLIS = 1_000L
         const val HTTP_OK = 200
         const val HTTP_NOT_FOUND = 404
+        const val HTTP_TOO_MANY_REQUESTS = 429
+        const val HTTP_SERVER_ERROR = 500
     }
 }
