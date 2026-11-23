@@ -40,7 +40,7 @@ public fun ModalBottomSheet(
     scrimColor: Color = ModalBottomSheetDefaults.scrimColor,
     dragHandle: @Composable (() -> Unit)? = { DragHandle() },
     contentWindowInsets: @Composable () -> WindowInsets = { ModalBottomSheetDefaults.contentWindowInsets },
-    properties: ModalBottomSheetProperties = ModalBottomSheetProperties(),
+    properties: ModalBottomSheetProperties = ModalBottomSheetDefaults.properties(),
     header: @Composable ColumnScope.() -> Unit = { HorizontalDivider(Modifier.fillMaxWidth()) },
     title: ModalBottomSheetTitle? = null,
     content: @Composable ColumnScope.() -> Unit,
