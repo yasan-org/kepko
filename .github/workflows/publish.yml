@@ -118,9 +118,9 @@ jobs:
           cp sample/composeApp/build/compose/binaries/main/rpm/*.rpm "kepko-sample-linux-${TAG}.rpm"
           gh release upload "${TAG}" "kepko-sample-linux-${TAG}.rpm" --clobber
 
-          tar -czf "kepko-sample-linux-${TAG}.tar.gz" \
+          tar -czf "kepko-sample-linux-x86_64-${TAG}.tar.gz" \
             -C sample/composeApp/build/compose/binaries/main/app Kepko
-          gh release upload "${TAG}" "kepko-sample-linux-${TAG}.tar.gz" --clobber
+          gh release upload "${TAG}" "kepko-sample-linux-x86_64-${TAG}.tar.gz" --clobber
 
           for apk in sample/androidApp/build/outputs/apk/release/*.apk; do
             suffix="$(basename "${apk}" .apk)"
@@ -138,6 +138,34 @@ jobs:
           zip -r "${GITHUB_WORKSPACE}/kepko-sample-js-${TAG}.zip" .
           cd "${GITHUB_WORKSPACE}"
           gh release upload "${TAG}" "kepko-sample-js-${TAG}.zip" --clobber
+
+  sample-linux-arm64:
+    name: Sample App (Linux arm64)
+    needs: publish
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: 25
+
+      - name: Build Linux Targets
+        run: ./gradlew :sample:composeApp:createDistributable
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          tar -czf "kepko-sample-linux-arm64-${TAG}.tar.gz" \
+            -C sample/composeApp/build/compose/binaries/main/app Kepko
+          gh release upload "${TAG}" "kepko-sample-linux-arm64-${TAG}.tar.gz" --clobber
 
   refresh-docs:
     name: Refresh Context7 Docs
