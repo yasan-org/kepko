@@ -13,4 +13,4 @@ jobs:
           curl -sS -f -X POST https://context7.com/api/v1/refresh \
             -H "Authorization: Bearer ${{ secrets.CONTEXT7_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"libraryName": "/yasanglass/kepko"}'
+            -d '{"libraryName": "/yasan-org/kepko"}'
