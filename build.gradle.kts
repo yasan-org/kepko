@@ -64,6 +64,7 @@ fun Project.configureDetekt() {
         source.from(
             "src/androidMain/kotlin",
             "src/androidTest/kotlin",
+            "src/appleMain/kotlin",
             "src/commonMain/kotlin",
             "src/commonTest/kotlin",
             "src/iosMain/kotlin",
