@@ -90,7 +90,7 @@ fun Project.configurePublishing() {
             name.set("Kepko")
             description.set("An opinionated design system for Compose Multiplatform.")
             inceptionYear.set("2025")
-            url.set("https://github.com/yasanglass/kepko/")
+            url.set("https://github.com/yasan-org/kepko/")
             licenses {
                 license {
                     name.set("The Apache License, Version 2.0")
@@ -106,9 +106,9 @@ fun Project.configurePublishing() {
                 }
             }
             scm {
-                url.set("https://github.com/yasanglass/kepko/")
-                connection.set("scm:git:git://github.com/yasanglass/kepko.git")
-                developerConnection.set("scm:git:ssh://git@github.com/yasanglass/kepko.git")
+                url.set("https://github.com/yasan-org/kepko/")
+                connection.set("scm:git:git://github.com/yasan-org/kepko.git")
+                developerConnection.set("scm:git:ssh://git@github.com/yasan-org/kepko.git")
             }
         }
     }
