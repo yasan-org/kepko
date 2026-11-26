@@ -48,6 +48,14 @@
       "transformTemplates": [
         "{\"releases\": [$distinct(releases.$match(version, /path=\"platforms;android-(\\d+\\.\\d+)\"/).groups[0]).{\"version\": $}]}"
       ]
+    },
+    "agp-from-catalog": {
+      "description": "Reads the agp version from the main branch version catalog of the yasan-org repository named by the package name",
+      "defaultRegistryUrlTemplate": "https://raw.githubusercontent.com/yasan-org/{{packageName}}/main/gradle/libs.versions.toml",
+      "format": "plain",
+      "transformTemplates": [
+        "{\"releases\": [$distinct(releases.$match(version, /^agp = \"([^\"]+)\"$/).groups[0]).{\"version\": $}]}"
+      ]
     }
   },
   "customManagers": [
@@ -76,6 +84,20 @@
       "depNameTemplate": "android-target-sdk",
       "datasourceTemplate": "custom.android-platforms",
       "versioningTemplate": "loose"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the Android Gradle Plugin through toolkit's version catalog rather than Maven, so this catalog only moves to an AGP that toolkit already builds with: projects that include both need one AGP version",
+      "managerFilePatterns": [
+        "/(^|/)gradle/libs\\.versions\\.toml$/"
+      ],
+      "matchStrings": [
+        "\\nagp = \"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "android-gradle-plugin",
+      "packageNameTemplate": "toolkit",
+      "datasourceTemplate": "custom.agp-from-catalog",
+      "versioningTemplate": "gradle"
     }
   ],
   "packageRules": [
@@ -85,6 +107,16 @@
         "org.jetbrains.kotlinx:kotlinx-datetime"
       ],
       "allowedVersions": "!/-compat$/"
+    },
+    {
+      "description": "The agp version moves through the android-gradle-plugin custom manager, which follows toolkit's catalog, so the Gradle manager leaves every dependency on it alone",
+      "matchManagers": [
+        "gradle"
+      ],
+      "matchJsonata": [
+        "sharedVariableName = \"agp\""
+      ],
+      "enabled": false
     },
     {
       "description": "Every update lands in one pull request, merged once CI passes; last so it overrides the presets' groups",
