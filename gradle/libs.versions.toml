@@ -1,5 +1,5 @@
 [versions]
-agp = "9.5.2"
+agp = "9.5.3"
 android-sdk-compile = "37.2"
 android-sdk-min = "21"
 androidx-activity-compose = "1.13.0"

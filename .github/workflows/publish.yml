@@ -142,7 +142,7 @@ jobs:
   sample-linux-arm64:
     name: Sample App (Linux arm64)
     needs: publish
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v7
