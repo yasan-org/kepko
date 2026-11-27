@@ -69,6 +69,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
+                implementation(project(":markdown"))
                 implementation(project(":navigation"))
                 implementation(project(":persistence"))
                 implementation(project(":serialization"))
@@ -83,6 +84,8 @@ kotlin {
                 implementation(libs.androidx.navigation3.ui)
                 implementation(libs.platformtools.darkmodedetector)
                 implementation(libs.kotlinx.serialization.json)
+                // Loads the images of the Markdown screen from the web.
+                implementation(libs.coil.network.ktor3)
             }
         }
         val nonMobileMain = create("nonMobileMain") {
@@ -92,10 +95,26 @@ kotlin {
             dependsOn(nonMobileMain)
             dependencies {
                 implementation(compose.desktop.currentOs)
+                implementation(libs.ktor.client.java)
             }
         }
-        jsMain { dependsOn(nonMobileMain) }
-        wasmJsMain { dependsOn(nonMobileMain) }
+        jsMain {
+            dependsOn(nonMobileMain)
+            dependencies {
+                implementation(libs.ktor.client.js)
+            }
+        }
+        wasmJsMain {
+            dependsOn(nonMobileMain)
+            dependencies {
+                implementation(libs.ktor.client.js)
+            }
+        }
+        iosMain {
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
+        }
         jvmTest {
             dependencies {
                 implementation(project(":resource"))
@@ -106,6 +125,9 @@ kotlin {
             }
         }
         androidMain {
+            dependencies {
+                implementation(libs.ktor.client.okhttp)
+            }
         }
     }
 }
@@ -152,6 +174,8 @@ compose.desktop {
                 TargetFormat.Exe,
                 TargetFormat.Pkg,
             )
+            // The Ktor Java engine, which loads the Markdown screen's images, needs java.net.http.
+            modules("java.net.http")
             packageName = "Kepko"
             packageVersion = project.version.toString()
             description = "Explore the Kepko design system for Compose Multiplatform"

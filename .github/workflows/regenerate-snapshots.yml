@@ -27,13 +27,13 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
 
       - name: Regenerate Snapshots
-        run: ./gradlew :resource:cleanRecordSnapshots :component:cleanRecordSnapshots :persistence:cleanRecordSnapshots :sample:composeApp:cleanRecordSnapshots
+        run: ./gradlew :resource:cleanRecordSnapshots :component:cleanRecordSnapshots :persistence:cleanRecordSnapshots :markdown:cleanRecordSnapshots :sample:composeApp:cleanRecordSnapshots
 
       - name: Commit Snapshots
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add resource/src/jvmTest/snapshots/ component/src/jvmTest/snapshots/ persistence/src/jvmTest/snapshots/ sample/composeApp/assets/readme/
+          git add resource/src/jvmTest/snapshots/ component/src/jvmTest/snapshots/ persistence/src/jvmTest/snapshots/ markdown/src/jvmTest/snapshots/ sample/composeApp/assets/readme/
           if git diff --staged --quiet; then
             echo "No snapshot changes to commit"
           else

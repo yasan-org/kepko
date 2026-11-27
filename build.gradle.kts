@@ -21,6 +21,7 @@ dependencies {
     dokka(project(":component"))
     dokka(project(":serialization"))
     dokka(project(":persistence"))
+    dokka(project(":markdown"))
     dokka(project(":navigation"))
 
     kover(project(":resource"))
@@ -28,6 +29,7 @@ dependencies {
     kover(project(":component"))
     kover(project(":serialization"))
     kover(project(":persistence"))
+    kover(project(":markdown"))
     kover(project(":navigation"))
 }
 

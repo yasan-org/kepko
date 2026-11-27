@@ -21,6 +21,7 @@ import glass.yasan.kepko.navigation.layoutChangeTransform
 import glass.yasan.kepko.navigation.rememberListDetailSceneStrategy
 import glass.yasan.kepko.persistence.PersistentPreferenceThemeScreen
 import glass.yasan.kepko.persistence.UserVisibleProfile
+import glass.yasan.kepko.sample.home.markdown.MarkdownScreen
 import glass.yasan.kepko.sample.home.serialization.SerializationScreen
 
 @OptIn(ExperimentalKepkoApi::class)
@@ -116,6 +117,8 @@ private fun sampleEntry(
             )
 
             Route.Icons -> IconScreen(onBackClick = onBackClick)
+
+            Route.Markdown -> MarkdownScreen(onBackClick = onBackClick)
 
             Route.Serialization -> SerializationScreen(onBackClick = onBackClick)
 
